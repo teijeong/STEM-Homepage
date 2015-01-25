@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link href="/css/shopstyle.css" rel="stylesheet" type="text/css">
+<title>『 관리자 페이지』</title>
+</head>
+<script language="javascript">
+<!--
+function sendit() {
+    var form=document.login_form;
+	if(form.admin_userid.value=="") {
+	    alert("관리자 아이디를 입력해 주십시오.");
+		form.admin_userid.focus();
+	} else if(form.admin_passwd.value=="") {
+	    alert("관리자 비밀번호를 입력해 주십시오.");
+		form.admin_passwd.focus();
+	} else {
+	    form.submit();
+	}
+}
+
+function inputSendit() {
+	if(event.keyCode==13) { 
+		sendit();
+	}
+}
+//-->
+</script>
+
+<style>
+body {filter:progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#FFf2f2f2', EndColorStr='#FFb1b1b3');}
+.ad_logbox {background-color:#fff; border:1px solid #bec1c6;}
+.ad_logbox th {text-align:left; padding:0 50px;}
+.ad_logbox td {font-size:12px;}
+.membox {margin:10px 0;}
+.membox span {display:inline-block; width:60px; font-size:12px;}
+</style>
+
+<body onload='document.login_form.admin_userid.focus();'>
+<table width="780px" height="100%" cellpadding="0" cellspacing="0" align="center">
+<form name="login_form" method="post" action="code_login_ok.asp" onsubmit="inputSendit();event.returnValue = false;">
+	<tr> 
+		<td valign="middle">
+			<table width="100%" cellpadding="0" cellspacing="0" class="ad_logbox">
+				<tr> 
+					<th>
+						<table cellspacing="0" cellpadding="0">
+							<tr> 
+								<td><img src="image/login/admin_login.gif" /></td>
+							</tr>
+							<tr> 
+								<td>
+									<table cellpadding="0" cellspacing="0" class="membox">	  
+										<tr> 
+											<td><span>아이디</span><input type="text" name="admin_userid" class="input" Value="<%=Request.Cookies("rememberADID")%>" style="height:20px; ime-mode:inactive" tabindex="1"></td>
+											<td rowspan="2" style="padding-left:10px;"><a href="javascript:sendit();"><img src="image/login/bt_adminlogin.gif" border="0" tabindex="3"></a></td>
+										</tr>
+										<tr>
+											<td><span>비밀번호</span><input type="password" name="admin_passwd" class="input" onKeyDown="inputSendit();" Value="<%=Request.Cookies("rememberADPWD")%>" style="height:20px;" tabindex="2"></td>
+										</tr>
+									</table>
+									<label style='cursor:pointer;' onfocus='this.blur()'><input type='checkbox' name='rememberadINFOYN' style='vertical-align: middle' onfocus='this.blur()' <% IF Request.Cookies("rememberADID")<>"" Then %>checked<% End IF %>>아이디/비밀번호 저장</label>
+
+									<p style='padding-top:40px;'>※ 관리자 페이지로 접속합니다<br>※ 공공장소에서의 로그인시 정보 유출에 주의하시기 바랍니다</p>
+								</td>
+							</tr>
+						</table>
+					</th>
+					<td width="250"><img src="image/login/login_thema.jpg" /></td>
+				</tr>
+			</table>
+			<p style="font-size:11px; font-family:돋움; color:#000; padding-top:5px;">Copyright ⓒ 2012 All rights reserved. Contact webmaster for more information</p>
+		</td>
+	</tr>
+</table>
+</body>
+</html>
