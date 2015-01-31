@@ -1,3 +1,4 @@
+#-*- coding: utf-8 -*-
 from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 
@@ -19,7 +20,31 @@ class User(db.Model):
 
 @app.route('/')
 def main():
-    return render_template('main.html')
+    #DB dummy
+    bannerRec1 = [
+        {'image':'main_img.gif'}, 
+        {'image':'1.jpg'}, 
+        {'image':'2.jpg'}, 
+        {'image':u'교육기부박람회1.JPG'}]
+    boardRec1 = [
+        {'idx':42,'title':'TEST1','date':'2014-01-31','new':True},
+        {'idx':43,'title':'TEST2','date':'2014-01-28','new':False},
+        {'idx':44,'title':'TEST3','date':'2014-01-20','new':False},
+        {'idx':45,'title':'TEST4','date':'2014-01-19','new':False},
+        {'idx':46,'title':'TEST5','date':'2014-01-17','new':False}]
+    boardRec2 = [
+        {'idx':42,'title':'QnA1','date':'2014-01-31','new':True},
+        {'idx':43,'title':'QnA2','date':'2014-01-28','new':True},
+        {'idx':44,'title':'QnA3','date':'2014-01-20','new':False},
+        {'idx':45,'title':'QnA4','date':'2014-01-19','new':False},
+        {'idx':46,'title':'QnA5','date':'2014-01-17','new':False}]
+    return render_template('main.html', bannerRec1=bannerRec1, boardRec1=boardRec1, boardRec2=boardRec2) 
+
+@app.route('/sub/<string:sub>')
+def showSub(sub):
+    mNum = sub[0]
+    sNum = sub[2]
+    return render_template('sub' + mNum + '_' + sNum + '.html', mNum=mNum, sNum=sNum)
 
 @app.route('/test')
 def test():

@@ -34,11 +34,10 @@ Set Rs=Nothing
 DBcon.Close
 Set DBcon=Nothing
 %>
-<!--#include virtual = "/inc/body.asp"-->
+{% extends "base.html" %}
+{% block container %}
 <div id="boardPwdINPUTDiv" name="boardPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
 <div id="boardcommentPwdINPUTDiv" name="boardcommentPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
-<% mNum=5 : sNum=1 %>
-<!--#include virtual = "/inc/top.asp"-->
 	<!--container-->
 	<div id="container">
 		<div class="contain">
@@ -48,7 +47,7 @@ Set DBcon=Nothing
 			</div>
 			<div class="con">
 				<ul>
-					<li class="stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
+					<li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img">
 
 						<% IF mode="write" Then %>
@@ -71,4 +70,4 @@ Set DBcon=Nothing
 		</div>
 	</div>
 	<!--//container-->
-<!--#include virtual = "/inc/footer.asp"-->
+{% endblock %}

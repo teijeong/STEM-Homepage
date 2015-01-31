@@ -38,7 +38,7 @@ Set DBcon=Nothing
 {% macro PT_BoardTopList(rec, actpage) -%}
     {% for article in rec %}
         <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
-        {% if item.new %}<img src='../static/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
+        {% if article.new %}<img src='../static/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
         </a><span> {{ article.date }} </span></dd>
     {% endfor %}
 {%- endmacro %}                                
@@ -51,12 +51,12 @@ Set DBcon=Nothing
             <div class="t_panel_{{ index }}">
         {% endif %}
         <div class="t_panel_{{ index }}-wrapper">
-        {% if banner.link == "" %}
-            <img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
-        {% else %}
+        {% if banner.link %}
             <a href="{{ banner.link }}"></a><img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0"></a>
+        {% else %}
+            <img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
         {% endif %}
-        </div></div><br />
+        </div></div>
     {% endfor %}
 
 {% endmacro %}
@@ -111,13 +111,13 @@ Set DBcon=Nothing
 				<dl>
 					<dt><em><img src="../static/images/m_notice.gif" /></em><span><a href="javascript:go_menu('sub5_1')"><img src="../static/images/btn_more.gif" /></a></span></dt>
 					
-                    {{ PT_BoardTopList(BoardRec1, '/sub/sub5_1') }}
+                    {{ PT_BoardTopList(boardRec1, '/sub/sub5_1') }}
 				</dl>
 			</div>
 			<div class="m_qna">
 				<dl>
 					<dt><em><img src="../static/images/m_qna.gif" /></em><span><a href="javascript:go_menu('sub5_2')"><img src="../static/images/btn_more.gif" /></a></span></dt>
-					{{ PT_BoardTopList(BoardRec2, '/sub/sub5_2') }}
+					{{ PT_BoardTopList(boardRec2, '/sub/sub5_2') }}
 				</dl>
 			</div>
 		</div>

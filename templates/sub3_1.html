@@ -62,7 +62,7 @@ Function PT_ItemList()
 				ImgTag="<img src='/upload/result/"&thumbFileName&"' border='0' "&imgPerSize("result",230,280,thumbFileName)&" align='center'>"
 			End IF
 
-			IF Allrec(8,i)<>"" Then MainIcon="<a href=""mailto:"&Allrec(8,i)&"""><img src=""/images/ico_mail.gif"" style=""margin-top:-6px"" /></a>"
+			IF Allrec(8,i)<>"" Then MainIcon="<a href=""mailto:"&Allrec(8,i)&"""><img src=""../static/images/ico_mail.gif"" style=""margin-top:-6px"" /></a>"
 'idx,title,filenames,bansort,note1,note2,content1,content2,email
 
 			Response.WRite "<li>"&Vbcrlf
@@ -87,12 +87,12 @@ End Function
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "/inc/right_login.asp"-->
-				<!--#include virtual = "/inc/left.asp"-->
+				<!--#include virtual = "../static/inc/right_login.asp"-->
+				<!--#include virtual = "../static/inc/left.asp"-->
 			</div>
 			<div class="con">
 				<ul>
-					<li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+					<li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img">
 						<div class="board_search">
 							<select name="bansort" class="" onchange="location.href='?bansort='+this.value">

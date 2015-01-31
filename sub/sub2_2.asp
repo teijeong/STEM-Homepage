@@ -1,5 +1,5 @@
-<!--#include virtual = "/inc/body.asp"-->
-<% mNum=2 : sNum=2 %>
+{% extends "base.html" %}
+{% block container %}
 <!--#include virtual = "/inc/top.asp"-->
 	<!--container-->
 	<div id="container">
@@ -10,7 +10,7 @@
 			</div>
 			<div class="con">
 				<ul>
-					<li class="stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
+					<li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img"><img src="/images/sub2_2.gif">
 					<p style="padding-top:50px;"><img src="/images/sub2_2_2.gif"></p>
 					<p style="padding-top:50px;"><img src="/images/sub2_2_3.gif"></p>
@@ -21,4 +21,4 @@
 		</div>
 	</div>
 	<!--//container-->
-<!--#include virtual = "/inc/footer.asp"-->
+{% endblock %}

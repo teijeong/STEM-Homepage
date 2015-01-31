@@ -11,9 +11,9 @@ Dim serboardsort
 Dim PreTag,NextTag
 Dim AdWrite,imgnames
 
-bbscode=2
+bbscode=1
 mode=Request("mode")
-prePage="/sub/sub5_2.asp"
+prePage="../static/sub/sub5_1.asp"
 recordTitleCutNum=40
 
 IF mode="write" Then
@@ -42,12 +42,12 @@ Set DBcon=Nothing
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "/inc/right_login.asp"-->
-				<!--#include virtual = "/inc/left.asp"-->
+				<!--#include virtual = "../static/inc/right_login.asp"-->
+				<!--#include virtual = "../static/inc/left.asp"-->
 			</div>
 			<div class="con">
 				<ul>
-					<li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+					<li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img">
 
 						<% IF mode="write" Then %>

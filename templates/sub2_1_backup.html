@@ -11,15 +11,13 @@ Dim serboardsort
 Dim PreTag,NextTag
 Dim AdWrite,imgnames
 
-bbscode=2
+bbscode=3
 mode=Request("mode")
-prePage="/sub/sub5_2.asp"
+prePage="../static/sub/sub2_1.asp"
 recordTitleCutNum=40
 
 IF mode="write" Then
 %><!--#include virtual = board/proc_boardwrite.asp--><%
-ElseIF mode="view" Then
-%><!--#include virtual = board/proc_boardview.asp--><%
 ElseIF mode="modify" Then
 %><!--#include virtual = board/proc_boardmodify.asp--><%
 ElseIF mode="reply" Then
@@ -27,7 +25,7 @@ ElseIF mode="reply" Then
 ElseIF mode="pwdinput" Then
 %><!--#include virtual = board/proc_pwdinput.asp--><%
 Else
-%><!--#include virtual = board/proc_boardlist.asp--><%
+%><!--#include virtual = board/proc_boardlist_withView.asp--><%
 End IF
 
 Set Rs=Nothing
@@ -38,22 +36,21 @@ Set DBcon=Nothing
 {% block container %}
 <div id="boardPwdINPUTDiv" name="boardPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
 <div id="boardcommentPwdINPUTDiv" name="boardcommentPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
+<!--#include virtual = "../static/inc/top.asp"-->
 	<!--container-->
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "/inc/right_login.asp"-->
-				<!--#include virtual = "/inc/left.asp"-->
+				<!--#include virtual = "../static/inc/right_login.asp"-->
+				<!--#include virtual = "../static/inc/left.asp"-->
 			</div>
 			<div class="con">
 				<ul>
-					<li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+					<li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img">
 
 						<% IF mode="write" Then %>
 						<!--#include virtual = board/bbs_Write.asp-->
-						<% ElseIF mode="view" Then %>
-						<!--#include virtual = board/bbs_View.asp-->
 						<% ElseIF mode="modify" Then %>
 						<!--#include virtual = board/bbs_Modify.asp-->
 						<% ElseIF mode="reply" Then %>
@@ -61,7 +58,7 @@ Set DBcon=Nothing
 						<% ElseIF mode="pwdinput" Then %>
 						<!--#include virtual = board/bbs_pwdinput.asp-->
 						<% Else %>
-						<!--#include virtual = board/bbs_list.asp-->
+						<!--#include virtual = board/bbs_list_withView.asp-->
 						<% End IF %>
 
 					</li>
