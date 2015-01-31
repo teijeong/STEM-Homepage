@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 
 <!-- #include virtual = common/dbcon.asp -->
-<!--
 <%
 Dim PopStr
 Dim Rs,Sql,MainColRec,NewColRec,PutColRec
@@ -34,10 +33,30 @@ DBcon.Close
 Set DBcon=Nothing
 
 %>
--->
+    
+{% macro PT_BoardTopList(rec, actpage) -%}
+    {% for article in rec %}
+        <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
+        {% if item.new %}<img src='/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
+        </a><span> {{ article.date }} </span></dd>
+    {% endfor %}
+{%- endmacro %}                                
 
-
-
+{% macro PT_MainThumbImage(rec, width, height, index) -%}
+    {% for banner in rec %}
+        {% if loop.first %}
+            <div class="t_panel_{{ index }}_first">
+        {% else %}
+            <div class="t_panel_{{ index }}">
+        {% endif %}
+        <div class="t_panel_{{ index }}-wrapper">
+        {% if banner.link == "" %}
+            <img src="/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
+        {% else %}
+            <a href="{{ banner.link }}"></a><img src="/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0"></a>
+        {% endif %}
+        </div></div><br />
+    {% endfor %}    
 {% block container %}
 	<!--container-->
 	<div id="container">
@@ -45,7 +64,7 @@ Set DBcon=Nothing
 			<div class="m_visual">
 				<script type="text/javascript" src="/js/jquery.cycle.all.min.js"></script>
 				<div class="slideshow1">
-					{{ PT_MainthumbImage(bannerRec1,730,450,1) }}
+					<%=PT_MainthumbImage(bannerRec1,730,450,1)%>
 				</div>
 
 				<style>
@@ -78,7 +97,7 @@ Set DBcon=Nothing
 				</script>
 			</div>
 			<div class="m_contents">
-				{% include 'right_login.html' %}
+				<!--#include virtual = "/inc/right_login.asp"-->
 				<div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="/images/m_recruit.gif" /></a></div>
 				<div><a href="javascript:go_menu('sub2_1')"><img src="/images/m_activities.gif" /></a></div>
 			</div>
@@ -102,28 +121,3 @@ Set DBcon=Nothing
 	</div>
 	<!--//container-->
 {% endblock %}
-
-{% macro PT_BoardTopList(rec, actpage) -%}
-    {% for article in rec %}
-        <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
-        {% if item.new %}<img src='/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
-        </a><span> {{ article.date }} </span></dd>
-    {% endfor %}
-{{%- endmacro %}}
-
-{% macro PT_MainThumbImage(rec, width, height, index) -%}
-    {% for banner in rec %}
-        {% if loop.first %}
-            <div class="t_panel_{{ index }}_first">
-        {% else %}
-            <div class="t_panel_{{ index }}">
-        {% endif %}
-        <div class="t_panel_{{ index }}-wrapper">
-        {% if banner.link == "" %}
-            <img src="/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
-        {% else %}
-            <a href="{{ banner.link }}"></a><img src="/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0"></a>
-        {% endif %}
-        </div></div><br />
-    {% endfor %}
-{{%- endmacro %}}

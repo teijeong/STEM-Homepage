@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask.ext.sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -18,8 +18,8 @@ class User(db.Model):
         return '<User %r>' % self.username
 
 @app.route('/')
-def hello():
-    return 'Hello World!'
+def main():
+    return render_template('container.html')
     
 if __name__ == '__main__':
     app.debug = True
