@@ -1,6 +1,6 @@
 <div class="m_login">
 	{% if Session.useridx %}
-	<form name="login" method="post" action="/member/login_ok.asp" onSubmit="mainLoginInputSendit(login);event.returnValue = false;" style='margin:0;'>
+	<form name="login" method="post" action="../static/member/login_ok.asp" onSubmit="mainLoginInputSendit(login);event.returnValue = false;" style='margin:0;'>
 	<input type='hidden' name='guestCHK' value='<%=guestCHK%>'>
 	<input type='hidden' name='returnURL' value='<%=returnURL%>'>
 	<dl>
@@ -21,6 +21,6 @@
 	{% endif %}
 	<ul>
 		<li>
-		<a href="javascript:go_menu('modify')"><img src="/images/m_mypage.gif" /></a><a href="javascript:go_menu('favorite')"><img src="/images/m_bookmark.gif" /></a></li>
+		<a href="javascript:go_menu('modify')"><img src="../static/images/m_mypage.gif" /></a><a href="javascript:go_menu('favorite')"><img src="../static/images/m_bookmark.gif" /></a></li>
 	</ul>
 </div>

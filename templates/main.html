@@ -35,17 +35,39 @@ Set DBcon=Nothing
 
 %>
 -->
+{% macro PT_BoardTopList(rec, actpage) -%}
+    {% for article in rec %}
+        <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
+        {% if item.new %}<img src='../static/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
+        </a><span> {{ article.date }} </span></dd>
+    {% endfor %}
+{%- endmacro %}                                
 
+{% macro PT_MainThumbImage(rec, width, height, index) -%}
+    {% for banner in rec %}
+        {% if loop.first %}
+            <div class="t_panel_{{ index }}_first">
+        {% else %}
+            <div class="t_panel_{{ index }}">
+        {% endif %}
+        <div class="t_panel_{{ index }}-wrapper">
+        {% if banner.link == "" %}
+            <img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
+        {% else %}
+            <a href="{{ banner.link }}"></a><img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0"></a>
+        {% endif %}
+        </div></div><br />
+    {% endfor %}
 
-
+{% endmacro %}
 {% block container %}
 	<!--container-->
 	<div id="container">
 		<div class="m_con">
 			<div class="m_visual">
-				<script type="text/javascript" src="/js/jquery.cycle.all.min.js"></script>
+				<script type="text/javascript" src="../static/js/jquery.cycle.all.min.js"></script>
 				<div class="slideshow1">
-					{{ PT_MainthumbImage(bannerRec1,730,450,1) }}
+					{{ PT_MainThumbImage(bannerRec1,730,450,1) }}
 				</div>
 
 				<style>
@@ -78,23 +100,23 @@ Set DBcon=Nothing
 				</script>
 			</div>
 			<div class="m_contents">
-				{% include 'right_login.html' %}
-				<div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="/images/m_recruit.gif" /></a></div>
-				<div><a href="javascript:go_menu('sub2_1')"><img src="/images/m_activities.gif" /></a></div>
+				<!--#include virtual = "../static/inc/right_login.asp"-->
+				<div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="../static/images/m_recruit.gif" /></a></div>
+				<div><a href="javascript:go_menu('sub2_1')"><img src="../static/images/m_activities.gif" /></a></div>
 			</div>
 		</div>
 		<div class="m_con2">
-			<div class="m_notice_img"><img src="/images/m_notice_img.gif" /></div>
+			<div class="m_notice_img"><img src="../static/images/m_notice_img.gif" /></div>
 			<div class="m_notice">
 				<dl>
-					<dt><em><img src="/images/m_notice.gif" /></em><span><a href="javascript:go_menu('sub5_1')"><img src="/images/btn_more.gif" /></a></span></dt>
+					<dt><em><img src="../static/images/m_notice.gif" /></em><span><a href="javascript:go_menu('sub5_1')"><img src="../static/images/btn_more.gif" /></a></span></dt>
 					
                     {{ PT_BoardTopList(BoardRec1, '/sub/sub5_1') }}
 				</dl>
 			</div>
 			<div class="m_qna">
 				<dl>
-					<dt><em><img src="/images/m_qna.gif" /></em><span><a href="javascript:go_menu('sub5_2')"><img src="/images/btn_more.gif" /></a></span></dt>
+					<dt><em><img src="../static/images/m_qna.gif" /></em><span><a href="javascript:go_menu('sub5_2')"><img src="../static/images/btn_more.gif" /></a></span></dt>
 					{{ PT_BoardTopList(BoardRec2, '/sub/sub5_2') }}
 				</dl>
 			</div>
@@ -102,28 +124,3 @@ Set DBcon=Nothing
 	</div>
 	<!--//container-->
 {% endblock %}
-
-{% macro PT_BoardTopList(rec, actpage) -%}
-    {% for article in rec %}
-        <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
-        {% if item.new %}<img src='/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
-        </a><span> {{ article.date }} </span></dd>
-    {% endfor %}
-{{%- endmacro %}}
-
-{% macro PT_MainThumbImage(rec, width, height, index) -%}
-    {% for banner in rec %}
-        {% if loop.first %}
-            <div class="t_panel_{{ index }}_first">
-        {% else %}
-            <div class="t_panel_{{ index }}">
-        {% endif %}
-        <div class="t_panel_{{ index }}-wrapper">
-        {% if banner.link == "" %}
-            <img src="/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
-        {% else %}
-            <a href="{{ banner.link }}"></a><img src="/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0"></a>
-        {% endif %}
-        </div></div><br />
-    {% endfor %}
-{{%- endmacro %}}

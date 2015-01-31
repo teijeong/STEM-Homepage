@@ -19,7 +19,19 @@ class User(db.Model):
 
 @app.route('/')
 def main():
-    return render_template('container.html')
+    return render_template('main.html')
+
+@app.route('/test')
+def test():
+    lst = []
+    for i in range(10):
+        lst.append({'number':i, 'name': 'Item ' + str(i*3)})
+    return render_template('test_one.html', items=lst)
+
+@app.route('/static/<path:path>')
+def send_file(path):
+    return send_from_directory('./static', path)
+
     
 if __name__ == '__main__':
     app.debug = True
