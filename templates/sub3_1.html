@@ -1,4 +1,5 @@
 <!--#include virtual = common/dbcon.asp-->
+{#
 <%
 bansort=checkParameter("int",Request("bansort"))
 Search=checkParameter("char",Request("Search"))
@@ -40,46 +41,39 @@ Set Rs=Nothing
 DBcon.Close
 Set DBcon=Nothing
 
-Function PT_SelectBox()
-	IF IsArray(YearRec) Then
-		For i=0 To UBound(YearRec,2)
-			Response.Write "<option value='"&YearRec(0,i)&"' "&selCheck(YearRec(0,i),bansort)&">"&YearRec(0,i)&"기</option>"
-		Next
-	End IF
-End Function
-
-Function PT_ItemList()
-	Dim i,k,ThumbFileName,tmpFileName
-
-	IF IsArray(Allrec) Then
-		For i=0 To UBound(Allrec,2)
-			ImgTag="" : MainIcon=""
-
-			IF Allrec(2,i)="" OR IsNull(Allrec(2,i)) Then
-				ImgTag="<img src='/images/noPic.gif' border='0' width='230' height='280' align='center'>"
-			Else
-				thumbFileName=getImageThumbFilename(Allrec(2,i))
-				ImgTag="<img src='/upload/result/"&thumbFileName&"' border='0' "&imgPerSize("result",230,280,thumbFileName)&" align='center'>"
-			End IF
-
-			IF Allrec(8,i)<>"" Then MainIcon="<a href=""mailto:"&Allrec(8,i)&"""><img src=""../static/images/ico_mail.gif"" style=""margin-top:-6px"" /></a>"
-'idx,title,filenames,bansort,note1,note2,content1,content2,email
-
-			Response.WRite "<li>"&Vbcrlf
-			Response.WRite "	<div class=""thum"">"&ImgTag&"</div>"&Vbcrlf
-			Response.WRite "	<dl>"&Vbcrlf
-			Response.WRite "	<dt>"&Allrec(1,i)&" ("&Allrec(4,i)&", "&Allrec(3,i)&") "&MainIcon&"</dt>"&Vbcrlf
-			Response.WRite "	<dd><span>Department</span><em style='word-wrap:break-word; line-height:1.4'>"&Allrec(5,i)&"</em></dd>"&Vbcrlf
-			Response.WRite "	<dd><span>Awards & career</span><em style='word-wrap:break-word; line-height:1.4'>"&ReplaceBr(Allrec(6,i))&"</em></dd>"&Vbcrlf
-			Response.WRite "	<dd><span>Commenets</span><em style='word-wrap:break-word; line-height:1.4'>"&ReplaceBr(Allrec(7,i))&"</em></dd>"&Vbcrlf
-			Response.WRite "	</dl>"&Vbcrlf
-			Response.WRite "</li>"&Vbcrlf
-		Next
-	Else
-		Response.WRite "<li>검색된 게시물이 없습니다.</li>"&Vbcrlf
-	End IF
-End Function
 %>
+#}
+
+{% macro PT_SelectBox(YearRec) -%}
+	{% for item in YearRec %}
+		<option value="{{ item.year }}">{{ item.year }}기</option>
+	{% endfor %}
+{%- endmacro %}
+
+{% macro PT_ItemList(AllRec) -%}
+	{% for item in AllRec %}
+		{% set imgTag = '<img src="../static/images/noPic.gif" border="0" width="230" height="280" align="center">' %}
+		{% set mailIcon = '' %}
+
+		{% if item.image and item.image != "" %}
+			{% set imgTag = '<img src="../static/upload/result/{{ item.image }}" border="0" width="230" height="280" align="center">' %}
+		{% endif %}
+
+		{% if item.email and item.email != "" %}
+			{% set mailIcon = '<a href="mailto:{{ item.email }}"><img src="../static/images/ico_mail.gif" style="margin-top:-6px" /></a>}' %}
+		{% endif %}
+		<li>
+			<div class="thum">{{ imgTag }}</div>
+			<dl>
+				<dt>{{ item.name }} ({{ item.major }}, {{ item.year }}기) {{ mailIcon }}</dt>
+				<dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ item.department }}</em></dd>
+				<dd><span>Awards & Career</span><em style="word-wrap:break-word; line-height:1.4">{{ item.awards }}</em></dd>
+				<dd><span>Comments</span><em style="word-wrap:break-word; line-height:1.4">{{ item.comments }}</em></dd>
+			</dl>
+		</li>
+	{% endfor %}
+{%- endmacro %}
+
 
 {% extends "base.html" %}
 {% block container %}
@@ -87,8 +81,8 @@ End Function
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "../static/inc/right_login.asp"-->
-				<!--#include virtual = "../static/inc/left.asp"-->
+				{% include "right_login.html" %}
+				{% include "left.html" %}
 			</div>
 			<div class="con">
 				<ul>
@@ -97,11 +91,11 @@ End Function
 						<div class="board_search">
 							<select name="bansort" class="" onchange="location.href='?bansort='+this.value">
 							<option selected> - 기수선택 - </option>
-							<%=PT_SelectBox()%>
+							{{ PT_SelectBox(YearRec) }}
 							</select>
 						</div>
 						<ul class="people">
-						<%=PT_ItemList()%>
+						{{ PT_ItemList(AllRec) }}
 						</ul>
 						<center><div><%=PT_SpPageLink("","bansort="&bansort,"")%></div></center>
 					</li>

@@ -1,4 +1,5 @@
-<!--#include virtual = common/dbcon.asp-->
+{% include "common/dbcon.html" %}
+{#
 <%
 Dim Rs,Sql,Allrec
 Dim Record_Cnt,TotalPage,PageSize,Page,Count
@@ -17,23 +18,24 @@ prePage="../static/sub/sub5_1.asp"
 recordTitleCutNum=40
 
 IF mode="write" Then
-%><!--#include virtual = board/proc_boardwrite.asp--><%
-ElseIF mode="view" Then
-%><!--#include virtual = board/proc_boardview.asp--><%
-ElseIF mode="modify" Then
-%><!--#include virtual = board/proc_boardmodify.asp--><%
-ElseIF mode="reply" Then
-%><!--#include virtual = board/proc_boardreply.asp--><%
-ElseIF mode="pwdinput" Then
-%><!--#include virtual = board/proc_pwdinput.asp--><%
+%>{% include "board/proc_boardwrite.html" %}<%
+elif mode="view" Then
+%>{% include "board/proc_boardview.html" %}<%
+elif mode="modify" Then
+%>{% include "board/proc_boardmodify.html" %}<%
+elif mode="reply" Then
+%>{% include "board/proc_boardreply.html" %}<%
+elif mode="pwdinput" Then
+%>{% include "board/proc_pwdinput.html" %}<%
 Else
-%><!--#include virtual = board/proc_boardlist.asp--><%
+%>{% include "board/proc_boardlist.html" %}<%
 End IF
 
 Set Rs=Nothing
 DBcon.Close
 Set DBcon=Nothing
 %>
+#}
 {% extends "base.html" %}
 {% block container %}
 <div id="boardPwdINPUTDiv" name="boardPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
@@ -42,27 +44,27 @@ Set DBcon=Nothing
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "../static/inc/right_login.asp"-->
-				<!--#include virtual = "../static/inc/left.asp"-->
+				{% include "right_login.html" %}
+				{% include "left.html" %}
 			</div>
 			<div class="con">
 				<ul>
 					<li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img">
 
-						<% IF mode="write" Then %>
-						<!--#include virtual = board/bbs_Write.asp-->
-						<% ElseIF mode="view" Then %>
-						<!--#include virtual = board/bbs_View.asp-->
-						<% ElseIF mode="modify" Then %>
-						<!--#include virtual = board/bbs_Modify.asp-->
-						<% ElseIF mode="reply" Then %>
-						<!--#include virtual = board/bbs_Reply.asp-->
-						<% ElseIF mode="pwdinput" Then %>
-						<!--#include virtual = board/bbs_pwdinput.asp-->
-						<% Else %>
-						<!--#include virtual = board/bbs_list.asp-->
-						<% End IF %>
+						{% if mode == "write" %}
+							{% include "board/bbs_Write.html" %}
+						{% elif mode == "view" %}
+							{% include "board/bbs_View.html" %}
+						{% elif mode == "modify" %}
+							{% include "board/bbs_Modify.html" %}
+						{% elif mode == "reply" %}
+							{% include "board/bbs_Reply.html" %}
+						{% elif mode == "pwdinput" %}
+							{% include "board/bbs_pwdinput.html" %}
+						{% else %}
+							{% include "board/bbs_list.html" %}
+						{% endif %}
 
 					</li>
 				</ul>

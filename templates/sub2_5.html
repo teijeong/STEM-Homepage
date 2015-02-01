@@ -1,4 +1,5 @@
 <!--#include virtual = common/dbcon.asp-->
+{#
 <%
 bansort=Request("bansort")
 Search=Replaceensine(ReplaceNoHtml(Request("Search")))
@@ -32,30 +33,23 @@ Rs.Close
 Set Rs=Nothing
 DBcon.Close
 Set DBcon=Nothing
-
-Function PT_SelectBox()
-	IF IsArray(YearRec) Then
-		For i=0 To UBound(YearRec,2)
-			Response.Write "<option value='"&YearRec(0,i)&"' "&selCheck(YearRec(0,i),bansort)&">"&YearRec(0,i)&"년</option>"
-		Next
-	End IF
-End Function
-
-Function PT_ItemList()
-	Dim i,k,ThumbFileName,tmpFileName
-
-	IF IsArray(Allrec) Then
-		For i=0 To UBound(Allrec,2)
-			Response.WRite "<tr>"&Vbcrlf
-			Response.WRite "	<th>"&Allrec(1,i)&"</th>"&Vbcrlf
-			Response.WRite "	<td><div id='HKeditorContent' name='HKeditorContent'>"&Allrec(3,i)&"</div></td>"&Vbcrlf
-			Response.WRite "</tr>"&Vbcrlf
-		Next
-	Else
-		Response.WRite "<li>검색된 게시물이 없습니다.</li>"&Vbcrlf
-	End IF
-End Function
 %>
+#}
+
+{% macro PT_SelectBox(YearRec) -%}
+	{% for item in YearRec %}
+		<option value="{{ item.year }}">{{ item.year }}년</option>
+	{% endfor %}
+{%- endmacro %}
+
+{% macro PT_ItemList(AllRec) -%}
+	{% for item in AllRec %}
+		<tr>
+			<th>{{ item.date }}</th>
+			<td><div id='HKeditorContent' name='HKeditorContent'>{{ item.description }}</div></td>
+		</tr>
+	{% endfor %}
+{%- endmacro %}
 
 {% extends "base.html" %}
 {% block container %}
@@ -63,8 +57,8 @@ End Function
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "../static/inc/right_login.asp"-->
-				<!--#include virtual = "../static/inc/left.asp"-->
+				{% include "right_login.html" %}
+				{% include "left.html" %}
 			</div>
 			<div class="con">
 				<ul>
@@ -72,7 +66,7 @@ End Function
 					<li class="con_img">
 						<p style="text-align:right">
 							<select name="bansort" class="" onchange="location.href='?bansort='+this.value">
-							<%=PT_SelectBox%>
+							{{ PT_SelectBox(YearRec) }}
 							</select>
 						</p>
 						<table cellspacing="0" cellpadding="0" class="history">
@@ -84,7 +78,7 @@ End Function
 							</tr>
 						</thead>
 						<tbody>
-							<%=PT_ItemList()%>
+							{{ PT_ItemList(AllRec) }}
 						</tbody>
 						</table>
 					</li>

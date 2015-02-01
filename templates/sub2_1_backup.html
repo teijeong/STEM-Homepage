@@ -1,4 +1,5 @@
-<!--#include virtual = common/dbcon.asp-->
+{% include "common/dbcon.html" %}
+{#
 <%
 Dim Rs,Sql,Allrec
 Dim Record_Cnt,TotalPage,PageSize,Page,Count
@@ -16,50 +17,39 @@ mode=Request("mode")
 prePage="../static/sub/sub2_1.asp"
 recordTitleCutNum=40
 
-IF mode="write" Then
-%><!--#include virtual = board/proc_boardwrite.asp--><%
-ElseIF mode="modify" Then
-%><!--#include virtual = board/proc_boardmodify.asp--><%
-ElseIF mode="reply" Then
-%><!--#include virtual = board/proc_boardreply.asp--><%
-ElseIF mode="pwdinput" Then
-%><!--#include virtual = board/proc_pwdinput.asp--><%
-Else
-%><!--#include virtual = board/proc_boardlist_withView.asp--><%
-End IF
 
 Set Rs=Nothing
 DBcon.Close
 Set DBcon=Nothing
 %>
-{% extends "base.html" %}
+#}
+
+{% extends "base.html' %}
 {% block container %}
 <div id="boardPwdINPUTDiv" name="boardPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
 <div id="boardcommentPwdINPUTDiv" name="boardcommentPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
-<!--#include virtual = "../static/inc/top.asp"-->
 	<!--container-->
 	<div id="container">
 		<div class="contain">
 			<div class="s_contents">
-				<!--#include virtual = "../static/inc/right_login.asp"-->
-				<!--#include virtual = "../static/inc/left.asp"-->
+				{% include "right_login.html' %}
+				{% include "left.html' %}
 			</div>
 			<div class="con">
 				<ul>
 					<li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
 					<li class="con_img">
-
-						<% IF mode="write" Then %>
-						<!--#include virtual = board/bbs_Write.asp-->
-						<% ElseIF mode="modify" Then %>
-						<!--#include virtual = board/bbs_Modify.asp-->
-						<% ElseIF mode="reply" Then %>
-						<!--#include virtual = board/bbs_Reply.asp-->
-						<% ElseIF mode="pwdinput" Then %>
-						<!--#include virtual = board/bbs_pwdinput.asp-->
-						<% Else %>
-						<!--#include virtual = board/bbs_list_withView.asp-->
-						<% End IF %>
+						{% if mode == 'write' %}
+							{% include "board/bbs_Write.html" %}
+						{% elif mode == 'modify' %}
+							{% include "board/bbs_Modify.html" %}
+						{% elif mode == 'reply' %}
+							{% include "board/bbs_Reply.html" %}
+						{% elif mode == 'pwdinput' %}
+							{% include "board/bbs_pwdinput.html" %}
+						{% else %}
+							{% include "board/bbs_list_withView.html" %}
+						{% endif %}
 
 					</li>
 				</ul>

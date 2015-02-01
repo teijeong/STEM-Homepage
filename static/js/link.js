@@ -1,7 +1,7 @@
 function go_menu(tar){
 
 	if (tar.substring(0,3) == 'sub') {
-		location.href = "/sub/" + tar.substring(3,4) + "/" + tar.substring(5,6), "_self";
+		location.href = "/sub/" + tar.substring(3,4) + "-" + tar.substring(5,6), "_self";
 	}
 	
 	/* 회원가입 */
@@ -45,7 +45,7 @@ function go_menu(tar){
 	
 	/* 메인으로 */
 	if(tar=='main')
-		location.href = "/index.asp", "_self";
+		location.href = "", "_self";
 
 }
 function bookmarksite(title,url) { 

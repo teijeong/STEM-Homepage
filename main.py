@@ -34,7 +34,7 @@ def main():
         {'idx':46,'title':'TEST5','date':'2014-01-17','new':False}]
     boardRec2 = [
         {'idx':42,'title':'QnA1','date':'2014-01-31','new':True},
-        {'idx':43,'title':'QnA2','date':'2014-01-28','new':True},
+        {'idx':43,'title':'QnA2','date':'2014-01-30','new':True},
         {'idx':44,'title':'QnA3','date':'2014-01-20','new':False},
         {'idx':45,'title':'QnA4','date':'2014-01-19','new':False},
         {'idx':46,'title':'QnA5','date':'2014-01-17','new':False}]
@@ -44,7 +44,7 @@ def main():
 def showSub(sub):
     mNum = sub[0]
     sNum = sub[2]
-    return render_template('sub' + mNum + '_' + sNum + '.html', mNum=mNum, sNum=sNum)
+    return render_template('sub' + mNum + '_' + sNum + '.html', Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
 
 @app.route('/test')
 def test():

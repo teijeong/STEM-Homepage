@@ -2,7 +2,7 @@
 /* Web Designer (pusher17@naver.com) SSONG 120418 */
 
 /* standard style 정의 */
-body {margin:0px; background:url('/images/bg.gif') top repeat-x; background-color:#ffffff;}
+body {margin:0px; background:url('../images/bg.gif') top repeat-x; background-color:#ffffff;}
 html{overflow-y:scroll}
 div, p, dl, dt, dd, table, th, td, form, fieldset, adddress {margin:0; padding:0;}
 h1, h2, h3, h4, h5, h6 {margin:0; padding:0;}
@@ -71,7 +71,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .m_con {position:relative; margin-top:35px; width:960px; height:450px; border:1px solid #d2d2d2; padding:9px;}
 .m_visual {float:left;}
 .m_contents {float:right;}
-.m_login {background:url('/images/m_login_bg.gif') top no-repeat; height:130px; width:220px;*zoom:1;}
+.m_login {background:url('../images/m_login_bg.gif') top no-repeat; height:130px; width:220px;*zoom:1;}
 .m_login:after {content:""; display:block; clear:both;}
 .m_login dl {padding:30px 0 0 10px; height:35px; width:200px;}
 .m_login dt {float:left;}
@@ -89,7 +89,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .m_notice dt:after {content:""; display:block; clear:both;}
 .m_notice dt em {float:left;}
 .m_notice dt span {float:right;}
-.m_notice dd a {float:left; font-size:11px; width:340px; background:url('/images/ico_dot_gray.gif') left 50% no-repeat; padding-left:8px;}
+.m_notice dd a {float:left; font-size:11px; width:340px; background:url('../images/ico_dot_gray.gif') left 50% no-repeat; padding-left:8px;}
 .m_notice dd span {float:right; font-size:11px; line-height:1.8em; color:#ffac7d; font-family:"굴림"}
 
 .m_qna {width:325px;}
@@ -97,7 +97,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .m_qna dt:after {content:""; display:block; clear:both;}
 .m_qna dt em {float:left;}
 .m_qna dt span {float:right;}
-.m_qna dd a {float:left; font-size:11px; width:275px; background:url('/images/ico_dot_gray.gif') left 50% no-repeat; padding-left:8px;}
+.m_qna dd a {float:left; font-size:11px; width:275px; background:url('../images/ico_dot_gray.gif') left 50% no-repeat; padding-left:8px;}
 .m_qna dd span {float:right; font-size:11px; line-height:1.8em; color:#ffac7d; font-family:"굴림"}
 
 
@@ -107,14 +107,14 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 
 
 /* 왼쪽 메뉴 */
-.left {position:relative; width:220px; float:left; background:url('/images/category_bg.gif') left repeat-y; margin-top:20px;}
+.left {position:relative; width:220px; float:left; background:url('../images/category_bg.gif') left repeat-y; margin-top:20px;}
 .category {position:relative; width:220px; overflow:hidden; padding-bottom:20px;}
 .category dt {margin-bottom:15px;}
 .category dd a.on img,.category dd a:focus img,.category dd a:hover img {margin-left:-220px;}
 
-.category dd.sub4_3 {padding-left:5px; background:url('/images/sub2_1_dot.gif') left 18% no-repeat; padding-bottom:2px; padding-top:3px;}
+.category dd.sub4_3 {padding-left:5px; background:url('../images/sub2_1_dot.gif') left 18% no-repeat; padding-bottom:2px; padding-top:3px;}
 .category dd.sub4_3 strong {color:#777;}
-.category dd.sub4_3_2 {padding-left:5px; background:url('/images/sub2_1_dot.gif') left 18% no-repeat;}
+.category dd.sub4_3_2 {padding-left:5px; background:url('../images/sub2_1_dot.gif') left 18% no-repeat;}
 .category dd.sub4_3_2 strong {color:#777;}
 
 
@@ -166,7 +166,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .tbl_type .num,.tbl_type .date,.tbl_type .hit{padding:0;font-family:Tahoma;line-height:normal}
 .tbl_type .title{text-align:left}
 .tbl_type .title .pic,.tbl_type .title .new{margin:0 0 2px;vertical-align:middle}
-.tbl_type tr.reply .title a{padding-left:15px;background:url('/images/ico_reply.gif') 0 1px no-repeat}
+.tbl_type tr.reply .title a{padding-left:15px;background:url('../images/ico_reply.gif') 0 1px no-repeat}
 .tbl_type tr.reply td a.comment{padding:0;background:none;color:#f00;font-size:12px;font-weight:bold}
 
 
@@ -215,7 +215,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 
 /* 회원가입 */
 .yak {margin-bottom:30px;}
-.yak_tit {padding-left:10px; font-size:14px; font-family:"나눔고딕"; font-weight:bold; color:#333; background:url('/images/ico_arrow_orange.png') left 50% no-repeat; margin-bottom:10px;}
+.yak_tit {padding-left:10px; font-size:14px; font-family:"나눔고딕"; font-weight:bold; color:#333; background:url('../images/ico_arrow_orange.png') left 50% no-repeat; margin-bottom:10px;}
 .yak p.right {float:right; padding:0;}
 .mem_cate {margin:10px 0;}
 
@@ -223,17 +223,17 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .tbl_join,.tbl_join th,.tbl_join td{border:0}
 .tbl_join{width:100%;border-top:1px solid #333; border-bottom:1px solid #999; font-size:12px; table-layout:fixed}
 .tbl_join caption{display:none;}
-.tbl_join .import {background:url('/images/ico_arrow_orange.png') left 50% no-repeat; border-bottom:solid 1px #d2d2d2;background-color:#f0f0f0; color:#222; font-weight:bold;line-height:18px;vertical-align:middle; text-align:left; padding-left:12px;}
+.tbl_join .import {background:url('../images/ico_arrow_orange.png') left 50% no-repeat; border-bottom:solid 1px #d2d2d2;background-color:#f0f0f0; color:#222; font-weight:bold;line-height:18px;vertical-align:middle; text-align:left; padding-left:12px;}
 .tbl_join th {padding:5px 0 4px 12px;border-bottom:solid 1px #d2d2d2;background-color:#f0f0f0;color:#222;font-weight:bold;line-height:18px;vertical-align:middle; font-size:11px; text-align:left;}
 .tbl_join td {padding:8px 0 5px 10px;border-bottom:solid 1px #d2d2d2;text-align:left}
 
 /*join_com*/
-.join_com {background:url('/images/join_com.gif') top no-repeat; height:295px; margin:30px 0 50px 0;*zoom:1;}
+.join_com {background:url('../images/join_com.gif') top no-repeat; height:295px; margin:30px 0 50px 0;*zoom:1;}
 .join_com:after {content:""; display:block; clear:both;}
 .join_com input {margin:175px 0 0 60px;}
 
 /* LoGin */
-.login {position:relative; margin:30px auto; width:660px; height:300px; background:url('/images/loginbox_bg.gif') no-repeat;}
+.login {position:relative; margin:30px auto; width:660px; height:300px; background:url('../images/loginbox_bg.gif') no-repeat;}
 .logbox {margin:50px 0 0 350px;}
 .logbox span {width:80px;}
 .logbox th {text-align:right;}
@@ -289,4 +289,4 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .history thead th {padding:5px 0 4px;border-top:solid 1px #f75900;border-bottom:solid 1px #fff;background-color:#f0f0f0;color:#f75900;font-weight:bold;line-height:18px;}
 .history tbody th {border-bottom:1px dotted #d6d6d6; color:#777; font-family:'Verdana','Malgun Gothic'; font-weight:normal; font-size:14px; padding:10px;}
 .history tbody td {border-bottom:1px dotted #d6d6d6; padding:10px;}
-.history tbody td p {background:url('/images/ico_arrow_orange.png') left 8px no-repeat; font-family:'Malgun Gothic'; color:#000; font-size:12px; padding-left:10px}
+.history tbody td p {background:url('../images/ico_arrow_orange.png') left 8px no-repeat; font-family:'Malgun Gothic'; color:#000; font-size:12px; padding-left:10px}
