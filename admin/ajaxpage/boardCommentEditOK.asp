@@ -12,12 +12,12 @@ BBscode=Request("BBscode")
 Sql="Select Top 1 boardidx From commentAdmin Where idx="&Idx
 Set Rs=DBcon.Execute(Sql)
 IF Rs.Bof Or Rs.Eof Then
-	Response.write ExecJavaAlert("잘못된접근입니다.","")
-	DBcon.Close
-	Set DBcon=Nothing
-	Response.End
+    Response.write ExecJavaAlert("잘못된접근입니다.","")
+    DBcon.Close
+    Set DBcon=Nothing
+    Response.End
 Else
-	boardidx=Rs("boardidx")
+    boardidx=Rs("boardidx")
 End IF
 
 Sql="UPDATE commentAdmin Set content=N'"&content&"' Where idx="&Idx

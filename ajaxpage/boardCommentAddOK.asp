@@ -8,15 +8,15 @@ Pwd=Request("pwd")
 UserIdx="Null"
 
 IF Pwd="" Then
-	IF Session("UserIdx")="" Then
-		Response.write ExecJavaAlert("로그인이필요한페이지입니다.","")
-		DBcon.Close
-		Set DBcon=Nothing
-		Response.End
-	Else
-		UserIdx=Session("UserIdx")
-		Name=Session("UserName")
-	End IF
+    IF Session("UserIdx")="" Then
+        Response.write ExecJavaAlert("로그인이필요한페이지입니다.","")
+        DBcon.Close
+        Set DBcon=Nothing
+        Response.End
+    Else
+        UserIdx=Session("UserIdx")
+        Name=Session("UserName")
+    End IF
 End IF
 
 Content=ReplaceNoHtml(Replaceensine(Request("content")))

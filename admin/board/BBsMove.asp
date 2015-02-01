@@ -14,22 +14,22 @@ Call HK_BBSSetup(BBsCode)
 Sql="SELECT Top 1 idx From boardSort Where boardidx="&targetMoveBoardidx&" Order by idx ASC"
 Set Rs=DBcon.Execute(Sql)
 IF Rs.Bof OR Rs.Eof THen
-	BoardSortidx="null"
+    BoardSortidx="null"
 Else
-	BoardSortidx=Rs("idx")
+    BoardSortidx=Rs("idx")
 End IF
 
 IDX=Split(idx,", ")
 
 For i=0 To Ubound(IDX)
-	Sql="SELECT Ref,ReLevel FROM BBsList WHERE idx="&Idx(i)
-	Set Rs=DBcon.Execute(Sql)
-	IF Not(Rs.Bof OR Rs.Eof) Then
-		Ref=Rs("Ref") : ReLevel=Rs("ReLevel")
+    Sql="SELECT Ref,ReLevel FROM BBsList WHERE idx="&Idx(i)
+    Set Rs=DBcon.Execute(Sql)
+    IF Not(Rs.Bof OR Rs.Eof) Then
+        Ref=Rs("Ref") : ReLevel=Rs("ReLevel")
 
-		Sql="UPDATE BBsList SET boardidx="&targetMoveBoardidx&",boardsort="&BoardSortidx&" Where Ref="&Ref
-		DBcon.Execute Sql
-	End IF
+        Sql="UPDATE BBsList SET boardidx="&targetMoveBoardidx&",boardsort="&BoardSortidx&" Where Ref="&Ref
+        DBcon.Execute Sql
+    End IF
 Next
 
 Set UploadForm=Nothing

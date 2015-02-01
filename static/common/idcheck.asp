@@ -7,9 +7,9 @@ Sql="Select Top 1 * from Members WHERE id='"&id&"'"
 Set IdYN=DBcon.Execute(sql)
 
 IF IdYN.Bof or IdYN.Eof Then
-	Response.Write "useY"
+    Response.Write "useY"
 Else
-	Response.Write "useN"
+    Response.Write "useN"
 End IF
 
 IDYN.Close

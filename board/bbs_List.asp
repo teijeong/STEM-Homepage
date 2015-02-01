@@ -4,9 +4,9 @@
 <%=BBsSelectField%>
 <input type='hidden' name='storeidx' value='<%=storeidx%>'>
 <select name="search" class="input">
-	<option value="title" selected="selected">제 목</option>
-	<option value="writer" <%=SelCheck("writer",search)%>>글쓴이</option>
-	<option value="content" <%=SelCheck("content",search)%>>글내용</option>
+    <option value="title" selected="selected">제 목</option>
+    <option value="writer" <%=SelCheck("writer",search)%>>글쓴이</option>
+    <option value="content" <%=SelCheck("content",search)%>>글내용</option>
 </select>
 <input name="searchstr" type="text" style="width:150px;" class="input" value='<%=ReplaceTextField(searchStr)%>'>
 <input type='button' value='검색' class='button1' onclick='searchGo();' style='cursor:pointer'>
@@ -27,16 +27,16 @@
 <col width="55">
 </colgroup>
 <thead>
-	<tr>
-		<th scope="col">번호</th>
-		<th scope="col">제목</th>
-		<th scope="col">글쓴이</th>
-		<th scope="col">날짜</th>
-		<th scope="col">조회수</th>
-	</tr>
+    <tr>
+        <th scope="col">번호</th>
+        <th scope="col">제목</th>
+        <th scope="col">글쓴이</th>
+        <th scope="col">날짜</th>
+        <th scope="col">조회수</th>
+    </tr>
 </thead>
 <tbody>
-	<%=PT_BoardList%>
+    <%=PT_BoardList%>
 </tbody>
 </table>
 

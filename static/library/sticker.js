@@ -82,4 +82,4 @@ else if (window.attachEvent)
 window.attachEvent("onload", beginticker)
 else if (document.all || document.getElementById)
 window.onload=beginticker
-</script>	
+</script>    

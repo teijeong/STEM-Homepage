@@ -14,9 +14,9 @@ body {margin:0px; background:url('bg1.gif') top center repeat-y;}
 
 <body>
 <table width="1000px" border="0" cellpadding="0" cellspacing="0" id="main">
-	<tr>
-		<td><a href="../index.asp"><img src="main1.jpg" alt="클릭하시면 다음 페이지를 확인하실 수 있습니다." title="클릭하시면 다음 페이지를 확인하실 수 있습니다." border="0" /></a></td>
-	</tr>
+    <tr>
+        <td><a href="../index.asp"><img src="main1.jpg" alt="클릭하시면 다음 페이지를 확인하실 수 있습니다." title="클릭하시면 다음 페이지를 확인하실 수 있습니다." border="0" /></a></td>
+    </tr>
 </table>
 </body>
 </html>

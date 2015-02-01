@@ -13,11 +13,11 @@ uploadform.DefaultPath=Server.MapPath("/upload/mainbanner/")
 Sql="SELECT Bansort,filenames From mainbannerAdmin Where idx="&IDX
 SET Rs=DBcon.Execute(Sql)
 If Not(Rs.Bof Or Rs.Eof) Then
-	IF Rs(1)<>"" Then
-		ImgDelete Rs(1),UploadForm.DefaultPath
-		ImgDelete getImageThumbFilename(Rs(1)),UploadForm.DefaultPath
-	End IF
-	Bansort=Rs(0)
+    IF Rs(1)<>"" Then
+        ImgDelete Rs(1),UploadForm.DefaultPath
+        ImgDelete getImageThumbFilename(Rs(1)),UploadForm.DefaultPath
+    End IF
+    Bansort=Rs(0)
 End IF
 
 Sql="DELETE mainbannerAdmin WHERE idx="&Idx

@@ -13,8 +13,8 @@ set UploadForm=server.CreateObject("DEXT.FileUpload")
 uploadform.DefaultPath=Server.MapPath("/upload/editorData/")
 
 IF Request("filename")<>"" Then
-	ImgDelete Request("filename"),UploadForm.DefaultPath
-	ImgDelete Request("filename"),Server.MapPath("/upload/thumeditordate/")
+    ImgDelete Request("filename"),UploadForm.DefaultPath
+    ImgDelete Request("filename"),Server.MapPath("/upload/thumeditordate/")
 End IF
 
 Set UploadForm=Nothing

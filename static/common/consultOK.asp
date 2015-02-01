@@ -10,16 +10,16 @@ Sql="INSERT INTO Consult1(writer,tel,Consort,wip) VALUES(?, ?, ?, ?)"
 
 Set objCmd = Server.CreateObject("ADODB.Command")
 With objCmd
-	.ActiveConnection = DBcon
-	.CommandType = adCmdText
-	.CommandText = Sql
-	
-	.Parameters.Append .CreateParameter("@Writer", adVarWChar, adParamInput, 50, writer)
-	.Parameters.Append .CreateParameter("@Tel", adVarWChar, adParamInput, 100, Tel)
-	.Parameters.Append .CreateParameter("@consort", adVarWChar, adParamInput, 100, consort)
-	.Parameters.Append .CreateParameter("@wip", adVarChar, adParamInput, 50, wip)
+    .ActiveConnection = DBcon
+    .CommandType = adCmdText
+    .CommandText = Sql
+    
+    .Parameters.Append .CreateParameter("@Writer", adVarWChar, adParamInput, 50, writer)
+    .Parameters.Append .CreateParameter("@Tel", adVarWChar, adParamInput, 100, Tel)
+    .Parameters.Append .CreateParameter("@consort", adVarWChar, adParamInput, 100, consort)
+    .Parameters.Append .CreateParameter("@wip", adVarChar, adParamInput, 50, wip)
 
-	.Execute,,adExecuteNoRecords
+    .Execute,,adExecuteNoRecords
 End With
 Set objCmd = Nothing
 

@@ -25,22 +25,22 @@ td {font-size:9pt; font-family: 굴림;}
 <script language="JavaScript">
  function resize() {
 
-	if(screen.availHeight-100 > <%=height%>){
-		winHeight = <%=height%> + 100;
-	}else{
-		winHeight = screen.availHeight - 100;
-	}
+    if(screen.availHeight-100 > <%=height%>){
+        winHeight = <%=height%> + 100;
+    }else{
+        winHeight = screen.availHeight - 100;
+    }
 
-	if(screen.availWidth-40 > <%=width%>){
-		winWidth = <%=width%> + 40;
-	}else{
-		winWidth = screen.availWidth-40;
-	}
+    if(screen.availWidth-40 > <%=width%>){
+        winWidth = <%=width%> + 40;
+    }else{
+        winWidth = screen.availWidth-40;
+    }
 
-	var winPosLeft = (screen.width - winWidth) / 2; // 새창 Y 좌표
-	var winPosTop = (screen.height - winHeight) / 2; // 새창 X 좌표
+    var winPosLeft = (screen.width - winWidth) / 2; // 새창 Y 좌표
+    var winPosTop = (screen.height - winHeight) / 2; // 새창 X 좌표
 
-	window.moveTo(winPosLeft,winPosTop);
+    window.moveTo(winPosLeft,winPosTop);
     window.resizeTo(winWidth,winHeight);
 
 //screen.availWidth

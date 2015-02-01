@@ -24,10 +24,10 @@ Sql = Sql & "from members WHERE idx IN("&chkidx&") order by idx desc"
 Rs.Open Sql,dbcon,1
 
 IF Rs.Bof Or Rs.Eof Then
-	Response.Write ExecJavaAlert("검색된 회원이 없습니다.",0)
-	Response.End
+    Response.Write ExecJavaAlert("검색된 회원이 없습니다.",0)
+    Response.End
 Else
-	Allrec=Rs.GetRows()
+    Allrec=Rs.GetRows()
 End IF
 Rs.Close
 
@@ -53,11 +53,11 @@ FieldData=FieldData&"<td>최종접속일</td>"
 WriteData = "<table border='1' cellspacing='0' cellpadding='3' bordercolor='#BDBEBD' style='border-collapse: collapse'><tr align='center' height='30' bgcolor='#E1E1E1'>"
 WriteData = WriteData & FieldData
 For i=0 To Ubound(Allrec,2)
-	WriteData = WriteData & "<tr align='center' height='25'><td>"&i+1&"</td>"
-	For j=0 To Ubound(Allrec)
-		WriteData = WriteData & "<td>"&Allrec(j,i)&"</td>"
-	Next
-	WriteData = WriteData & "</tr>"
+    WriteData = WriteData & "<tr align='center' height='25'><td>"&i+1&"</td>"
+    For j=0 To Ubound(Allrec)
+        WriteData = WriteData & "<td>"&Allrec(j,i)&"</td>"
+    Next
+    WriteData = WriteData & "</tr>"
 Next
 WriteData = WriteData & "</table>"
 

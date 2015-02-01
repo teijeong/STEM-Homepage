@@ -7,12 +7,12 @@ Set Rs=Server.CreateObject("ADODB.RecordSet")
 Set Rs=DBcon.Execute(Sql)
 
 IF Not(Rs.Bof Or Rs.Eof) Then
-	title=ReplaceTextField(Rs("title"))
-	Bansort=Rs("Bansort")
-	content=Rs("content")
+    title=ReplaceTextField(Rs("title"))
+    Bansort=Rs("Bansort")
+    content=Rs("content")
 Else
-	strLocation="self.close();"
-	Response.Write ExecJavaAlert("잘못된 접근입니다.\n현재창을 닫습니다.",3)
+    strLocation="self.close();"
+    Response.Write ExecJavaAlert("잘못된 접근입니다.\n현재창을 닫습니다.",3)
 End If
 
 Rs.Close
@@ -36,13 +36,13 @@ Set DBcon=Nothing
 <SCRIPT LANGUAGE="JavaScript">
 <!--
 function goAdd(){
-	f=document.historyform;
-	if(f.title.value==""){
-		alert("일시를 입력하세요");
-		f.title.focus();
-		return;
-	}
-	document.historyform.submit();
+    f=document.historyform;
+    if(f.title.value==""){
+        alert("일시를 입력하세요");
+        f.title.focus();
+        return;
+    }
+    document.historyform.submit();
 }
 //-->
 </SCRIPT>
@@ -56,20 +56,20 @@ function goAdd(){
 <input type='hidden' name='idx' value='<%=Idx%>'>
 <input type='hidden' name='Bansort' value='<%=Bansort%>'>
 <table width="880" border="1" cellpadding="0" cellspacing="0" bordercolor='#BDBEBD' class="menu" style='border-collapse: collapse'>
-	<tr><td height='30' colspan='2' bgcolor='#EFEFEF' align='center'><b>게시물 수정</b></td></tr>
-	<tr height="25" align="center">
-		<td width='100' height="25" align="center" bgcolor="#F6F6F6">일시</td>
-		<td align='left'>
-			&nbsp;<input type='text' name='title' size='100' class='input' maxlength='50' value='<%=Title%>'>
-		</td>
-	</tr>
-	<tr align="center">
-		<td width='150' align="center" bgcolor="#F6F6F6">활동내용</td>
-		<td align='left' style='padding: 5px;'>
-			<textarea name='content' style='width:100%; height:70px;' class='ckeditor'><%=Content%></textarea>
-		</td>
-	</tr>
-	<tr><td colspan='2' align='center' height='25'><input type='button' value='게시물 수정하기' class='btn' style='width:99%;cursor:pointer;' onclick='goAdd()'></td></tr>
+    <tr><td height='30' colspan='2' bgcolor='#EFEFEF' align='center'><b>게시물 수정</b></td></tr>
+    <tr height="25" align="center">
+        <td width='100' height="25" align="center" bgcolor="#F6F6F6">일시</td>
+        <td align='left'>
+            &nbsp;<input type='text' name='title' size='100' class='input' maxlength='50' value='<%=Title%>'>
+        </td>
+    </tr>
+    <tr align="center">
+        <td width='150' align="center" bgcolor="#F6F6F6">활동내용</td>
+        <td align='left' style='padding: 5px;'>
+            <textarea name='content' style='width:100%; height:70px;' class='ckeditor'><%=Content%></textarea>
+        </td>
+    </tr>
+    <tr><td colspan='2' align='center' height='25'><input type='button' value='게시물 수정하기' class='btn' style='width:99%;cursor:pointer;' onclick='goAdd()'></td></tr>
 </table>
 </form>
 </center>

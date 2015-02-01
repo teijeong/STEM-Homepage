@@ -10,21 +10,21 @@ Sql="Select * FROM PageAdmin WHERE resultSortidx="&resultSortidx
 Set Rs=DBcon.Execute(Sql)
 
 IF Rs.Bof Or Rs.Eof Then
-	Sql="Insert INTO PageAdmin(resultSortidx,content) values(?,?)"
+    Sql="Insert INTO PageAdmin(resultSortidx,content) values(?,?)"
 Else
-	Sql="Update PageAdmin Set resultSortidx=?, content=? Where resultSortidx="&resultSortidx
+    Sql="Update PageAdmin Set resultSortidx=?, content=? Where resultSortidx="&resultSortidx
 End IF
 
 Set objCmd = Server.CreateObject("ADODB.Command")
 With objCmd
-	.ActiveConnection = DBcon
-	.CommandType = adCmdText
-	.CommandText = Sql
-	
-	.Parameters.Append .CreateParameter("@resultSortidx", adInteger, adParamInput, 4, resultSortidx)
-	.Parameters.Append .CreateParameter("@Content", adVarWChar, adParamInput, 2147483647, Content)
+    .ActiveConnection = DBcon
+    .CommandType = adCmdText
+    .CommandText = Sql
+    
+    .Parameters.Append .CreateParameter("@resultSortidx", adInteger, adParamInput, 4, resultSortidx)
+    .Parameters.Append .CreateParameter("@Content", adVarWChar, adParamInput, 2147483647, Content)
 
-	.Execute,,adExecuteNoRecords
+    .Execute,,adExecuteNoRecords
 End With
 
 Set objCmd = Nothing

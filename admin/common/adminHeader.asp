@@ -25,11 +25,11 @@ jQuery(function() {
 <div id="layerShow" name='layerShow' style="width:100%; zoom:1; position:fixed; _position:absolute;  left:0px; z-index:100; top:0px; display:none;"></div>
 <div id='progressDIV' style='background:#000000; width:100%; zoom:1; position:fixed; _position:absolute;  left:0px; z-index:100; top:0px; opacity:0.3; filter:alpha(opacity:70); display:none;' >
 <table border=0 cellpadding=0 cellspacing=0 width='100%' height='100%'>
-	<tr>
-		<td align=center bgcolor='#000000'>
-			<img src=/common/memberimg/progress.gif>
-			<div style='color: red; padding-top:5px; font-size:13px;'>처리중입니다. 잠시만 기다려주세요.</div>
-		</td>
-	</tr>
+    <tr>
+        <td align=center bgcolor='#000000'>
+            <img src=/common/memberimg/progress.gif>
+            <div style='color: red; padding-top:5px; font-size:13px;'>처리중입니다. 잠시만 기다려주세요.</div>
+        </td>
+    </tr>
 </table>
 </div>

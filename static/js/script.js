@@ -5,51 +5,51 @@ top.document.title = ':: 우수학생센터 공우 ::'
 /********************************* 플래시 투명 ***************************/
 function Flash( src,src2,width,height )
 {
-	var useragent = navigator.userAgent;
-	var html = '';
+    var useragent = navigator.userAgent;
+    var html = '';
 
-	var isFlash = enabledFlash() ;
-	if(isFlash ) {
-		html += '	<object type="application/x-shockwave-flash" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" id="param" width="'+width+'" height="'+height+'">' ;
-		html += '	<param name="movie" value="'+src+'">' ;
-		html += '	<param name="quality" value="high">' ;
-		html += '	<param name="bgcolor" value="#ffffff">';
-		html  +='	<param name="wmode" value="transparent">';
-		html += '	<param name="swliveconnect" value="true">';			
-		html += '	</object>' ;
-	}else{
-		html += '	<object type="application/x-shockwave-flash" data="'+src+'" width="'+width+'" height="'+height+'" id="param">' ;
-		html += '	<param name="wmode" value="transparent" />' ;	
-		html += '	<img src="'+src2+'" alt="" />' ;
-		html += '	</object>' ;		
-	}
+    var isFlash = enabledFlash() ;
+    if(isFlash ) {
+        html += '    <object type="application/x-shockwave-flash" classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=7,0,0,0" id="param" width="'+width+'" height="'+height+'">' ;
+        html += '    <param name="movie" value="'+src+'">' ;
+        html += '    <param name="quality" value="high">' ;
+        html += '    <param name="bgcolor" value="#ffffff">';
+        html  +='    <param name="wmode" value="transparent">';
+        html += '    <param name="swliveconnect" value="true">';            
+        html += '    </object>' ;
+    }else{
+        html += '    <object type="application/x-shockwave-flash" data="'+src+'" width="'+width+'" height="'+height+'" id="param">' ;
+        html += '    <param name="wmode" value="transparent" />' ;    
+        html += '    <img src="'+src2+'" alt="" />' ;
+        html += '    </object>' ;        
+    }
  
  document.write(html);
 }
 
 
 function enabledFlash(){
-	if(navigator.appName=="Microsoft Internet Explorer" ) {
-		return true ;
-	}
-	
-	var uagent = navigator.userAgent.toLocaleLowerCase();
+    if(navigator.appName=="Microsoft Internet Explorer" ) {
+        return true ;
+    }
+    
+    var uagent = navigator.userAgent.toLocaleLowerCase();
 
-	if(uagent.indexOf("iphone") > -1  || uagent.indexOf("ipod") > -1 || uagent.indexOf("ipad") > -1){
-		return false ;
-	}
-	if(uagent.indexOf("firefox") > -1){
-		return false ;
-	}
+    if(uagent.indexOf("iphone") > -1  || uagent.indexOf("ipod") > -1 || uagent.indexOf("ipad") > -1){
+        return false ;
+    }
+    if(uagent.indexOf("firefox") > -1){
+        return false ;
+    }
 
-	if(uagent.indexOf("chrome") > -1){
-		return false ;
-	}
-	
-	if(uagent.indexOf("opera") > -1){
-		return false ;
-	}	
-	return false;
+    if(uagent.indexOf("chrome") > -1){
+        return false ;
+    }
+    
+    if(uagent.indexOf("opera") > -1){
+        return false ;
+    }    
+    return false;
 }
 /********************************* 플래시 투명 ***************************/
 
@@ -122,38 +122,38 @@ function mtab(n) {
 
 /* 레이어 새창 스크립트 */
 function view_area(area){
-		if ("popindi" == area) {
-			//closeAll_MPop();
-			document.getElementById("popindi").style.display="";
-			document.getElementById("popyak").style.display="none";
-		} else if ("popyak" == area) {
-			document.getElementById("popyak").style.display="";
-			document.getElementById("popindi").style.display="none";
-		}
-	}
-	
-	function closeAll_MPop(){
-		document.getElementById("mpop3").style.display="none";
-		document.getElementById("mpop4").style.display="none";
-		document.getElementById("mpop5_1").style.display="none";
-		document.getElementById("mpop5_2").style.display="";
-		document.getElementById("mpop5_3").style.display="none";
-		document.getElementById("mpop6_1").style.display="none";
-		document.getElementById("mpop6_2").style.display="none";
-		document.getElementById("mpop6_3").style.display="none";
-		document.getElementById("mpop6_4").style.display="none";
-		document.getElementById("mpop6_5").style.display="none";
-		document.getElementById("mpop7").style.display="none";
-	}
+        if ("popindi" == area) {
+            //closeAll_MPop();
+            document.getElementById("popindi").style.display="";
+            document.getElementById("popyak").style.display="none";
+        } else if ("popyak" == area) {
+            document.getElementById("popyak").style.display="";
+            document.getElementById("popindi").style.display="none";
+        }
+    }
+    
+    function closeAll_MPop(){
+        document.getElementById("mpop3").style.display="none";
+        document.getElementById("mpop4").style.display="none";
+        document.getElementById("mpop5_1").style.display="none";
+        document.getElementById("mpop5_2").style.display="";
+        document.getElementById("mpop5_3").style.display="none";
+        document.getElementById("mpop6_1").style.display="none";
+        document.getElementById("mpop6_2").style.display="none";
+        document.getElementById("mpop6_3").style.display="none";
+        document.getElementById("mpop6_4").style.display="none";
+        document.getElementById("mpop6_5").style.display="none";
+        document.getElementById("mpop7").style.display="none";
+    }
 
-	function view_MPop(id){
-		closeAll_MPop();
-		document.getElementById(id).style.display="";
-	}
+    function view_MPop(id){
+        closeAll_MPop();
+        document.getElementById(id).style.display="";
+    }
 
-	function close_area(area){
-		document.getElementById(area).style.display="none";
-	}
+    function close_area(area){
+        document.getElementById(area).style.display="none";
+    }
 
 /* 인풋 bg */
 function 

@@ -37,34 +37,34 @@ Set DBcon=Nothing
 <div id="boardPwdINPUTDiv" name="boardPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
 <div id="boardcommentPwdINPUTDiv" name="boardcommentPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
 <!--#include virtual = "/inc/top.asp"-->
-	<!--container-->
-	<div id="container">
-		<div class="contain">
-			<div class="s_contents">
-				<!--#include virtual = "/inc/right_login.asp"-->
-				<!--#include virtual = "/inc/left.asp"-->
-			</div>
-			<div class="con">
-				<ul>
-					<li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
-					<li class="con_img">
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                <!--#include virtual = "/inc/right_login.asp"-->
+                <!--#include virtual = "/inc/left.asp"-->
+            </div>
+            <div class="con">
+                <ul>
+                    <li class="stit"><img src="/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+                    <li class="con_img">
 
-						<% IF mode="write" Then %>
-						<!--#include virtual = board/bbs_Write.asp-->
-						<% ElseIF mode="modify" Then %>
-						<!--#include virtual = board/bbs_Modify.asp-->
-						<% ElseIF mode="reply" Then %>
-						<!--#include virtual = board/bbs_Reply.asp-->
-						<% ElseIF mode="pwdinput" Then %>
-						<!--#include virtual = board/bbs_pwdinput.asp-->
-						<% Else %>
-						<!--#include virtual = board/bbs_list_withView.asp-->
-						<% End IF %>
+                        <% IF mode="write" Then %>
+                        <!--#include virtual = board/bbs_Write.asp-->
+                        <% ElseIF mode="modify" Then %>
+                        <!--#include virtual = board/bbs_Modify.asp-->
+                        <% ElseIF mode="reply" Then %>
+                        <!--#include virtual = board/bbs_Reply.asp-->
+                        <% ElseIF mode="pwdinput" Then %>
+                        <!--#include virtual = board/bbs_pwdinput.asp-->
+                        <% Else %>
+                        <!--#include virtual = board/bbs_list_withView.asp-->
+                        <% End IF %>
 
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-	<!--//container-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
 {% endblock %}

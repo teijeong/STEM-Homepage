@@ -5,12 +5,12 @@ Dim Selcodes,Num,i,CateIdx,strLocation,Sql
 Bansort=Request("Bansort")
 SelCodes=Request("selcodes")
 Selcodes=Split(Selcodes,",")
-	
+    
 Num=1
 For i=0 To Ubound(SelCodes)
-	Sql="UPDATE resultAdmin SET ListNum="&Num&" WHERE idx="&SelCodes(i)
-	DBcon.Execute Sql
-	Num=Num+1
+    Sql="UPDATE resultAdmin SET ListNum="&Num&" WHERE idx="&SelCodes(i)
+    DBcon.Execute Sql
+    Num=Num+1
 Next
 
 Dbcon.Close

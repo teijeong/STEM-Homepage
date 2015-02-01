@@ -40,36 +40,36 @@ Set DBcon=Nothing
 {% block container %}
 <div id="boardPwdINPUTDiv" name="boardPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
 <div id="boardcommentPwdINPUTDiv" name="boardcommentPwdINPUTDiv" style="position:absolute; visibility:hidden;"></div>
-	<!--container-->
-	<div id="container">
-		<div class="contain">
-			<div class="s_contents">
-				{% include "right_login.html" %}
-				{% include "left.html" %}
-			</div>
-			<div class="con">
-				<ul>
-					<li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
-					<li class="con_img">
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul>
+                    <li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+                    <li class="con_img">
 
-						{% if mode == "write" %}
-							{% include "board/bbs_Write.html" %}
-						{% elif mode == "view" %}
-							{% include "board/bbs_View.html" %}
-						{% elif mode == "modify" %}
-							{% include "board/bbs_Modify.html" %}
-						{% elif mode == "reply" %}
-							{% include "board/bbs_Reply.html" %}
-						{% elif mode == "pwdinput" %}
-							{% include "board/bbs_pwdinput.html" %}
-						{% else %}
-							{% include "board/bbs_list.html" %}
-						{% endif %}
+                        {% if mode == "write" %}
+                            {% include "board/bbs_Write.html" %}
+                        {% elif mode == "view" %}
+                            {% include "board/bbs_View.html" %}
+                        {% elif mode == "modify" %}
+                            {% include "board/bbs_Modify.html" %}
+                        {% elif mode == "reply" %}
+                            {% include "board/bbs_Reply.html" %}
+                        {% elif mode == "pwdinput" %}
+                            {% include "board/bbs_pwdinput.html" %}
+                        {% else %}
+                            {% include "board/bbs_list.html" %}
+                        {% endif %}
 
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-	<!--//container-->
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
 {% endblock %}

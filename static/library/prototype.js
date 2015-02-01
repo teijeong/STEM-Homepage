@@ -1219,11 +1219,11 @@ Ajax.Request = Class.create(Ajax.Base, {
 
     this.parameters = params;
     var toQueryStringFunc;
-	if(this.options.encoding.toLowerCase() == "euc-kr"){
-		toQueryStringFunc = Object.toQueryStringEucKr(params);
-	}else{
-		toQueryStringFunc = Object.toQueryString(params);
-	}
+    if(this.options.encoding.toLowerCase() == "euc-kr"){
+        toQueryStringFunc = Object.toQueryStringEucKr(params);
+    }else{
+        toQueryStringFunc = Object.toQueryString(params);
+    }
     if (params = toQueryStringFunc) {
       // when GET, append parameters to URL
       if (this.method == 'get')
@@ -2768,7 +2768,7 @@ var Selector = Class.create({
         p = ps[i];
         if (m = e.match(p)) {
           this.matcher.push(Object.isFunction(c[i]) ? c[i](m) :
-    	      new Template(c[i]).evaluate(m));
+              new Template(c[i]).evaluate(m));
           e = e.replace(m[0], '');
           break;
         }
@@ -3107,7 +3107,7 @@ Object.extend(Selector, {
 
     nextElementSibling: function(node) {
       while (node = node.nextSibling)
-	      if (node.nodeType == 1) return node;
+          if (node.nodeType == 1) return node;
       return null;
     },
 

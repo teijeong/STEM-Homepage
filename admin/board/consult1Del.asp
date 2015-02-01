@@ -13,9 +13,9 @@ Sql="SELECT FileNames From consult1 Where idx="&idx
 SET Rs=DBcon.Execute(Sql)
 
 IF Not(Rs.Bof Or Rs.Eof) Then
-	FileNames=Rs("FileNames")
+    FileNames=Rs("FileNames")
 
-	IF FileNames<>"" Then ImgDelete FileNames,UploadForm.DefaultPath
+    IF FileNames<>"" Then ImgDelete FileNames,UploadForm.DefaultPath
 End IF
 
 Sql="Delete consult1 Where idx="&Idx

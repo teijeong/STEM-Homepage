@@ -4,10 +4,10 @@ body, td, div, p, span, th{font-family:"돋움", "Verdana";font-size:12px;}
 img{border:0;vertical-align: middle;}
 p,form,img,b {margin:0;padding:0;vertical-align: middle;}
 
-select	{font-family:"돋움", "Verdana";font-size:12px; margin:0; padding:0;vertical-align: middle;}
-input	{font-family:"돋움", "Verdana";font-size:12px; margin:0;padding:0;vertical-align: middle; height:18px; line-height:1.4; }
-.input	{ font-size:12px;  font-family:굴림; border:1px solid #BDBEBD; }
-.btn	{ font-size:12px; border:1px solid #BDBEBD; padding:0; margin:0; font-family:"돋움", "Verdana"; font-weight:normal; cursor:pointer; line-height:1.0;}
+select    {font-family:"돋움", "Verdana";font-size:12px; margin:0; padding:0;vertical-align: middle;}
+input    {font-family:"돋움", "Verdana";font-size:12px; margin:0;padding:0;vertical-align: middle; height:18px; line-height:1.4; }
+.input    { font-size:12px;  font-family:굴림; border:1px solid #BDBEBD; }
+.btn    { font-size:12px; border:1px solid #BDBEBD; padding:0; margin:0; font-family:"돋움", "Verdana"; font-weight:normal; cursor:pointer; line-height:1.0;}
 
 
 A:link { color:#333333; text-decoration:none }
@@ -25,7 +25,7 @@ a.br:hover {text-decoration:none; color:#993333;}
 .button { font-size:11px;  font-family:돋움; border:1px solid #BDBEBD; cursor:pointer; }
 .solid { font-size:12px;  font-family:굴림; border:1px solid #BDBEBD }
 .input1 { font-size:8pt;  font-family:굴림; border:1px solid #BDBEBD; background-color:#EFF3E7;}
-.area {	border: 1px solid #D2D3D3; font-size:12px;  font-family:굴림; }
+.area {    border: 1px solid #D2D3D3; font-size:12px;  font-family:굴림; }
 .menu { color:#333333; font-size: 12px; font-family: "굴림", "Arial", "Helvetica", "sans-serif"; line-height: 160% }
 .submenu { color:#737173; font-size: 11px; font-family: "굴림", "Arial", "Helvetica", "sans-serif"; line-height: 150% }
 .menupurple { color:#FF00FF; font-size: 12px;font-family: "굴림", "Arial", "Helvetica", "sans-serif"; line-height: 150% }
@@ -43,70 +43,70 @@ a.t_menu1:visited {  font-size: 11px; font-family: "굴림", "Arial", "Helvetica
 a.t_menu1:hover {  font-size: 11px; font-family: "굴림", "Arial", "Helvetica", "sans-serif"; line-height: 120%; text-decoration:none; color:#737173;}
 
 .bl{
-	font-family: "굴림";
-	font-size: 13px;
-	color: #000000;	
+    font-family: "굴림";
+    font-size: 13px;
+    color: #000000;    
 }
 .sbl{
-	font-family: "굴림";
-	font-size: 15px;
-	color: #9B9C9D;	
+    font-family: "굴림";
+    font-size: 15px;
+    color: #9B9C9D;    
 }
 .sca{
-	border-style:dashed;
-	border-width:1px;border-color:#aaaaaa;
-	font-family: "굴림";
-	font-size: 12px;
-	color: #B0B0B0;
+    border-style:dashed;
+    border-width:1px;border-color:#aaaaaa;
+    font-family: "굴림";
+    font-size: 12px;
+    color: #B0B0B0;
 }
 .fontstyle {
-	font-family: "굴림";
-	font-size: 11px;
-	color: #C28686;
-	font-style: normal;
+    font-family: "굴림";
+    font-size: 11px;
+    color: #C28686;
+    font-style: normal;
 }
 .catefont {
-	font-family: "굴림";
-	font-size: 12px;
-	color: #000000;
-	font-style: normal;
+    font-family: "굴림";
+    font-size: 12px;
+    color: #000000;
+    font-style: normal;
 }
 .br{
-	font-family: "굴림";
-	font-size: 12px;
-	color: #746359;
+    font-family: "굴림";
+    font-size: 12px;
+    color: #746359;
 }
 
 .bottomfont {
-	font-family: "굴림";
-	font-size: 12px;
-	font-style: normal;
-	color: #BCBCBC;
+    font-family: "굴림";
+    font-size: 12px;
+    font-style: normal;
+    color: #BCBCBC;
 }
 .graytext {
-	font-family:"굴림";
-	font-size: 12px;
-	font-style: normal;
-	color: #676767;
+    font-family:"굴림";
+    font-size: 12px;
+    font-style: normal;
+    color: #676767;
 }
 .graytext1 {
-	font-family:"굴림";
-	font-size: 8pt;
-	font-style: normal;
-	color: #636563;
+    font-family:"굴림";
+    font-size: 8pt;
+    font-style: normal;
+    color: #636563;
 }
 .edit {
-	font-size: 12px;
-	border: 1px solid #CCCCCC;
+    font-size: 12px;
+    border: 1px solid #CCCCCC;
 }
 .ca {
-	border: 1px solid #999999;
+    border: 1px solid #999999;
 }
 .tbr {
-	border: 1px solid #CCCCCC;
+    border: 1px solid #CCCCCC;
 }
 .hform{
-	border:1px solid #FFFFFF ; background-color:#FFFFFF; font-size:12px; color:#676767
+    border:1px solid #FFFFFF ; background-color:#FFFFFF; font-size:12px; color:#676767
 }
 .cp { color:#FFFFFF; font-size: 10px; font-family: "Tahoma", "Helvetica", "sans-serif"; line-height: 150%
 }

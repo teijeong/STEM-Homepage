@@ -4,11 +4,11 @@ Session.CodePage = 65001
 Response.CharSet = "utf-8"
 
 IF Request.cookies("acountcode") = "" Then
-	Response.Write "<SCRIPT LANGUAGE='JavaScript'>"&Vbcrlf
-	Response.Write "alert('로그인 정보가 불확실합니다.\n로그인페이지로 이동합니다.')"&Vbcrlf
-	Response.Write "location.href='/admin/login.htm'"&Vbcrlf
-	Response.Write "</SCRIPT>"&Vbcrlf
-	Response.End
+    Response.Write "<SCRIPT LANGUAGE='JavaScript'>"&Vbcrlf
+    Response.Write "alert('로그인 정보가 불확실합니다.\n로그인페이지로 이동합니다.')"&Vbcrlf
+    Response.Write "location.href='/admin/login.htm'"&Vbcrlf
+    Response.Write "</SCRIPT>"&Vbcrlf
+    Response.End
 End IF
 %>
 
@@ -50,43 +50,43 @@ function fnSearch(){
 var obj = document.fo_search;
 var tp = arguments[0];
 
-	switch(tp) {
-		case SEARCH_TYPE_1: obj.action = 'index.asp'; break;
-		case SEARCH_TYPE_2: obj.action = 'count1.asp'; break;
-		case SEARCH_TYPE_3: obj.action = 'count2.asp'; break;
-		case SEARCH_TYPE_4: obj.action = 'count3.asp'; break;
-		case SEARCH_TYPE_5: obj.action = 'count4.asp'; break;
-		case SEARCH_TYPE_6: obj.action = 'count5.asp'; break;
-		case SEARCH_TYPE_7: obj.action = 'count6.asp'; break;
-		case SEARCH_TYPE_8: obj.action = 'count7.asp'; break;
-		case SEARCH_TYPE_9: obj.action = 'count8.asp'; break;
-	}
-	
-	obj.tp.value = tp;
-	obj.submit();
+    switch(tp) {
+        case SEARCH_TYPE_1: obj.action = 'index.asp'; break;
+        case SEARCH_TYPE_2: obj.action = 'count1.asp'; break;
+        case SEARCH_TYPE_3: obj.action = 'count2.asp'; break;
+        case SEARCH_TYPE_4: obj.action = 'count3.asp'; break;
+        case SEARCH_TYPE_5: obj.action = 'count4.asp'; break;
+        case SEARCH_TYPE_6: obj.action = 'count5.asp'; break;
+        case SEARCH_TYPE_7: obj.action = 'count6.asp'; break;
+        case SEARCH_TYPE_8: obj.action = 'count7.asp'; break;
+        case SEARCH_TYPE_9: obj.action = 'count8.asp'; break;
+    }
+    
+    obj.tp.value = tp;
+    obj.submit();
 }
 </script>
 <style>
 input.eSelectButton{
-	background-color:threedshadow;
+    background-color:threedshadow;
 }
 </style>
 
 
 <!--#include virtual = admin/common/topimg.htm-->
 <table border="0" cellpadding="0" cellspacing="0" align="center" width='100%'>
-	<tr>
-		<td valign="top" style='padding-left:10px;'>
-			<table cellpadding="2" cellspacing="0" width='1080'>
-				<tr>
-					<td>
-						<table cellpadding="0" cellspacing="0" width="100%">
-							<tr><td style='color: #39518C;' class='menu'><img src='/admin/image/titleArrow2.gif'><b>접속현황</td></tr>
-						</table>
-					</td>
-				</tr>
-				<tr>
-					<td>
+    <tr>
+        <td valign="top" style='padding-left:10px;'>
+            <table cellpadding="2" cellspacing="0" width='1080'>
+                <tr>
+                    <td>
+                        <table cellpadding="0" cellspacing="0" width="100%">
+                            <tr><td style='color: #39518C;' class='menu'><img src='/admin/image/titleArrow2.gif'><b>접속현황</td></tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
 
 
 
@@ -121,7 +121,7 @@ GetRs Rs, Sql
 TotalCnt = Rs(0)
 
 if TotalCnt <= 0 then 
-	TotalCnt = 1 
+    TotalCnt = 1 
 end if
 
 FreeAndNil(Rs)
@@ -137,22 +137,22 @@ if rs.eof then
 else
 L = 1
 Do While Not Rs.Eof
-	Referer = rs("Referer")
-	TotalVisit = rs("TotalVisit")
-	
-	setDefault Referer, "BOOKMARK"
-	
-	if Not Referer = "BOOKMARK" then
-		Referer = "<a href='http://" & Referer & "' target=_blank>" & Referer & "</a>"
-	end if
-	
-	if CLng(TotalCnt) = 0 then
-		Percent = "0%"
-		PercentSize = 0
-	else
-		Percent = formatpercent(TotalVisit/TotalCnt,0)
-		PercentSize = replace(Percent,"%","")*3
-	end if
+    Referer = rs("Referer")
+    TotalVisit = rs("TotalVisit")
+    
+    setDefault Referer, "BOOKMARK"
+    
+    if Not Referer = "BOOKMARK" then
+        Referer = "<a href='http://" & Referer & "' target=_blank>" & Referer & "</a>"
+    end if
+    
+    if CLng(TotalCnt) = 0 then
+        Percent = "0%"
+        PercentSize = 0
+    else
+        Percent = formatpercent(TotalVisit/TotalCnt,0)
+        PercentSize = replace(Percent,"%","")*3
+    end if
 %>
   <tr bgcolor=#ffffff onmouseover="this.style.backgroundColor='#F2F9F7'" onmouseout="this.style.backgroundColor='#FFFFFF'"> 
     <td height="23"><%=L%></td>
@@ -162,7 +162,7 @@ Do While Not Rs.Eof
     <td height="23"><%=Percent%></td>
   </tr>
   <%
-	rs.movenext : L = L + 1
+    rs.movenext : L = L + 1
 loop
 end if
 freeandnil(rs)
@@ -174,11 +174,11 @@ freeandnil(con)
 
 
 
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
 </table>
 
 <!--#include virtual = admin/common/bottom.html-->

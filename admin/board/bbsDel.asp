@@ -20,48 +20,48 @@ set UploadForm=server.CreateObject("DEXT.FileUpload")
 uploadform.DefaultPath=Server.MapPath("/upload/board/")
 
 IF Request("delSort")="group" Then
-	idx=Request("chkidx")
+    idx=Request("chkidx")
 Else
-	idx=Request("idx")
+    idx=Request("idx")
 End IF
 
 IDX=Split(idx,", ")
 
 For i=0 To Ubound(IDX)
-	Sql="SELECT Ref,ReLevel FROM BBsList WHERE idx="&Idx(i)
-	Set Rs=DBcon.Execute(Sql)
-	IF Not(Rs.Bof OR Rs.Eof) Then
-		Ref=Rs("Ref") : ReLevel=Rs("ReLevel")
+    Sql="SELECT Ref,ReLevel FROM BBsList WHERE idx="&Idx(i)
+    Set Rs=DBcon.Execute(Sql)
+    IF Not(Rs.Bof OR Rs.Eof) Then
+        Ref=Rs("Ref") : ReLevel=Rs("ReLevel")
 
-		Sql="SELECT idx,imgnames From BBsList Where Ref="&Ref&" And ReLevel Like '"&ReLevel&"%'"
-		SET Rs=DBcon.Execute(Sql)
+        Sql="SELECT idx,imgnames From BBsList Where Ref="&Ref&" And ReLevel Like '"&ReLevel&"%'"
+        SET Rs=DBcon.Execute(Sql)
 
-		IF Not(Rs.Bof Or Rs.Eof) Then
-			Do Until Rs.Eof
-				imgnames=Rs("imgnames")
-				IF imgnames<>"" Then
-					ImgDelete imgnames,UploadForm.DefaultPath
-					ImgDelete getImageThumbFilename(imgnames),UploadForm.DefaultPath
-				End IF
+        IF Not(Rs.Bof Or Rs.Eof) Then
+            Do Until Rs.Eof
+                imgnames=Rs("imgnames")
+                IF imgnames<>"" Then
+                    ImgDelete imgnames,UploadForm.DefaultPath
+                    ImgDelete getImageThumbFilename(imgnames),UploadForm.DefaultPath
+                End IF
 
-				Sql="SELECT filenames FROM BBSData WHERE bidx="&Rs("idx")
-				Set FileRs=DBcon.Execute(Sql)
-				IF Not(FileRs.Bof Or FileRs.Eof) Then
-					Do Until FileRs.Eof
-						If FileRs("filenames")<>""  Then ImgDelete FileRs("filenames"),UploadForm.DefaultPath
-						FileRs.MoveNext()
-					Loop
-				End IF
-				Sql="DELETE BBSData WHERE bidx="&Rs("idx")
-				DBcon.Execute Sql
-				
-				Rs.MoveNext()
-			Loop
-		End IF
+                Sql="SELECT filenames FROM BBSData WHERE bidx="&Rs("idx")
+                Set FileRs=DBcon.Execute(Sql)
+                IF Not(FileRs.Bof Or FileRs.Eof) Then
+                    Do Until FileRs.Eof
+                        If FileRs("filenames")<>""  Then ImgDelete FileRs("filenames"),UploadForm.DefaultPath
+                        FileRs.MoveNext()
+                    Loop
+                End IF
+                Sql="DELETE BBSData WHERE bidx="&Rs("idx")
+                DBcon.Execute Sql
+                
+                Rs.MoveNext()
+            Loop
+        End IF
 
-		Sql="Delete BBsList Where Ref="&Ref&" And ReLevel Like '"&ReLevel&"%'"
-		DBcon.Execute Sql
-	End IF
+        Sql="Delete BBsList Where Ref="&Ref&" And ReLevel Like '"&ReLevel&"%'"
+        DBcon.Execute Sql
+    End IF
 Next
 
 

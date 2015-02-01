@@ -7,8 +7,8 @@ Page=Request("page")
 idx=Request("idx")
 
 IF CSTR(idx)="0" Then
-	Response.write Execjavaalert("접근할수 없는 사용자코드입니다.\n다시시도해주세요.",0)
-	Response.end
+    Response.write Execjavaalert("접근할수 없는 사용자코드입니다.\n다시시도해주세요.",0)
+    Response.end
 End IF
 
 Sql="Delete admin Where idx="&Idx

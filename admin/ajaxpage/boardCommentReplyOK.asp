@@ -17,9 +17,9 @@ Sql="Select Top 1 co_ReLevel From CommentAdmin Where co_ref="&co_ref&" And co_Re
 Set MaxReLevelRec=DBcon.Execute(Sql)
 
 IF MaxReLevelRec.Eof Then
-	MaxReLevel = co_ReLevel&"A"
+    MaxReLevel = co_ReLevel&"A"
 Else
-	MaxReLevel = co_ReLevel&Chr(ASC(Right(MaxReLevelRec(0),1))+1)
+    MaxReLevel = co_ReLevel&Chr(ASC(Right(MaxReLevelRec(0),1))+1)
 End IF
 
 Set MaxReLevelRec=Nothing

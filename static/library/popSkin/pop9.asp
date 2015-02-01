@@ -10,12 +10,12 @@ DBcon.Close
 Set DBcon=Nothing
 
 Function PT_PopContent
-	IF Sort=0 Then
-		Response.Write "<div id='HKeditorContent' name='HKeditorContent'>"&Content&"</div>"
-	Else
-		IF LinkUrl<>"" Then Response.Write "<a href=""javascript:goPage('"&LinkUrl&"')"">"&Vbcrlf
-		Response.Write "<img src='/upload/popup/"&OutPutImg&"' border='0' align='absmiddle'></a>"&Vbcrlf
-	End IF
+    IF Sort=0 Then
+        Response.Write "<div id='HKeditorContent' name='HKeditorContent'>"&Content&"</div>"
+    Else
+        IF LinkUrl<>"" Then Response.Write "<a href=""javascript:goPage('"&LinkUrl&"')"">"&Vbcrlf
+        Response.Write "<img src='/upload/popup/"&OutPutImg&"' border='0' align='absmiddle'></a>"&Vbcrlf
+    End IF
 End Function
 %>
 
@@ -26,7 +26,7 @@ End Function
 </head>
 <div style="margin:0px; background:url('/library/popSkin/pop9.jpg') left top no-repeat; width:530px; height:565px;">
 <div style="padding:70px 0px 0 70px;">
-	<div id='HKeditorContent' name='HKeditorContent' style="position:relative;  width:410px; height:420px; word-wrap:break-all; overflow:auto;"><%=Content%></div>
+    <div id='HKeditorContent' name='HKeditorContent' style="position:relative;  width:410px; height:420px; word-wrap:break-all; overflow:auto;"><%=Content%></div>
 </div>
 </div>
 </html>
