@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Untitled Document</title>
+<script type="text/javascript" src="../static/js/link.js"></script>
+<script type="text/javascript" src="../static/js/script.js"></script>
+<script type="text/javascript" src="../static/js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="../static/js/navi.js"></script>
+<link rel="stylesheet" type="text/css" href="../static/css/default.css" />
+<link rel="shortcut icon" href="../static/favicon.ico">
+
+<link href="../static/css/default.css" rel="stylesheet" type="text/css" />
+<link href="../static/css/editorContent.css" rel=stylesheet type="text/css">
+<script type="text/javascript" src="../static/library/prototype.js"></script>
+<script type="text/javascript" src="../static/library/functions.js"></script>
+<script type="text/javascript" src="../static/library/boardControl.js"></script>
+</head>
+<body>
+    
+    {% include "top.html" %}
+    {% block container %}{% endblock %}
+    <!--footer-->
+    <div id="footer">
+        <div class="foot"><img src="../static/images/copyright.gif" /></div>
+        <div class="foot_familysite">
+            <select name="" class="input" style="width:150px;" onChange="navChange3(this); return true;">
+            <option selected>Family Site</option>
+            <option value='http://eng.snu.ac.kr' >서울대학교 공과대학</option>
+            <option value='http://www.snu.ac.kr' >서울대학교</option>
+            <option value='http://www.dongbuhitek.co.kr' >동부하이텍</option>
+            <option value='http://www.dongbufoundation.or.kr' >동부문화재단</option>
+            </select>
+            <script language="javascript">
+            function navChange3(popup) {
+              if (popup.options[popup.selectedIndex].value != "")
+              {
+                window.open(popup.options[popup.selectedIndex].value, '_blank');
+                popup.selectedIndex=0;
+              }
+            }
+            </script>
+        </div>
+    </div>
+    <!--//footer-->
+</div>
+
+</body>
+</html>
