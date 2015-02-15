@@ -1,5 +1,5 @@
-{% include "common/dbcon.html" %}
 {#
+{% include "common/dbcon.html" %}
 <%
 Dim Rs,Sql,Allrec
 Dim Record_Cnt,TotalPage,PageSize,Page,Count
@@ -63,7 +63,7 @@ Set DBcon=Nothing
                         {% elif mode == "pwdinput" %}
                             {% include "board/bbs_pwdinput.html" %}
                         {% else %}
-                            {% include "board/bbs_list.html" %}
+                            {% include "board/bbs_List.html" %}
                         {% endif %}
 
                     </li>

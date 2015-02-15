@@ -290,3 +290,8 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .history tbody th {border-bottom:1px dotted #d6d6d6; color:#777; font-family:'Verdana','Malgun Gothic'; font-weight:normal; font-size:14px; padding:10px;}
 .history tbody td {border-bottom:1px dotted #d6d6d6; padding:10px;}
 .history tbody td p {background:url('../images/ico_arrow_orange.png') left 8px no-repeat; font-family:'Malgun Gothic'; color:#000; font-size:12px; padding-left:10px}
+
+
+.pagenation {
+    text-align: center;
+}

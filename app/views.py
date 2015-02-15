@@ -28,6 +28,11 @@ def main():
 def showSub(sub):
     mNum = sub[0]
     sNum = sub[2]
+    if mNum == '5':
+        post = {'id':1,'title':'test','level':2,'commentCount':2,
+            'isSecret':True,'isNew':True,'date':'2014-02-20','viewCount':4,
+            'author':{'name':'Fred'}}
+        return render_template('sub' + mNum + '_' + sNum + '.html',page=4,totalpage=15,posts=[post],Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
     return render_template('sub' + mNum + '_' + sNum + '.html', Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
 
 @app.route('/test')
@@ -36,7 +41,8 @@ def test():
     for i in range(10):
         lst.append({'number':i, 'name': 'Item ' + str(i*3)})
     return render_template('test_one.html', items=lst)
-
+"""
 @app.route('/static/<path:path>')
 def send_file(path):
     return send_from_directory('./static', path)
+"""
