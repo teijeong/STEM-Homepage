@@ -45,7 +45,7 @@ function go_menu(tar){
     
     /* 메인으로 */
     if(tar=='main')
-        location.href = "", "_self";
+        location.href = "/", "_self";
 
 }
 function bookmarksite(title,url) { 

@@ -42,6 +42,29 @@ def viewPost(id):
     post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
     return render_template('sub5_2.html',mNum=5, sNum=2, mode='view', post=post, Session={'useridx':1})
 
+@app.route('/post/<int:id>/modify')
+def modifyPost(id):
+    board = {}
+    user = {'id':1, 'name':'Fred'}
+    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+    return render_template('sub5_2.html',mNum=5, sNum=2, mode='modify', post=post, Session={'useridx':1})
+
+@app.route('/post/<int:id>/reply')
+def replyPost(id):
+    board = {}
+    user = {'id':1, 'name':'Fred'}
+    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+    return render_template('sub5_2.html',mNum=5, sNum=2, board=board, mode='reply', post=post, Session={'useridx':1})
+
+@app.route('/post/write')
+def writePost():
+    board = {}
+    user = {'id':1, 'name':'Fred'}
+    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+    return render_template('sub5_2.html',mNum=5, sNum=2, mode='write', board=board, post=post, Session={'useridx':1})
+
+
+
 @app.route('/test')
 def test():
     lst = []
