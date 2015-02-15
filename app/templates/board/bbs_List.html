@@ -1,8 +1,24 @@
 {#
     TopSortListTag            : 
     BBsSelectField            : category selection
-    HK_NotYN                    :
-    HK_MemYN                    :
+
+    BoardSort table
+    0   idx
+    1   pdsYN       : 
+    2   memYN       : member only(?)
+    3   repYN       : reply
+    4   comYN       : comment 
+    5   notYN       : notice (?)
+    6   pubYN       : public/secret
+    7   imgYN       : album (?)
+    8   ViewMode    :
+    9   ComMode
+    10  langSort
+    11  imgViewYN   : image view addon
+    12  vodUrlYN    : vod?
+    13  listNum
+    14  downMode
+
     Session['Membership']    :
     SelCheck(v1,v2)            : 
 #}
@@ -53,7 +69,7 @@
                     <div>
                         {% if post.isSecret %}<img src="/static/common/memberimg/public.gif" />&nbsp;{% endif %}
                         {% if post.level > 1 %}<img src="/static/images/ico_reply.gif" />&nbsp;{% endif %}
-                        <a href="/view/{{ post.id }}">{{ post.title }}</a>&nbsp;
+                        <a href="/post/{{ post.id }}/view">{{ post.title }}</a>&nbsp;
                         {% if post.commentCount > 0 %}
                             <span style='font-size:11px;font-weight:bold;color:#6FA2FF;'>[{{ post.commentCount }}]</span>&nbsp;
                         {%endif%}

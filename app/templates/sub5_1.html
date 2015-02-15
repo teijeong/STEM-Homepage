@@ -14,7 +14,7 @@ Dim AdWrite,imgnames
 
 bbscode=1
 mode=Request("mode")
-prePage="../static/sub/sub5_1.asp"
+prePage="{{ url_for('static', filename='sub/sub5_1.asp') }}"
 recordTitleCutNum=40
 
 IF mode="write" Then
@@ -49,7 +49,7 @@ Set DBcon=Nothing
             </div>
             <div class="con">
                 <ul>
-                    <li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
                     <li class="con_img">
 
                         {% if mode == "write" %}

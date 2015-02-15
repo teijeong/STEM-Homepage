@@ -9,8 +9,8 @@
             </div>
             <div class="con">
                 <ul>
-                    <li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
-                    <li class="con_img"><img src="../static/images/sub2_4.gif"></li>
+                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
+                    <li class="con_img"><img src="{{ url_for('static', filename='images/sub2_4.gif') }}"></li>
                 </ul>
             </div>
         </div>

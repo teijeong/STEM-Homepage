@@ -52,7 +52,7 @@ Set DBcon=Nothing
         {% endif %}
         <div class="t_panel_{{ index }}-wrapper">
         {% if banner.link %}
-            <a href="{{ banner.link }}"></a><img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0"></a>
+            <a href="{{ banner.link }}"></a><img src="{{ url_for('static', filename=('upload/mainbanner/' + banner.image)) }}" width="{{ width }}" height={{ height }} border="0"></a>
         {% else %}
             <img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
         {% endif %}
@@ -65,7 +65,7 @@ Set DBcon=Nothing
     <div id="container">
         <div class="m_con">
             <div class="m_visual">
-                <script type="text/javascript" src="../static/js/jquery.cycle.all.min.js"></script>
+                <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cycle.all.min.js') }}"></script>
                 <div class="slideshow1">
                     {{ PT_MainThumbImage(bannerRec1,730,450,1) }}
                 </div>
@@ -100,23 +100,23 @@ Set DBcon=Nothing
                 </script>
             </div>
             <div class="m_contents">
-                <!--#include virtual = "../static/inc/right_login.asp"-->
-                <div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="../static/images/m_recruit.gif" /></a></div>
-                <div><a href="javascript:go_menu('sub2_1')"><img src="../static/images/m_activities.gif" /></a></div>
+                <!--#include virtual = "{{ url_for('static', filename='inc/right_login.asp') }}"-->
+                <div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="{{ url_for('static', filename='images/m_recruit.gif') }}" /></a></div>
+                <div><a href="javascript:go_menu('sub2_1')"><img src="{{ url_for('static', filename='images/m_activities.gif') }}" /></a></div>
             </div>
         </div>
         <div class="m_con2">
-            <div class="m_notice_img"><img src="../static/images/m_notice_img.gif" /></div>
+            <div class="m_notice_img"><img src="{{ url_for('static', filename='images/m_notice_img.gif') }}" /></div>
             <div class="m_notice">
                 <dl>
-                    <dt><em><img src="../static/images/m_notice.gif" /></em><span><a href="javascript:go_menu('sub5_1')"><img src="../static/images/btn_more.gif" /></a></span></dt>
+                    <dt><em><img src="{{ url_for('static', filename='images/m_notice.gif') }}" /></em><span><a href="javascript:go_menu('sub5_1')"><img src="{{ url_for('static', filename='images/btn_more.gif') }}" /></a></span></dt>
                     
                     {{ PT_BoardTopList(boardRec1, '/sub/sub5_1') }}
                 </dl>
             </div>
             <div class="m_qna">
                 <dl>
-                    <dt><em><img src="../static/images/m_qna.gif" /></em><span><a href="javascript:go_menu('sub5_2')"><img src="../static/images/btn_more.gif" /></a></span></dt>
+                    <dt><em><img src="{{ url_for('static', filename='images/m_qna.gif') }}" /></em><span><a href="javascript:go_menu('sub5_2')"><img src="{{ url_for('static', filename='images/btn_more.gif') }}" /></a></span></dt>
                     {{ PT_BoardTopList(boardRec2, '/sub/sub5_2') }}
                 </dl>
             </div>

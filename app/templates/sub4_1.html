@@ -9,12 +9,12 @@
             </div>
             <div class="con">
                 <ul>
-                    <li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
-                    <li class="con_img"><img src="../static/images/sub4_1.gif">
+                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
+                    <li class="con_img"><img src="{{ url_for('static', filename='images/sub4_1.gif') }}">
                         <table>
                             <tr>
-                                <td style="padding:30px 0 0 260px;"><a href="../static/inc/a1.hwp"><img src="../static/images/sub4_1_a.gif"></a></td>
-                                <td style="padding:30px 0 0 20px;"><a href="../static/inc/a2.hwp"><img src="../static/images/sub4_1_b.gif"></a></td>
+                                <td style="padding:30px 0 0 260px;"><a href="{{ url_for('static', filename='inc/a1.hwp"><img src="../static/images/sub4_1_a.gif') }}"></a></td>
+                                <td style="padding:30px 0 0 20px;"><a href="{{ url_for('static', filename='inc/a2.hwp"><img src="../static/images/sub4_1_b.gif') }}"></a></td>
                             </tr>
                         </table>
                     </li>

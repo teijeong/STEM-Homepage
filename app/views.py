@@ -35,6 +35,13 @@ def showSub(sub):
         return render_template('sub' + mNum + '_' + sNum + '.html',page=4,totalpage=15,posts=[post],Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
     return render_template('sub' + mNum + '_' + sNum + '.html', Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
 
+@app.route('/post/<int:id>/view')
+def viewPost(id):
+    board = {}
+    user = {'id':1, 'name':'Fred'}
+    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+    return render_template('sub5_2.html',mNum=5, sNum=2, mode='view', post=post, Session={'useridx':1})
+
 @app.route('/test')
 def test():
     lst = []

@@ -52,15 +52,15 @@ Set DBcon=Nothing
 
 {% macro PT_ItemList(AllRec) -%}
     {% for item in AllRec %}
-        {% set imgTag = '<img src="../static/images/noPic.gif" border="0" width="230" height="280" align="center">' %}
+        {% set imgTag = '<img src="' + url_for('static', filename='images/noPic.gif') + '" border="0" width="230" height="280" align="center">' %}
         {% set mailIcon = '' %}
 
         {% if item.image and item.image != "" %}
-            {% set imgTag = '<img src="../static/upload/result/{{ item.image }}" border="0" width="230" height="280" align="center">' %}
+            {% set imgTag = '<img src="' + url_for('static', filename=('upload/result/' + item.image)) + '" border="0" width="230" height="280" align="center">' %}
         {% endif %}
 
         {% if item.email and item.email != "" %}
-            {% set mailIcon = '<a href="mailto:{{ item.email }}"><img src="../static/images/ico_mail.gif" style="margin-top:-6px" /></a>}' %}
+            {% set mailIcon = '<a href="mailto:' + item.email + '"><img src="' + url_for('static', filename='images/ico_mail.gif') + ' style="margin-top:-6px" /></a>}' %}
         {% endif %}
         <li>
             <div class="thum">{{ imgTag }}</div>
@@ -86,7 +86,7 @@ Set DBcon=Nothing
             </div>
             <div class="con">
                 <ul>
-                    <li class="stit"><img src="../static/images/stit{{mNum}}_{{sNum}}.gif" alt="" /></li>
+                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
                     <li class="con_img">
                         <div class="board_search">
                             <select name="bansort" class="" onchange="location.href='?bansort='+this.value">
