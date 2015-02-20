@@ -1,6 +1,9 @@
 #-*-coding: utf-8 -*-
-from app import app
-from flask import render_template
+from app import app, api, db, models
+from flask import render_template, Response
+from flask.ext.restful import Resource, reqparse, fields, marshal_with
+import datetime
+
 
 @app.route('/')
 def main():
@@ -29,11 +32,35 @@ def showSub(sub):
     mNum = sub[0]
     sNum = sub[2]
     if mNum == '5':
-        post = {'id':1,'title':'test','level':2,'commentCount':2,
-            'isSecret':True,'isNew':True,'date':'2014-02-20','viewCount':4,
-            'author':{'name':'Fred'}}
-        return render_template('sub' + mNum + '_' + sNum + '.html',page=4,totalpage=15,posts=[post],Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
+        showBoard(sub, 1)
     return render_template('sub' + mNum + '_' + sNum + '.html', Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
+
+@app.route('/sub/<string:sub>/<int:page>')
+def showBoard(sub, page):
+    mNum = sub[0]
+    sNum = sub[2]
+    pagenation = models.Post.query.filter_by(
+        board_id=int(sNum)).order_by(
+        models.Post.timestamp).paginate(
+        page, per_page=10)
+
+    posts = []
+
+    for post in pagenation.items:
+        posts.append(post)
+        posts[-1].author.nickname = post.author.nickname
+    post1 = {'id':1, 'level':1, 'title':'hello', 'body': 'world', 'hitCount':0,
+        'commentCount':0, 'timestamp':datetime.datetime.now(), 'user_id':1, 'board_id':2,
+        'author':{'username':'user','nickname':'nick', 'id':1}}
+    post2 = {'id':2, 'level':1, 'title':'hello2', 'body': 'world', 'hitCount':0,
+        'commentCount':0, 'timestamp':datetime.datetime.now(), 'user_id':1, 'board_id':2,
+        'author':{'username':'user','nickname':'nick', 'id':1}}
+    posts = [post1, post2]
+    print(posts)
+    return render_template('sub' + mNum + '_' + sNum + '.html',
+            page=page,totalpage=pagenation.pages,
+            posts=posts,Session={'useridx':1},
+            mNum=int(mNum), sNum=int(sNum))
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
@@ -56,12 +83,6 @@ def replyPost(id):
     post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
     return render_template('sub5_2.html',mNum=5, sNum=2, board=board, mode='reply', post=post, Session={'useridx':1})
 
-@app.route('/post/write')
-def writePost():
-    board = {}
-    user = {'id':1, 'name':'Fred'}
-    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
-    return render_template('sub5_2.html',mNum=5, sNum=2, mode='write', board=board, post=post, Session={'useridx':1})
 
 
 
@@ -71,8 +92,28 @@ def test():
     for i in range(10):
         lst.append({'number':i, 'name': 'Item ' + str(i*3)})
     return render_template('test_one.html', items=lst)
-"""
-@app.route('/static/<path:path>')
-def send_file(path):
-    return send_from_directory('./static', path)
-"""
+
+class WritePost(Resource):
+    def get(self):
+        board = {}
+        user = {'id':1, 'name':'Fred'}
+        post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+        return Response(
+            render_template('sub5_2.html',mNum=5, sNum=2, mode='write', board=board, post=post, Session={'useridx':1}),
+            mimetype='text/html')
+    
+    def post(self):
+        postParser = reqparse.RequestParser();
+        postParser.add_argument('title', type=str)
+        postParser.add_argument('body', type=str)
+        postParser.add_argument('userID', type=int)
+        postParser.add_argument('boardID', type=int)
+        postParser.add_argument('level', type=int)
+
+        args = postParser.parse_args()
+        post = models.Post(
+            args['level'], args['title'], args['body'], args['userID'], args['boardID'])
+        db.session.add(post)
+        db.session.commit()
+
+api.add_resource(WritePost, '/post/write')

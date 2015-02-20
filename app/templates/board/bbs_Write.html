@@ -27,7 +27,7 @@
         {% endif %}
         <tr>
             <th scope="row">작성자</th>
-            <td {% if Session %}colspan="3"{% endif %}><input name="writer" type="text" size="35" maxlength="10" class="input" value="{% if Session %}{{ Session.username }}{% endif %}"></td>
+            <td {% if Session %}colspan="3"{% endif %}><input id="writer" type="text" size="35" maxlength="10" class="input" value="{% if Session %}{{ Session.username }}{% endif %}"></td>
             {% if not Session %}
             <th scope="row">비밀번호</th>
             <td><input name="pass" type="password" size="35" maxlength="10" class="input"></td>
@@ -37,20 +37,20 @@
     <tbody>
         <tr>
             <th scope="row">Email</th>
-            <td colspan="3"><input name="email" type="text" maxlength="45" class="input" style="width:98%;"></td>
+            <td colspan="3"><input id="email" type="text" maxlength="45" class="input" style="width:98%;"></td>
         </tr>
         <tr>
             <th scope="row">제목</th>
-            <td colspan="3"><input name="title" type="text" maxlength="45" class="input" style="width:98%;"></td>
+            <td colspan="3"><input id="title" type="text" maxlength="45" class="input" style="width:98%;"></td>
         </tr>
         {% if board.imageSupport %}
         <tr>
             <th scope="row">이미지첨부</th>
-            <td colspan="3"><input type="file" name="imgfiles" style="width:70%" class="input"></td>
+            <td colspan="3"><input type="file" id="imgfiles" style="width:70%" class="input"></td>
         </tr>
         {% endif %}
         <tr>
-            <td colspan="4" class="cont" style="padding:10px 0 5px 0;"><div id="textareaDIV"><textarea name="content" id="content" style="width:100%; word-break:break-all;" rows="15" class="ckeditor"></textarea></div></td>
+            <td colspan="4" class="cont" style="padding:10px 0 5px 0;"><div id="textareaDIV"><textarea id="content" style="width:100%; word-break:break-all;" rows="15" class="ckeditor"></textarea></div></td>
         </tr>
         {% if board.fileSupport %}
         <tr>
@@ -59,8 +59,8 @@
                 <table cellpadding="0" cellspacing="0" width="100%" id="inRow">
                     <tr>
                         <td style="padding:1px 0; border:0px solid #ffffff">
-                            <input type="file" name="files" style="width:350px" class="input">
-                            <input type="hidden" name="filedel_idx" value="0">
+                            <input type="file" id="files" style="width:350px" class="input">
+                            <input type="hidden" id="filedel_idx" value="0">
                             <a href="#jLink" onclick="addRow()"><span style="color: #D90000">필드추가</span></a>
                         </td>
                     </tr>
@@ -72,7 +72,7 @@
 </table>
 
 <div style="padding:10px; text-align:center;">
-    <input type="button" value="확인" class="button2" onclick="sendit();" style="cursor:pointer">
+    <input type="button" value="확인" class="button2" onclick="javascript:writePost(1,2);" style="cursor:pointer">
     <input type="button" value="취소" class="button1" onclick="history.back();" style="cursor:pointer">
 </div>
 </form>

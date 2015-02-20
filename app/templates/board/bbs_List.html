@@ -36,11 +36,10 @@
         <input name="searchstr" type="text" style="width:150px;" class="input">
         <input type='button' value='검색' class='button1' onclick='searchGo();' style='cursor:pointer'>
         {% if Session %}
-            <input type='button' value='쓰기' class='button1' onclick="javascript:gotoWrite" style='cursor:pointer'>
+            <input type='button' value='쓰기' class='button1' onclick="location.href='/post/write'" style='cursor:pointer'>
         {% endif %}
     </form>
 </div>
-
 <table cellspacing="0" border="0" summary="게시판의 글제목 리스트" class="tbl_type" style='table-layout:fixed; word-wrap:break-word;'>
     <colgroup>
         <col width="70">
@@ -59,26 +58,35 @@
         </tr>
     </thead>
     <tbody>
-        {% for post in posts %}
+        <tr><td>a</td><td>b</td><td>c</td><td>d</td><td>e</td></tr>
+        {% for post in posts_bbs %}
+            {#
             {% if post.level > 1 %}
                 {% set levelView = "padding-left:%dpx;" % (post.level * 10) %}
             {% endif %}
+            #}
             <tr {{ trBg }}>
                 <td class="num" style="text-align:center">{{ post.id }}</td>
                 <td class="title" style="text-align:left;padding:5px0 5px 0;{{levelView}}">
                     <div>
-                        {% if post.isSecret %}<img src="/static/common/memberimg/public.gif" />&nbsp;{% endif %}
-                        {% if post.level > 1 %}<img src="/static/images/ico_reply.gif" />&nbsp;{% endif %}
+                        {% if post.isSecret %}<img src="{{ url_for('static', filename='common/memberimg/public.gif') }}" />&nbsp;{% endif %}
+                        {#
+                        {% if post.level > 1 %}<img src="{{ url_for('static', filename='images/ico_reply.gif') }}" />&nbsp;{% endif %}
+                        #}
                         <a href="/post/{{ post.id }}/view">{{ post.title }}</a>&nbsp;
+                        {#
                         {% if post.commentCount > 0 %}
                             <span style='font-size:11px;font-weight:bold;color:#6FA2FF;'>[{{ post.commentCount }}]</span>&nbsp;
-                        {%endif%}
-                        {% if post.isNew %}<img src="/static/images/ico_new.gif" />{% endif %}
+                        {% endif %}
+                        #}
+                        {% if post.isNew %}<img src="{{ url_for('static', filename='images/ico_new.gif') }}" />{% endif %}
                     </div>
                 </td>
-                <td class="name" style="text-align:center">{{ post.author.name }}</td>
-                <td class="date" style="text-align:center">{{ post.date }}</td>
-                <td class="hit" style="text-align:center">{{ post.viewCount }}</td>
+                {% if post.author %}
+                <td class="name" style="text-align:center">{{ post.author.nickname }}</td>
+                <td class="date" style="text-align:center">{{ post.timestamp }}</td>
+                <td class="hit" style="text-align:center">{{ post.hitCount }}</td>
+                {% endif %}
             </tr>
         {% endfor %}
     </tbody>
