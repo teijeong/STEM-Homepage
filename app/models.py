@@ -12,14 +12,16 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='joined')
     session = db.Column(db.BigInteger)
+    cycle = db.Column(db.Integer)
 
-    def __init__(self, username, password, nickname, email):
+    def __init__(self, username, password, nickname, cycle, email):
         self.username = username
         self.password = password
         self.email = email
         self.nickname = nickname
+        self.cycle = cycle
         self.session = 0
-
+        
     def __repr__(self):
         return '<User %r>' % self.nickname
 

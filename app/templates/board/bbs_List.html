@@ -35,7 +35,7 @@
         <input name="searchstr" type="text" style="width:150px;" class="input">
         <input type='button' value='검색' class='button1' onclick='searchGo();' style='cursor:pointer'>
         {% if Session %}
-            <input type='button' value='쓰기' class='button1' onclick="location.href='/post/write'" style='cursor:pointer'>
+            <input type='button' value='쓰기' class='button1' onclick="location.href='/post/write?board={{ sNum }}'" style='cursor:pointer'>
         {% endif %}
     </form>
 </div>

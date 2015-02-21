@@ -41,7 +41,7 @@ def showBoard(sub, page):
     sNum = sub[2]
     pagenation = models.Post.query.filter_by(
         board_id=int(sNum)).order_by(
-        models.Post.timestamp).paginate(
+        models.Post.timestamp.desc()).paginate(
         page, per_page=10)
 
     
@@ -52,7 +52,7 @@ def showBoard(sub, page):
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
-    post = models.Post.query.filter_by(id=id).first()
+    post = models.Post.query.get(id)
     post.hitCount = post.hitCount + 1
     db.session.commit()
     return render_template('sub5_2.html',mNum=5, sNum=2, mode='view', post=post, Session={'useridx':1})
@@ -83,15 +83,18 @@ def test():
 
 class WritePost(Resource):
     def get(self):
-        board = {}
-        user = {'id':1, 'name':'Fred'}
-        post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+        boardParser = reqparse.RequestParser()
+        boardParser.add_argument('board', type=int, required=True)
+
+        args = boardParser.parse_args()
+        board = models.Board.query.get(args['board'])
+        user = models.User.query.get(1)
         return Response(
-            render_template('sub5_2.html',mNum=5, sNum=2, mode='write', board=board, post=post, Session={'useridx':1}),
+            render_template('sub5_2.html',mNum=5, sNum=2, mode='write', board=board, Session=user),
             mimetype='text/html')
     
     def post(self):
-        postParser = reqparse.RequestParser();
+        postParser = reqparse.RequestParser()
         postParser.add_argument('title', type=str)
         postParser.add_argument('body', type=str)
         postParser.add_argument('userID', type=int)

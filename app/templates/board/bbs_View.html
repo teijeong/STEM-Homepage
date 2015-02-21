@@ -78,7 +78,7 @@
         <button class="button2" onclick="javascript:deletePostPwd({{ post.id }})">삭제</button>
     {% endif %}
 
-    <button class="button2" onClick="javascript:showBoard({{ post.board.id }})" style="cursor:pointer">목록</button>
+    <button class="button2" onClick="location.href='/sub/5-{{post.board.id }}'" style="cursor:pointer">목록</button>
 </div>
 
 {% if post.board.comment %}

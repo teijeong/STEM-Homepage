@@ -22,5 +22,9 @@ function loadPages($, page, totalpage) {
     }
 }
 
+function gotoPage(page) {
+    location.href = "/sub/5-{{ sNum }}/" + page;
+}
+
 loadPages(jQuery, {{ page }}, {{ totalpage }});
 </script>

@@ -27,7 +27,7 @@
         {% endif %}
         <tr>
             <th scope="row">작성자</th>
-            <td {% if Session %}colspan="3"{% endif %}><input id="writer" type="text" size="35" maxlength="10" class="input" value="{% if Session %}{{ Session.username }}{% endif %}"></td>
+            <td {% if Session %}colspan="3"{% endif %}><input id="writer" type="text" size="35" maxlength="10" class="input" value="{% if Session %}{{ Session.nickname }}" disabled="true{% endif %}"></td>
             {% if not Session %}
             <th scope="row">비밀번호</th>
             <td><input name="pass" type="password" size="35" maxlength="10" class="input"></td>
@@ -37,7 +37,7 @@
     <tbody>
         <tr>
             <th scope="row">Email</th>
-            <td colspan="3"><input id="email" type="text" maxlength="45" class="input" style="width:98%;"></td>
+            <td colspan="3"><input id="email" type="text" maxlength="45" class="input" style="width:98%;" value="{% if Session %}{{ Session.email }}" disabled="true{% endif %}"></td>
         </tr>
         <tr>
             <th scope="row">제목</th>
@@ -72,7 +72,7 @@
 </table>
 
 <div style="padding:10px; text-align:center;">
-    <input type="button" value="확인" class="button2" onclick="javascript:writePost(1,2);" style="cursor:pointer">
+    <input type="button" value="확인" class="button2" onclick="javascript:writePost({{ Session.id}}, {{ board.id }});" style="cursor:pointer">
     <input type="button" value="취소" class="button1" onclick="history.back();" style="cursor:pointer">
 </div>
 </form>
