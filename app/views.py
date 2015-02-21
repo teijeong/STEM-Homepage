@@ -32,7 +32,7 @@ def showSub(sub):
     mNum = sub[0]
     sNum = sub[2]
     if mNum == '5':
-        showBoard(sub, 1)
+        return showBoard(sub, 1)
     return render_template('sub' + mNum + '_' + sNum + '.html', Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
 
 @app.route('/sub/<string:sub>/<int:page>')
@@ -44,29 +44,17 @@ def showBoard(sub, page):
         models.Post.timestamp).paginate(
         page, per_page=10)
 
-    posts = []
-
-    for post in pagenation.items:
-        posts.append(post)
-        posts[-1].author.nickname = post.author.nickname
-    post1 = {'id':1, 'level':1, 'title':'hello', 'body': 'world', 'hitCount':0,
-        'commentCount':0, 'timestamp':datetime.datetime.now(), 'user_id':1, 'board_id':2,
-        'author':{'username':'user','nickname':'nick', 'id':1}}
-    post2 = {'id':2, 'level':1, 'title':'hello2', 'body': 'world', 'hitCount':0,
-        'commentCount':0, 'timestamp':datetime.datetime.now(), 'user_id':1, 'board_id':2,
-        'author':{'username':'user','nickname':'nick', 'id':1}}
-    posts = [post1, post2]
-    print(posts)
+    
     return render_template('sub' + mNum + '_' + sNum + '.html',
             page=page,totalpage=pagenation.pages,
-            posts=posts,Session={'useridx':1},
+            posts=pagenation.items,Session={'useridx':1},
             mNum=int(mNum), sNum=int(sNum))
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
-    board = {}
-    user = {'id':1, 'name':'Fred'}
-    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
+    post = models.Post.query.filter_by(id=id).first()
+    post.hitCount = post.hitCount + 1
+    db.session.commit()
     return render_template('sub5_2.html',mNum=5, sNum=2, mode='view', post=post, Session={'useridx':1})
 
 @app.route('/post/<int:id>/modify')

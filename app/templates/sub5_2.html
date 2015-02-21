@@ -51,7 +51,6 @@ Set DBcon=Nothing
                 <ul>
                     <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum,sNum)) }}" alt="" /></li>
                     <li class="con_img">
-
                         {% if mode == "write" %}
                             {% include "board/bbs_Write.html" %}
                         {% elif mode == "view" %}
