@@ -22,8 +22,8 @@
 <thead>
     <tr>
         <th scope="row">작성자</th>
-        <td {% if Session %}colspan="3"{% endif %}><input name="writer" type="text" size="38" maxlength="10" class="input" value="{{ Session.username }}"></td>
-        {% if not Session %}
+        <td {% if current_user.is_authenticated() %}colspan="3"{% endif %}><input name="writer" type="text" size="38" maxlength="10" class="input" value="{{ current_user.nickname }}"></td>
+        {% if not current_user.is_authenticated() %}
         <th scope="row">비밀번호</th>
         <td><input name="pass" type="password" size="38" maxlength="10" class="input"></td>
         {% endif %}

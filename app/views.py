@@ -1,9 +1,15 @@
 #-*-coding: utf-8 -*-
-from app import app, api, db, models
-from flask import render_template, Response
+from app import app, api, db, models, lm
+from flask import render_template, Response, redirect, url_for
 from flask.ext.restful import Resource, reqparse, fields, marshal_with
+from flask.ext.login import login_user, logout_user, current_user, login_required
+from .forms import LoginForm
 import datetime
 
+
+@lm.user_loader
+def load_user(id):
+    return models.User.query.get(int(id))
 
 @app.route('/')
 def main():
@@ -27,13 +33,17 @@ def main():
         {'idx':46,'title':'QnA5','date':'2014-01-17','new':False}]
     return render_template('main.html', bannerRec1=bannerRec1, boardRec1=boardRec1, boardRec2=boardRec2) 
 
+
+
+
 @app.route('/sub/<string:sub>')
 def showSub(sub):
     mNum = sub[0]
     sNum = sub[2]
     if mNum == '5':
         return showBoard(sub, 1)
-    return render_template('sub' + mNum + '_' + sNum + '.html', Session={'useridx':1}, mNum=int(mNum), sNum=int(sNum))
+    return render_template('sub' + mNum + '_' + sNum + '.html',
+        mNum=int(mNum), sNum=int(sNum), form=LoginForm())
 
 @app.route('/sub/<string:sub>/<int:page>')
 def showBoard(sub, page):
@@ -47,39 +57,50 @@ def showBoard(sub, page):
     
     return render_template('sub' + mNum + '_' + sNum + '.html',
             page=page,totalpage=pagenation.pages,
-            posts=pagenation.items,Session={'useridx':1},
-            mNum=int(mNum), sNum=int(sNum))
+            posts=pagenation.items,
+            mNum=int(mNum), sNum=int(sNum),
+            form=LoginForm())
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
     post = models.Post.query.get(id)
     post.hitCount = post.hitCount + 1
     db.session.commit()
-    return render_template('sub5_2.html',mNum=5, sNum=2, mode='view', post=post, Session={'useridx':1})
+    return render_template('sub5_2.html',mNum=5, sNum=2,
+        mode='view', post=post,
+        form=LoginForm())
 
 @app.route('/post/<int:id>/modify')
 def modifyPost(id):
     board = {}
     user = {'id':1, 'name':'Fred'}
     post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
-    return render_template('sub5_2.html',mNum=5, sNum=2, mode='modify', post=post, Session={'useridx':1})
+    return render_template('sub5_2.html',mNum=5, sNum=2,
+        mode='modify', post=post,
+        form=LoginForm())
 
 @app.route('/post/<int:id>/reply')
 def replyPost(id):
     board = {}
     user = {'id':1, 'name':'Fred'}
     post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
-    return render_template('sub5_2.html',mNum=5, sNum=2, board=board, mode='reply', post=post, Session={'useridx':1})
+    return render_template('sub5_2.html',mNum=5, sNum=2,
+        board=board, mode='reply', post=post,
+        form=LoginForm())
 
+@app.route('/login', methods=['GET','POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        login_user(form.user)
+        return redirect('/')
 
+    return render_template('login.html', form=form)
 
-
-@app.route('/test')
-def test():
-    lst = []
-    for i in range(10):
-        lst.append({'number':i, 'name': 'Item ' + str(i*3)})
-    return render_template('test_one.html', items=lst)
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/')
 
 class WritePost(Resource):
     def get(self):
@@ -90,7 +111,9 @@ class WritePost(Resource):
         board = models.Board.query.get(args['board'])
         user = models.User.query.get(1)
         return Response(
-            render_template('sub5_2.html',mNum=5, sNum=2, mode='write', board=board, Session=user),
+            render_template('sub5_%d.html' % args['board'],
+                mNum=5, sNum=args['board'], mode='write', board=board,
+                form=LoginForm()),
             mimetype='text/html')
     
     def post(self):
@@ -106,5 +129,10 @@ class WritePost(Resource):
             args['level'], args['title'], args['body'], args['userID'], args['boardID'])
         db.session.add(post)
         db.session.commit()
+        return Response(
+            render_template('sub5_%d.html' % args['boardID'],
+                mNum=5, sNum=args['boardID'],
+                form=LoginForm()),
+            mimetype='text/html')
 
 api.add_resource(WritePost, '/post/write')

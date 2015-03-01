@@ -70,7 +70,7 @@
         <button class="button2" onclick="javaScript:writeReply({{ post.id }})">답변</button>
     {% endif %}
 
-    {% if (not Session and post.board.isPublic) or (Session and post.author.id == Session.id) %}
+    {% if (not current_user.is_authenticated() and post.board.isPublic) or (current_user.is_authenticated() and post.author.id == current_user.id) %}
         <button class="button2" onclick="javascript:modifyPost({{ post.id }})">수정</button>
         <button class="button2" onclick="javascript:deletePost({{ post.id }})">삭제</button>
     {% elif post.board.isPublic %}

@@ -21,9 +21,24 @@ class User(db.Model):
         self.nickname = nickname
         self.cycle = cycle
         self.session = 0
-        
+
     def __repr__(self):
         return '<User %r>' % self.nickname
+
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return unicode(self.id)
+        except NameError:
+            return str(self.id)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
