@@ -3,7 +3,7 @@ from app import app, api, db, models, lm
 from flask import render_template, Response, redirect, url_for
 from flask.ext.restful import Resource, reqparse, fields, marshal_with
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from .forms import LoginForm
+from .forms import LoginForm, RegisterForm
 import datetime
 
 
@@ -42,6 +42,8 @@ def showSub(sub):
     sNum = sub[2]
     if mNum == '5':
         return showBoard(sub, 1)
+    if mNum == '3':
+        return redirect('/sub/3-1/1')
     return render_template('sub' + mNum + '_' + sNum + '.html',
         mNum=int(mNum), sNum=int(sNum), form=LoginForm())
 
@@ -49,17 +51,37 @@ def showSub(sub):
 def showBoard(sub, page):
     mNum = sub[0]
     sNum = sub[2]
-    pagenation = models.Post.query.filter_by(
-        board_id=int(sNum)).order_by(
-        models.Post.timestamp.desc()).paginate(
-        page, per_page=10)
 
-    
-    return render_template('sub' + mNum + '_' + sNum + '.html',
-            page=page,totalpage=pagenation.pages,
-            posts=pagenation.items,
-            mNum=int(mNum), sNum=int(sNum),
-            form=LoginForm())
+    if mNum == '5':
+        pagenation = models.Post.query.filter_by(
+            board_id=int(sNum)).order_by(
+            models.Post.timestamp.desc()).paginate(
+            page, per_page=10)
+
+        
+        return render_template('sub' + mNum + '_' + sNum + '.html',
+                page=page,totalpage=pagenation.pages,
+                posts=pagenation.items,
+                mNum=int(mNum), sNum=int(sNum),
+                form=LoginForm())
+
+    elif mNum == '3':
+        return showPeople(sub, page)
+
+    return showSub(sub)
+
+def showPeople(sub, page):
+    mNum = sub[0]
+    sNum = sub[2]
+
+    yearRec = models.User.query.with_entities(models.User.cycle).distinct().all()
+    yearRec = sorted([y[0] for y in yearRec])
+    if not page in yearRec:
+        page = yearRec[0]
+    allRec = models.User.query.filter_by(cycle=page)
+    return render_template('sub3_1.html',
+        mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
+        yearRec=yearRec, allRec=allRec)
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
@@ -93,12 +115,22 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         login_user(form.user)
-        return redirect('/')
+        return redirect(form.next.data)
 
-    return render_template('login.html', form=form)
+    return render_template('member/login.html', form=form)
+
+@app.route('/member/register', methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        login_user(form.user)
+        return redirect('/')
+    else:
+        return render_template('member/register.html', form=form)
 
 @app.route('/logout')
 def logout():
+    form = LoginForm()
     logout_user()
     return redirect('/')
 
@@ -135,4 +167,17 @@ class WritePost(Resource):
                 form=LoginForm()),
             mimetype='text/html')
 
+class IdCheck(Resource):
+    def post(self):
+        idparser = reqparse.RequestParser()
+        idparser.add_argument('userid', type=str)
+
+        args = idparser.parse_args()
+        user = models.User.query.filter_by(username=args['userid']).first()
+        if user is not None:
+            return {'duplicate':True}
+        else:
+            return {'duplicate':False}
+
 api.add_resource(WritePost, '/post/write')
+api.add_resource(IdCheck, '/member/register/idcheck')

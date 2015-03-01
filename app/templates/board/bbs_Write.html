@@ -27,8 +27,8 @@
         {% endif %}
         <tr>
             <th scope="row">작성자</th>
-            <td {% if current_user.is_authenticated %}colspan="3"{% endif %}><input id="writer" type="text" size="35" maxlength="10" class="input" value="{% if current_user.is_authenticated %}{{ current_user.nickname }}" disabled="true{% endif %}"></td>
-            {% if not current_user.is_authenticated %}
+            <td {% if current_user.is_authenticated() %}colspan="3"{% endif %}><input id="writer" type="text" size="35" maxlength="10" class="input" value="{% if current_user.is_authenticated() %}{{ current_user.nickname }}" disabled="true{% endif %}"></td>
+            {% if not current_user.is_authenticated() %}
             <th scope="row">비밀번호</th>
             <td><input name="pass" type="password" size="35" maxlength="10" class="input"></td>
             {% endif %}
@@ -37,7 +37,7 @@
     <tbody>
         <tr>
             <th scope="row">Email</th>
-            <td colspan="3"><input id="email" type="text" maxlength="45" class="input" style="width:98%;" value="{% if current_user.is_authenticated %}{{ current_user.email }}" disabled="true{% endif %}"></td>
+            <td colspan="3"><input id="email" type="text" maxlength="45" class="input" style="width:98%;" value="{% if current_user.is_authenticated() %}{{ current_user.email }}" disabled="true{% endif %}"></td>
         </tr>
         <tr>
             <th scope="row">제목</th>
