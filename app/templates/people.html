@@ -1,0 +1,22 @@
+{% for member in people %}
+    
+    {% set imgTag = '<img src="' + url_for('static', filename='images/nopic.gif') + '" border="0" width="230" height="280" align="center">' %}
+    {% set mailIcon = '' %}
+
+    {% if member.img and member.img != "" %}
+        {% set imgTag = '<img src="' + url_for('static', filename=('upload/member_img/' + member.img)) + '" border="0" width="230" height="280" align="center">' %}
+    {% endif %}
+
+    {% if member.user.email and member.user.email != "" %}
+        {% set mailIcon = '<a href="mailto:%s"><img src="%s" style="margin-top:-6px" /></a>' % (member.email, url_for('static', filename='images/ico_mail.gif'))%}
+    {% endif %}
+    <li>
+        <div class="thum">{{ imgTag | safe}}</div>
+        <dl>
+            <dt>{{ member.user.nickname }} ({{ member.department.name }}, {{ member.cycle }}기) {{ mailIcon | safe }}</dt>
+            <dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ member.stem_department.name }}</em></dd>
+            <dd><span>Awards &amp; Career</span><em style="word-wrap:break-word; line-height:1.4">{{ member.cv }}</em></dd>
+            <dd><span>Comments</span><em style="word-wrap:break-word; line-height:1.4">{{ member.comment }}</em></dd>
+        </dl>
+    </li>
+{% endfor %}

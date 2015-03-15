@@ -10,16 +10,15 @@ class User(db.Model):
         schemes=['pbkdf2_sha512', 'md5_crypt'], deprecated=['md5_crypt']))
     nickname = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
-    posts = db.relationship('Post', backref='author', lazy='joined')
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
     session = db.Column(db.BigInteger)
-    cycle = db.Column(db.Integer)
+    member = db.relationship('Member', uselist=False, backref='user', lazy='joined')
 
-    def __init__(self, username, password, nickname, cycle, email):
+    def __init__(self, username, password, nickname, email):
         self.username = username
         self.password = password
         self.email = email
         self.nickname = nickname
-        self.cycle = cycle
         self.session = 0
 
     def __repr__(self):
@@ -40,6 +39,40 @@ class User(db.Model):
         except NameError:
             return str(self.id)
 
+class Member(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    cycle = db.Column(db.Integer)
+    dept_id = db.Column(db.Integer, db.ForeignKey('department.id'))
+    stem_dept_id = db.Column(db.Integer, db.ForeignKey('stem_department.id'))
+    comment = db.Column(db.String(500))
+    cv = db.Column(db.String(500))
+    phone = db.Column(db.String(20))
+    birthday = db.Column(db.Date)
+    img = db.Column(db.String(256))
+
+    def __init__(self, user):
+        self.user = user
+        self.cycle = 0
+        self.dept_id = None
+        self.stem_dept_id = None
+        self.comment = ""
+        self.cv = ""
+        self.phone = ""
+        self.birthday = datetime.date(1993, 1, 1)
+        self.img = ""
+
+class Department(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    shortName = db.Column(db.String(10))
+    members =  db.relationship('Member', backref='department', lazy='dynamic')
+
+class StemDepartment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(40))
+    members =  db.relationship('Member', backref='stem_department', lazy='dynamic')
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer)
@@ -58,7 +91,7 @@ class Post(db.Model):
         self.body = body
         self.user_id = userid
         self.board_id = boardid
-        self. timestamp = datetime.datetime.now()
+        self.timestamp = datetime.datetime.now()
         self.hitCount = 0
         self.commentCount = 0
 
@@ -69,7 +102,7 @@ class Board(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
     description = db.Column(db.String(200))
-    posts = db.relationship('Post', backref='board', lazy='joined')
+    posts = db.relationship('Post', backref='board', lazy='dynamic')
 
     def __init__(self, name, description):
         self.name = name

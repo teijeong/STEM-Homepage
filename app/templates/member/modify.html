@@ -1,3 +1,4 @@
+{#
 <!--#include virtual = common/dbcon.asp-->
 <% HK_returnURL="/member/modify.asp" %>
 <!--#include virtual = common/sessionchk.asp-->
@@ -36,9 +37,10 @@ Set MemberRec=Nothing
 DBcon.Close
 Set DBcon=Nothing
 %>
-
-<!--#include virtual = "/inc/body.asp"-->
-<SCRIPT LANGUAGE="JavaScript">
+#}
+{% extends "base.html" %}
+{% block container %}
+<script type="text/javascript">
 <!--
 // 한글 입력 검색
 function hangul_chk(word) {
@@ -180,20 +182,17 @@ function domain_chk()    {
     }
 }
 //-->
-</SCRIPT>
+</script>
 
-<% mNum=6 : sNum=3 %>
-<!--#include virtual = "/inc/top.asp"-->
-    <!--container-->
     <div id="container">
         <div class="contain">
             <div class="s_contents">
-                <!--#include virtual = "/inc/right_login.asp"-->
-                <!--#include virtual = "/inc/left.asp"-->
+                {% include "right_login.html" %}
+                {% include "left.html" %}
             </div>
             <div class="con">
                 <ul>
-                    <li class="stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
+                    <li class="stit"><img src="/images/stit6_3.gif" alt="" /></li>
                     <li class="con_img">
 
 <p style="text-align:right;"><img src="/images/ico_arrow_orange.png" alt="" title="" /> 필수 입력 사항입니다.</p>
@@ -208,25 +207,17 @@ function domain_chk()    {
     <col width="110">
     <col>
 </colgroup>
-<thead>
-    <tr>
-        <th scope="row" height='20'>이름</th>
-        <td style="padding:5px 0 5px 10px;"><%=Name%></td>
-    </tr>
-</thead>
 <tbody>
     <tr>
-        <th scope="row" class="import">아이디</th>
-        <td style="padding:5px 0 5px 10px;"><%=id%></td>
+        <th scope="row" height='20'>이름</th>
+        <td style="padding:5px 0 5px 10px;">{{ current_user.nickname }}</td>
     </tr>
     <tr>
-        <th scope="row" class="import">생년월일</th>
-        <td style="padding:5px 0 5px 10px;">
-            <input name="birthday" value='<%=Birthday(0)%>' maxlength='4' type="text" class="input" onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled;width:80px' />년
-            <input name="birthday" value='<%=Birthday(1)%>' maxlength='2' type="text" class="input" onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled;width:50px' />월
-            <input name="birthday" value='<%=Birthday(2)%>' maxlength='2' type="text" class="input" onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled;width:50px' />일
-        </td>
+        <th scope="row" class="import">아이디</th>
+        <td style="padding:5px 0 5px 10px;">{{ current_user.username }}</td>
     </tr>
+    <!--
+    
     <tr>
         <th scope="row" class="import">성별</th>
         <td style="padding:5px 0 5px 10px;">
@@ -234,6 +225,7 @@ function domain_chk()    {
             <input type="radio" name="sex" value="여" <%=ChangeChecked("여",Sex)%>>여
         </td>
     </tr>
+    -->
     <tr>
         <th scope="row" class="import">비밀번호</th>
         <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'> * 6~15자로 입력해주세요.</td>
@@ -245,106 +237,66 @@ function domain_chk()    {
     <tr>
         <th scope="row" class="import">E-mail</th>
         <td style="padding:5px 0 5px 10px;">
-            <input name="email1" size="20" maxlength="25" type="text" class="input" value="<%=EmailStr(0)%>">
+            <input name="email" size="46" maxlength="50" type="text" class="input" value="{{ current_user.email }}">
+            <!--
             @
-            <input name="email2" size="23" maxlength="25" type="text" class="input" readonly tabindex="-1" value='<%=EmailStr(1)%>'>
+            <input name="email2" size="23" maxlength="25" type="text" class="input" readonly tabindex="-1">
             <select name="email_domain" onChange="domain_chk();" class='input'>
                 <option value="" selected >이메일선택</option>
-                <option value="chol.com" <%=Selcheck("chol.com",EmailStr(1))%>>chol.com</option>
-                <option value="dreamwiz.com" <%=Selcheck("dreamwiz.com",EmailStr(1))%>>dreamwiz.com</option>
-                <option value="empas.com" <%=Selcheck("empas.com",EmailStr(1))%>>empas.com</option>
-                <option value="freechal.com" <%=Selcheck("freechal.com",EmailStr(1))%>>freechal.com</option>
-                <option value="hanafos.com" <%=Selcheck("hanafos.com",EmailStr(1))%>>hanafos.com</option>
-                <option value="hanmail.net" <%=Selcheck("hanmail.net",EmailStr(1))%>>hanmail.net</option>
-                <option value="hanmir.com" <%=Selcheck("hanmir.com",EmailStr(1))%>>hanmir.com</option>
-                <option value="hitel.net" <%=Selcheck("hitel.net",EmailStr(1))%>>hitel.net</option>
-                <option value="hotmail.com" <%=Selcheck("hotmail.com",EmailStr(1))%>>hotmail.com</option>
-                <option value="korea.com" <%=Selcheck("korea.com",EmailStr(1))%>>korea.com</option>
-                <option value="naver.com" <%=Selcheck("naver.com",EmailStr(1))%>>naver.com</option>
-                <option value="nate.com" <%=Selcheck("nate.com",EmailStr(1))%>>nate.com</option>
-                <option value="netian.com" <%=Selcheck("netian.com",EmailStr(1))%>>netian.com</option>
-                <option value="yahoo.co.kr" <%=Selcheck("yahoo.co.kr",EmailStr(1))%>>yahoo.co.kr</option>
+                <option value="chol.com">chol.com</option>
+                <option value="dreamwiz.com">dreamwiz.com</option>
+                <option value="empas.com">empas.com</option>
+                <option value="freechal.com">freechal.com</option>
+                <option value="hanafos.com">hanafos.com</option>
+                <option value="hanmail.net">hanmail.net</option>
+                <option value="hanmir.com">hanmir.com</option>
+                <option value="hitel.net">hitel.net</option>
+                <option value="hotmail.com">hotmail.com</option>
+                <option value="korea.com">korea.com</option>
+                <option value="naver.com">naver.com</option>
+                <option value="nate.com">nate.com</option>
+                <option value="netian.com">netian.com</option>
+                <option value="yahoo.co.kr">yahoo.co.kr</option>
                 <option value="">직접입력</option>
             </select>
+            -->
              * 아이디/비번 분실시 필수.
-        </td>
-    </tr>
-    <tr>
-        <th scope="row" class="import">핸드폰번호</th>
-        <td style="padding:5px 0 5px 10px;">
-            <select name="phone" style='width:100px;' class='input'>
-                <option value="" selected="selected">선택하세요</option>
-                <option value="010" <%=SelCheck("010",phone(0))%>>010</option>
-                <option value="011" <%=SelCheck("011",phone(0))%>>011</option>
-                <option value="016" <%=SelCheck("016",phone(0))%>>016</option>
-                <option value="017" <%=SelCheck("017",phone(0))%>>017</option>
-                <option value="018" <%=SelCheck("018",phone(0))%>>018</option>
-                <option value="019" <%=SelCheck("019",phone(0))%>>019</option>
-            </select>
-            -
-            <input name="phone" type="text" class='input' size="4" maxlength='4' onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value='<%=phone(1)%>'>
-            -
-            <input name="phone" type="text" class='input' size="4" maxlength='4' onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value='<%=phone(2)%>'>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">전화번호</th>
-        <td style="padding:5px 0 5px 10px;">
-            <select name="tel" style='width:100px;' class='input'>
-                <option value="" selected="selected">선택하세요</option>
-                <option value="02" <%=SelCheck("02",Tel(0))%>>서울 (02)</option>
-                <option value="031" <%=SelCheck("031",Tel(0))%>>경기 (031)</option>
-                <option value="032" <%=SelCheck("032",Tel(0))%>>인천 (032)</option>
-                <option value="033" <%=SelCheck("033",Tel(0))%>>강원 (033)</option>
-                <option value="041" <%=SelCheck("041",Tel(0))%>>충남 (041)</option>
-                <option value="042" <%=SelCheck("042",Tel(0))%>>대전 (042)</option>
-                <option value="043" <%=SelCheck("043",Tel(0))%>>충북 (043)</option>
-                <option value="0502" <%=SelCheck("0502",Tel(0))%>>Dacom(0502)</option>
-                <option value="0505" <%=SelCheck("0505",Tel(0))%>>KT (0505)</option>
-                <option value="051" <%=SelCheck("051",Tel(0))%>>부산 (051)</option>
-                <option value="052" <%=SelCheck("052",Tel(0))%>>울산    (052)</option>
-                <option value="053" <%=SelCheck("053",Tel(0))%>>대구 (053)</option>
-                <option value="054" <%=SelCheck("054",Tel(0))%>>경북 (054)</option>
-                <option value="055" <%=SelCheck("055",Tel(0))%>>경남 (055)</option>
-                <option value="061" <%=SelCheck("061",Tel(0))%>>전남 (061)</option>
-                <option value="062" <%=SelCheck("062",Tel(0))%>>광주 (062)</option>
-                <option value="063" <%=SelCheck("063",Tel(0))%>>전북 (063)</option>
-                <option value="064" <%=SelCheck("064",Tel(0))%>>제주 (064)</option>
-                <option value="070" <%=SelCheck("070",Tel(0))%>>인터넷 (070)</option>
-            </select>
-            -
-            <input name="tel" type="text" class="input" size="4"  maxlength='4' onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value='<%=tel(1)%>'>
-            -
-            <input name="tel" type="text" class="input" size="4" maxlength='4' onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value='<%=tel(2)%>'>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row" class="import">주소</th>
-        <td style="padding:5px 0 5px 10px;">
-            <input name="zip" type="text" class="input" size="5" readonly value="<%=Zip(0)%>">
-            -
-            <input name="zip" type="text" class="input" size="6" readonly value="<%=Zip(1)%>">
-            <input type="button" title="" value="우편번호 검색" class="button1" onClick="zipcodeck('name','430','310','scroll','Join','zip','addr1','addr2')">
-            <p style="padding:4px 0 0 0;"><input name="addr1" type="text" class="input" size="50" readonly value="<%=Addr1%>"></p>
-            <p style="padding:4px 0 0 0;"><input name="addr2" type="text" class="input" size="50" maxlength='50' value="<%=Addr2%>"> (상세주소입력)</p>
-        </td>
-    </tr>
-    <tr>
-        <th scope="row">알림 수신 설정</th>
-        <td style="padding:5px 0 5px 10px;">
-            <input name="smsYN" type="radio" value="1" <%=ChangeChecked(1,smsYN)%> style='border:0px;'>
-            SMS 수신합니다.
-            <input name="smsYN" type="radio" value="0" <%=ChangeChecked(0,smsYN)%> style='border:0px;'>
-            SMS 수신하지 않습니다.<br>
-
-            <input name="emailYN" type="radio" value="1" <%=ChangeChecked(1,emailYN)%> style='border:0px;'>
-            이메일 정보를 받겠습니다.
-            <input name="emailYN" type="radio" value="0" <%=ChangeChecked(0,emailYN)%> style='border:0px;'>
-            이메일 정보를 받지 않겠습니다.
         </td>
     </tr>
 </tbody>
 </table>
+<br>
+<h4>공우 회원 정보 수정</h4>
+{% if current_user.member %}
+<table cellspacing="0" class="tbl_join tbl_member" summary="공우 회원 정보 수정">
+<caption>공우 회원 정보 수정</caption>
+<colgroup>
+    <col width="110">
+    <col>
+</colgroup>
+<tbody>
+    <tr>
+        <th scope="row" class="import">핸드폰번호</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="phone" type="text" class="input" size="20" maxlength="20" onKeyPress='if( event.keyCode !== 45 && (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value="{{current_user.member.phone}}">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">생년월일</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="birthday" maxlength="10" type="text" class="input" onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled;width:80px' value="{{current_user.member.birthday}}"/>
+        </td>
+    <!--
+    <tr>
+        <th scope="row" class="import">사는 곳</th>
+        <td style="padding:5px 0 5px 10px;">
+            <p style="padding:4px 0 0 0;"><input name="addr" type="text" class="input" size="50" readonly value=""></p>
+        </td>
+    </tr>
+    -->
+</tbody>
+</table>
+{% endif %}
 </form>
 <iframe name='iframes' frameborder='0' width='0' height='0'></iframe>
 <p style="padding:15px 0; text-align:center;">
@@ -357,5 +309,4 @@ function domain_chk()    {
             </div>
         </div>
     </div>
-    <!--//container-->
-<!--#include virtual = "/inc/footer.asp"-->
+{% endblock %}

@@ -74,14 +74,14 @@ def showPeople(sub, page):
     mNum = sub[0]
     sNum = sub[2]
 
-    yearRec = models.User.query.with_entities(models.User.cycle).distinct().all()
+    yearRec = models.User.query.with_entities(models.Member.cycle).distinct().all()
     yearRec = sorted([y[0] for y in yearRec])
     if not page in yearRec:
         page = yearRec[0]
-    allRec = models.User.query.filter_by(cycle=page)
+    allRec = models.Member.query.filter_by(cycle=page)
     return render_template('sub3_1.html',
         mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
-        yearRec=yearRec, allRec=allRec)
+        yearRec=yearRec, people=allRec)
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
@@ -127,6 +127,11 @@ def register():
         return redirect('/')
     else:
         return render_template('member/register.html', form=form)
+
+@app.route('/member/modify')
+@login_required
+def modify():
+    return render_template('member/modify.html')
 
 @app.route('/logout')
 def logout():
@@ -179,5 +184,11 @@ class IdCheck(Resource):
         else:
             return {'duplicate':False}
 
+class ShowPeople(Resource):
+    def get(self, cycle):
+        people = models.Member.query.filter_by(cycle=cycle)
+        return Response(render_template('people.html', people=people), mimetype='text/html')
+
+api.add_resource(ShowPeople, '/view/people/<int:cycle>', endpoint='api.show_people')
 api.add_resource(WritePost, '/post/write')
 api.add_resource(IdCheck, '/member/register/idcheck')

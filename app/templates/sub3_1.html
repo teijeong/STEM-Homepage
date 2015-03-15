@@ -46,33 +46,11 @@ Set DBcon=Nothing
 
 {% macro PT_SelectBox(YearRec) -%}
     {% for cycle in YearRec %}
-        <option value="{{ cycle }}">{{ cycle }}기</option>
+        <option value="{{ cycle }}" {% if loop.first %}selected{% endif %}>{{ cycle }}기</option>
     {% endfor %}
 {%- endmacro %}
 
-{% macro PT_ItemList(AllRec) -%}
-    {% for item in AllRec %}
-        {% set imgTag = '<img src="' + url_for('static', filename='images/noPic.gif') + '" border="0" width="230" height="280" align="center">' %}
-        {% set mailIcon = '' %}
 
-        {% if item.image and item.image != "" %}
-            {% set imgTag = '<img src="' + url_for('static', filename=('upload/result/' + item.image)) + '" border="0" width="230" height="280" align="center">' %}
-        {% endif %}
-
-        {% if item.email and item.email != "" %}
-            {% set mailIcon = '<a href="mailto:%s"><img src="%s" style="margin-top:-6px" /></a>}' % (item.email, url_for('static', filename='images/ico_mail.gif'))%}
-        {% endif %}
-        <li>
-            <div class="thum">{{ imgTag }}</div>
-            <dl>
-                <dt>{{ item.nickname }} ({{ item.major }}, {{ item.cycle }}기) {{ mailIcon | safe }}</dt>
-                <dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ item.department }}</em></dd>
-                <dd><span>Awards &amp; Career</span><em style="word-wrap:break-word; line-height:1.4">{{ item.awards }}</em></dd>
-                <dd><span>Comments</span><em style="word-wrap:break-word; line-height:1.4">{{ item.comments }}</em></dd>
-            </dl>
-        </li>
-    {% endfor %}
-{%- endmacro %}
 
 
 {% extends "base.html" %}
@@ -89,18 +67,33 @@ Set DBcon=Nothing
                     <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
                     <li class="con_img">
                         <div class="board_search">
-                            <select name="bansort" class="" onchange="location.href='./' + this.value">
+                            <select name="bansort" class="" onchange="loadPeople(this.value)">
                             <option selected> - 기수선택 - </option>
                             {{ PT_SelectBox(yearRec) }}
                             </select>
                         </div>
                         <ul class="people">
-                        {{ PT_ItemList(allRec) }}
+                        {% include "people.html" %}
                         </ul>
                         <center><div><%=PT_SpPageLink("","bansort="&bansort,"")%></div></center>
                     </li>
                 </ul>
             </div>
+            <script type="text/javascript">
+                var loadPeople = function(cycle) {
+                    var url = "{{ url_for('api.show_people', cycle=1) }}";
+                    url = url.substr(0, url.length - 1) + cycle;
+                    (function($) {
+                        $.ajax({
+                            method: "GET",
+                            url: url,
+                            success: function(data) {
+                                $(".people").html(data);
+                            }
+                        });
+                    })(jQuery);
+                };
+            </script>
         </div>
     </div>
     <!--//container-->
