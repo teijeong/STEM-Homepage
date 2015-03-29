@@ -27,9 +27,8 @@
         <p class="m_login_txt"></p>
         {% else %}
         <form name="login" method="post" action="{{ url_for('login') }}" onSubmit="mainLoginInputSendit(login);event.returnValue = false;" style='margin:0;'>
-        <input type='hidden' name='guestCHK' value='<%=guestCHK%>'>
-        <input type='hidden' name='returnURL' value='<%=returnURL%>'>
-        <input name="next" type="hidden" value="/sub/{{mNum}}-{{sNum}}">
+        <input name="next" type="hidden" value="{% if mNum >= 1 and mNum <= 5 %}/sub/{{mNum}}-{{sNum}}{% else %}/{% endif %}">
+        <!-- {{mNum }} -->
         <dl>
             <dt>
                 {{ form.hidden_tag() }}

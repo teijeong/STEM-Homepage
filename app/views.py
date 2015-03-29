@@ -89,6 +89,10 @@ def showPeople(sub, page):
 
     yearRec = models.User.query.with_entities(models.Member.cycle).distinct().all()
     yearRec = sorted([y[0] for y in yearRec])
+    try:
+        yearRec.remove(0)
+    except ValueError:
+        pass
     if not page in yearRec:
         page = yearRec[0]
     allRec = models.Member.query.filter_by(cycle=page)
