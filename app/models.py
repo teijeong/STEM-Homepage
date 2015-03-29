@@ -5,13 +5,12 @@ from sqlalchemy_utils import PasswordType
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.Integer)
+    username = db.Column(db.String(64))
     password = db.Column(PasswordType(
         schemes=['pbkdf2_sha512', 'md5_crypt'], deprecated=['md5_crypt']))
-    nickname = db.Column(db.String(64), index=True, unique=True)
+    nickname = db.Column(db.Unicode(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    session = db.Column(db.BigInteger)
     member = db.relationship('Member', uselist=False, backref='user', lazy='joined')
 
     def __init__(self, username, password, nickname, email):
@@ -19,7 +18,6 @@ class User(db.Model):
         self.password = password
         self.email = email
         self.nickname = nickname
-        self.session = 0
 
     def __repr__(self):
         return '<User %r>' % self.nickname
@@ -45,11 +43,11 @@ class Member(db.Model):
     cycle = db.Column(db.Integer)
     dept_id = db.Column(db.Integer, db.ForeignKey('department.id'))
     stem_dept_id = db.Column(db.Integer, db.ForeignKey('stem_department.id'))
-    comment = db.Column(db.String(500))
-    cv = db.Column(db.String(500))
+    comment = db.Column(db.Unicode(500))
+    cv = db.Column(db.Unicode(500))
     phone = db.Column(db.String(20))
     birthday = db.Column(db.Date)
-    img = db.Column(db.String(256))
+    img = db.Column(db.Unicode(256))
 
     def __init__(self, user):
         self.user = user
@@ -64,20 +62,20 @@ class Member(db.Model):
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    shortName = db.Column(db.String(10))
+    name = db.Column(db.Unicode(100))
+    shortName = db.Column(db.Unicode(10))
     members =  db.relationship('Member', backref='department', lazy='dynamic')
 
 class StemDepartment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(40))
+    name = db.Column(db.Unicode(40))
     members =  db.relationship('Member', backref='stem_department', lazy='dynamic')
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer)
-    title = db.Column(db.String(160))
-    body = db.Column(db.String(2000))
+    title = db.Column(db.Unicode(160))
+    body = db.Column(db.Unicode(2000))
     hitCount = db.Column(db.Integer)
     commentCount = db.Column(db.Integer)
     timestamp = db.Column(db.DateTime)
@@ -95,13 +93,24 @@ class Post(db.Model):
         self.hitCount = 0
         self.commentCount = 0
 
+    @classmethod
+    def historyPost(self, title, startDate, endDate = None):
+        post = Post(0, title, '', None, 3)
+        timezero = datetime.time(tzinfo=datetime.timezone.utc)
+        post.timestamp = datetime.datetime.combine(startDate, timezero)
+        if (endDate):
+            endtime = datetime.datetime.combine(endDate, timezero)
+            post.body = str(endtime.timestamp())
+
+        return post
+
     def __repr__(self):
         return '<Post %r>' % (self.body)
 
 class Board(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True)
-    description = db.Column(db.String(200))
+    name = db.Column(db.Unicode(80), unique=True)
+    description = db.Column(db.Unicode(200))
     posts = db.relationship('Post', backref='board', lazy='dynamic')
 
     def __init__(self, name, description):
@@ -110,8 +119,8 @@ class Board(db.Model):
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(256))
-    link = db.Column(db.String(1024))
+    name = db.Column(db.Unicode(256))
+    link = db.Column(db.Unicode(1024))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
     def __init__(self, name, link, post):

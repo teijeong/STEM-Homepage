@@ -79,107 +79,28 @@ function email_chk(word) {
 }
 
 function sendit(){
-    var    Join=document.Join;
+    var    Modify=document.Modify;
 
-    if (Join.birthday[0].value==""){
-        alert("생년월일을 입력하여 주십시요.");
-        Join.birthday[0].focus();
-        return;
+    if (Modify.passwd.value !== ""){
+        if (hangul_chk(Modify.passwd.value) != true ){
+            alert("비밀번호에 한글이나 여백은 사용할 수 없습니다.");
+            Modify.passwd.focus();
+             return;
+        }
+        if (Modify.passwd.value.length < 6 || Modify.passwd.value.length > 15) {
+            alert("비밀번호는 6~15자리입니다.");
+            Modify.passwd.focus();
+            return;
+        }
+        if (Modify.passwd.value!==Modify.passwd_check.value){
+            alert("비밀번호가 일치하지 않습니다. 다시 입력하여 주십시요.");
+            Modify.passwd.focus();
+            return;
+        }
     }
-    if (Join.birthday[1].value==""){
-        alert("생년월일을 입력하여 주십시요.");
-        Join.birthday[1].focus();
-        return;
-    }
-    if (Join.birthday[2].value==""){
-        alert("생년월일을 입력하여 주십시요.");
-        Join.birthday[2].focus();
-        return;
-    }
-    if (Join.passwd.value==""){
-        alert("비밀번호를 입력하여 주십시요.");
-        Join.passwd.focus();
-        return;
-    }
-    if (hangul_chk(Join.passwd.value) != true ){
-        alert("비밀번호에 한글이나 여백은 사용할 수 없습니다.");
-        Join.passwd.focus();
-         return;
-    }
-    if (Join.passwd.value.length < 6 || Join.passwd.value.length > 15) {
-        alert("비밀번호는 6~15자리입니다.");
-        Join.passwd.focus();
-        return;
-    }
-    if (Join.passwd_check.value==""){
-        alert("비밀번호 확인을 입력하여 주십시요.");
-        Join.passwd_check.focus();
-        return;
-    }
-    if (Join.passwd.value!==Join.passwd_check.value){
-        alert("비밀번호가 일치하지 않습니다. 다시 입력하여 주십시요.");
-        Join.passwd.focus();
-        return;
-    }
-    if(Join.email1.value==""){
-        alert("이메일을 입력하세요");
-        Join.email1.focus();
-        return;
-    }
-    if(Join.email2.value==""){
-        alert("이메일을 입력하세요");
-        Join.email2.focus();
-        return;
-    }
-    Join.email.value=Join.email1.value + "@" +Join.email2.value;
 
-    if (email_chk(Join.email.value) != true ){
-        alert("이메일 주소에 한글이나 여백은 사용할 수 없습니다.");
-        Join.email1.focus();
-         return;
-    }
-    if( (Join.tel[0].value + Join.tel[1].value + Join.tel[2].value).length !=0 ){
-        if(Join.tel[0].value==""){
-            alert("전화번호 국번을 선택하세요.");
-            return;
-        }
-        if(Join.tel[1].value==""){
-            alert("전화번호를 입력하세요.");
-            Join.tel[1].focus();
-            return;
-        }
-        if(Join.tel[2].value==""){
-            alert("전화번호를 입력하세요.");
-            Join.tel[2].focus();
-            return;
-        }
-    }
-    if(Join.phone[0].value==""){
-        alert("휴대전화번호 국번을 선택하세요.");
-        return;
-    }
-    if(Join.phone[1].value==""){
-        alert("휴대전화번호를 입력하세요.");
-        Join.phone[1].focus();
-        return;
-    }
-    if(Join.phone[2].value==""){
-        alert("휴대전화번호를 입력하세요.");
-        Join.phone[2].focus();
-        return;
-    }
-    Join.target="iframes";
-    Join.submit();
-}
-function domain_chk()    {
-    if (document.Join.email_domain.value!="") {
-        document.Join.email2.value=document.Join.email_domain.value;
-        document.Join.email2.readOnly=true;
-    } else {
-        document.Join.email2.value="";
-        document.Join.email2.readOnly=false;
-        document.Join.email2.focus();
-    }
+    Modify.target="iframes";
+    Modify.submit();
 }
 //-->
 </script>
@@ -195,14 +116,11 @@ function domain_chk()    {
                     <li class="stit"><img src="/images/stit6_3.gif" alt="" /></li>
                     <li class="con_img">
 
-<p style="text-align:right;"><img src="/images/ico_arrow_orange.png" alt="" title="" /> 필수 입력 사항입니다.</p>
-<form name='Join' method='post' action='/member/joinOk.asp?sort=2' enctype="multipart/form-data">
-<input name="email" type="hidden" class="input" value='<%=email%>'>
-<input name="name" type="hidden" class="input" value='<%=Name%>'>
-<input name="userid" type='hidden' value="<%=Id%>">
-<input name="memsort" type='hidden' value="<%=memsort%>">
-<table cellspacing="0" class="tbl_join" summary="개인회원정보입력">
-<caption>개인회원정보입력</caption>
+<p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+<form name="Modify" method="POST" action="{{ url_for('modify')}}" enctype="multipart/form-data">
+{{ form.hidden_tag() }}
+<table cellspacing="0" class="tbl_join" summary="개인회원정보수정">
+<caption>개인회원정보수정</caption>
 <colgroup>
     <col width="110">
     <col>
@@ -213,7 +131,7 @@ function domain_chk()    {
         <td style="padding:5px 0 5px 10px;">{{ current_user.nickname }}</td>
     </tr>
     <tr>
-        <th scope="row" class="import">아이디</th>
+        <th scope="row">아이디</th>
         <td style="padding:5px 0 5px 10px;">{{ current_user.username }}</td>
     </tr>
     <!--
@@ -227,47 +145,26 @@ function domain_chk()    {
     </tr>
     -->
     <tr>
-        <th scope="row" class="import">비밀번호</th>
+        <th scope="row">비밀번호</th>
         <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'> * 6~15자로 입력해주세요.</td>
     </tr>
     <tr>
-        <th scope="row" class="import">비밀번호 확인</th>
+        <th scope="row">비밀번호 확인</th>
         <td style="padding:5px 0 5px 10px;"><input name="passwd_check" type="password" class="input" size="15" maxlength='15'></td>
     </tr>
     <tr>
-        <th scope="row" class="import">E-mail</th>
+        <th scope="row">E-mail</th>
         <td style="padding:5px 0 5px 10px;">
             <input name="email" size="46" maxlength="50" type="text" class="input" value="{{ current_user.email }}">
-            <!--
-            @
-            <input name="email2" size="23" maxlength="25" type="text" class="input" readonly tabindex="-1">
-            <select name="email_domain" onChange="domain_chk();" class='input'>
-                <option value="" selected >이메일선택</option>
-                <option value="chol.com">chol.com</option>
-                <option value="dreamwiz.com">dreamwiz.com</option>
-                <option value="empas.com">empas.com</option>
-                <option value="freechal.com">freechal.com</option>
-                <option value="hanafos.com">hanafos.com</option>
-                <option value="hanmail.net">hanmail.net</option>
-                <option value="hanmir.com">hanmir.com</option>
-                <option value="hitel.net">hitel.net</option>
-                <option value="hotmail.com">hotmail.com</option>
-                <option value="korea.com">korea.com</option>
-                <option value="naver.com">naver.com</option>
-                <option value="nate.com">nate.com</option>
-                <option value="netian.com">netian.com</option>
-                <option value="yahoo.co.kr">yahoo.co.kr</option>
-                <option value="">직접입력</option>
-            </select>
-            -->
              * 아이디/비번 분실시 필수.
         </td>
     </tr>
 </tbody>
 </table>
+
+{% if current_user.member %}
 <br>
 <h4>공우 회원 정보 수정</h4>
-{% if current_user.member %}
 <table cellspacing="0" class="tbl_join tbl_member" summary="공우 회원 정보 수정">
 <caption>공우 회원 정보 수정</caption>
 <colgroup>
@@ -278,14 +175,47 @@ function domain_chk()    {
     <tr>
         <th scope="row" class="import">핸드폰번호</th>
         <td style="padding:5px 0 5px 10px;">
-            <input name="phone" type="text" class="input" size="20" maxlength="20" onKeyPress='if( event.keyCode !== 45 && (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value="{{current_user.member.phone}}">
+            <input name="cell" type="text" class="input" size="20" maxlength="20" onKeyPress='if( event.keyCode !== 45 && (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value="{{current_user.member.phone}}">
         </td>
     </tr>
     <tr>
         <th scope="row" class="import">생년월일</th>
         <td style="padding:5px 0 5px 10px;">
-            <input name="birthday" maxlength="10" type="text" class="input" onKeyPress='if( (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled;width:80px' value="{{current_user.member.birthday}}"/>
+            <input name="birthday" maxlength="10" type="date" class="input" value="{{current_user.member.birthday}}"/>
         </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">기수</th>
+        <td style="padding:5px 0 5px 10px;"><input name="cycle" type="text" class="input" size="3" maxlength='3' value="{{current_user.member.cycle}}">기</td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">소속 학과(부)</th>
+        <td style="padding:5px 0 5px 10px;"><select name="department" class="input">
+        {% for dept in departments %}
+        <option value="{{dept.id}}"{% if dept.id == current_user.dept_id %} selected {% endif %}>{{dept.name}}</option>
+        {% endfor %}
+        </select></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">부서</th>
+        <td style="padding:5px 0 5px 10px;"><select name="stem_department" class="input">
+        {% for dept in stem_departments %}
+        <option value="{{dept.id}}" {% if dept.id == current_user.stem_dept_id %} selected {% endif %}>{{dept.name}}</option>
+        {% endfor %}
+        </select></td>
+    </tr>
+    <tr>
+        <th scope="row">Awards & Career</th>
+        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%"class="input" rows="5" name="cv">{{ current_user.member.cv }}</textarea></td>
+    </tr>
+    <tr>
+        <th scope="row">Comments</th>
+        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%" class="input" rows="5" name="comment">{{ current_user.member.comment }}</textarea></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">사진</th>
+        <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="input"></td>
+    </tr>
     <!--
     <tr>
         <th scope="row" class="import">사는 곳</th>
@@ -296,7 +226,26 @@ function domain_chk()    {
     -->
 </tbody>
 </table>
+
 {% endif %}
+
+<br>
+<h4>비밀번호 확인</h4>
+<table cellspacing="0" class="tbl_join tbl_member" summary="비밀번호 확인">
+<caption>비밀번호 확인</caption>
+<colgroup>
+    <col width="110">
+    <col>
+</colgroup>
+<tbody>
+    <tr>
+        <th scope="row" class="import">비밀번호</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="passwd_original" type="password" class="input" size="20" maxlength="20">
+        </td>
+    </tr>
+</tbody>
+</table>
 </form>
 <iframe name='iframes' frameborder='0' width='0' height='0'></iframe>
 <p style="padding:15px 0; text-align:center;">

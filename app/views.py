@@ -3,7 +3,8 @@ from app import app, api, db, models, lm
 from flask import render_template, Response, redirect, url_for
 from flask.ext.restful import Resource, reqparse, fields, marshal_with
 from flask.ext.login import login_user, logout_user, current_user, login_required
-from .forms import LoginForm, RegisterForm
+from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
+from sqlalchemy import and_
 import datetime
 
 
@@ -13,28 +14,33 @@ def load_user(id):
 
 @app.route('/')
 def main():
-    #DB dummy
     bannerRec1 = [
         {'image':'main_img.gif'}, 
         {'image':'1.jpg'}, 
         {'image':'2.jpg'}, 
         {'image':u'교육기부박람회1.JPG'}]
-    boardRec1 = [
-        {'idx':42,'title':'TEST1','date':'2014-01-31','new':True},
-        {'idx':43,'title':'TEST2','date':'2014-01-28','new':False},
-        {'idx':44,'title':'TEST3','date':'2014-01-20','new':False},
-        {'idx':45,'title':'TEST4','date':'2014-01-19','new':False},
-        {'idx':46,'title':'TEST5','date':'2014-01-17','new':False}]
-    boardRec2 = [
-        {'idx':42,'title':'QnA1','date':'2014-01-31','new':True},
-        {'idx':43,'title':'QnA2','date':'2014-01-30','new':True},
-        {'idx':44,'title':'QnA3','date':'2014-01-20','new':False},
-        {'idx':45,'title':'QnA4','date':'2014-01-19','new':False},
-        {'idx':46,'title':'QnA5','date':'2014-01-17','new':False}]
-    return render_template('main.html', bannerRec1=bannerRec1, boardRec1=boardRec1, boardRec2=boardRec2) 
+
+    boardRec1 = db.session.query(models.Post).filter_by(
+        board_id=1).order_by(models.Post.timestamp.desc()).limit(5).all()
+    boardRec2 = db.session.query(models.Post).filter_by(
+        board_id=2).order_by(models.Post.timestamp.desc()).limit(5).all()
+
+    for post in boardRec1:
+        now = datetime.datetime.utcnow()
+        post.date = post.timestamp.strftime('%m.%d')
+        if now - post.timestamp < datetime.timedelta(days=3):
+            post.new = True
+
+    for post in boardRec2:
+        now = datetime.datetime.utcnow()
+        post.date = post.timestamp.strftime('%m.%d')
+        if now - post.timestamp < datetime.timedelta(days=3):
+            post.new = True
 
 
-
+    return render_template('main.html',
+        bannerRec1=bannerRec1, boardRec1=boardRec1, boardRec2=boardRec2,
+        form=LoginForm())
 
 @app.route('/sub/<string:sub>')
 def showSub(sub):
@@ -42,8 +48,11 @@ def showSub(sub):
     sNum = sub[2]
     if mNum == '5':
         return showBoard(sub, 1)
-    if mNum == '3':
+    elif mNum == '3':
         return redirect('/sub/3-1/1')
+    elif mNum == '2' and sNum == '5':
+        year = datetime.date.today().year
+        return redirect('/sub/2-5/%d' % year)
     return render_template('sub' + mNum + '_' + sNum + '.html',
         mNum=int(mNum), sNum=int(sNum), form=LoginForm())
 
@@ -68,6 +77,10 @@ def showBoard(sub, page):
     elif mNum == '3':
         return showPeople(sub, page)
 
+    elif mNum == '2' and sNum == '5':
+        return showHistory(sub, page)
+
+
     return showSub(sub)
 
 def showPeople(sub, page):
@@ -82,6 +95,32 @@ def showPeople(sub, page):
     return render_template('sub3_1.html',
         mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
         yearRec=yearRec, people=allRec)
+
+def showHistory(sub, page):
+    mNum = sub[0]
+    sNum = sub[2]
+
+    year = datetime.date.today().year
+    yearRec = [n for n in range(2010, datetime.date.today().year + 1)]
+    if not page in yearRec:
+        page = year
+    start = datetime.datetime(page, 1, 1, tzinfo = datetime.timezone.utc)
+    end = datetime.datetime(page, 12, 31, tzinfo = datetime.timezone.utc)
+    allRec = db.session.query(models.Post).filter(
+        and_(models.Post.timestamp.between(start, end),
+            models.Post.board_id == 3
+            )).order_by(models.Post.timestamp).all()
+
+    for post in allRec:
+        post.period = post.timestamp.strftime('%m.%d')
+        if post.body != '':
+            endDate = datetime.datetime.utcfromtimestamp(float(post.body))
+            post.period = post.period + ' ~ ' + endDate.strftime('%m.%d')
+
+    print(allRec)
+    return render_template('sub2_5.html',
+        mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
+        years=yearRec, page=page, history=allRec)
 
 @app.route('/post/<int:id>/view')
 def viewPost(id):
@@ -128,10 +167,23 @@ def register():
     else:
         return render_template('member/register.html', form=form)
 
-@app.route('/member/modify')
+@app.route('/member/modify', methods=['GET', 'POST'])
 @login_required
 def modify():
-    return render_template('member/modify.html')
+
+    if current_user.member:
+        form = ModifyMemberForm()
+        if form.validate_on_submit():
+            return redirect('/')
+        departments = models.Department.query.all()
+        stem_departments = models.StemDepartment.query.all()
+        return render_template('member/modify.html', form=form,
+            departments=departments, stem_departments=stem_departments)
+    else:
+        form = ModifyForm()
+        if form.validate_on_submit():
+            return redirect('/')
+        return render_template('member/modify.html', form=form)
 
 @app.route('/logout')
 def logout():

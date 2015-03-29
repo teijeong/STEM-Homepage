@@ -36,17 +36,17 @@ Set DBcon=Nothing
 %>
 #}
 
-{% macro PT_SelectBox(YearRec) -%}
-    {% for item in YearRec %}
-        <option value="{{ item.year }}">{{ item.year }}년</option>
+{% macro PT_SelectBox(years) -%}
+    {% for year in years %}
+        <option value="{{ year }}" {% if year==page %}selected{% endif %}>{{ year }}년</option>
     {% endfor %}
 {%- endmacro %}
 
 {% macro PT_ItemList(AllRec) -%}
     {% for item in AllRec %}
         <tr>
-            <th>{{ item.date }}</th>
-            <td><div id='HKeditorContent' name='HKeditorContent'>{{ item.description }}</div></td>
+            <th>{{ item.period }}</th>
+            <td><div id='HKeditorContent' name='HKeditorContent'>{{ item.title }}</div></td>
         </tr>
     {% endfor %}
 {%- endmacro %}
@@ -65,8 +65,8 @@ Set DBcon=Nothing
                     <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
                     <li class="con_img">
                         <p style="text-align:right">
-                            <select name="bansort" class="" onchange="location.href='?bansort='+this.value">
-                            {{ PT_SelectBox(YearRec) }}
+                            <select name="bansort" class="" onchange="location.href='./' + this.value">
+                            {{ PT_SelectBox(years) }}
                             </select>
                         </p>
                         <table cellspacing="0" cellpadding="0" class="history">
@@ -78,7 +78,7 @@ Set DBcon=Nothing
                             </tr>
                         </thead>
                         <tbody>
-                            {{ PT_ItemList(AllRec) }}
+                            {{ PT_ItemList(history) }}
                         </tbody>
                         </table>
                     </li>

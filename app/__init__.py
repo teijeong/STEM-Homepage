@@ -13,4 +13,4 @@ api = restful.Api(app)
 lm = LoginManager()
 lm.init_app(app)
 
-from app import views, models, forms
+from app import views, models, forms, config

@@ -1,8 +1,14 @@
 #-*- coding: utf-8 -*-
 
+import app
+import os
 from flask.ext.wtf import Form
 from wtforms import IntegerField, TextField, PasswordField, validators
+from flask_wtf.file import FileField, FileAllowed
 from app import models, db
+from flask.ext.login import current_user
+from datetime import datetime
+from werkzeug import secure_filename
 
 class LoginForm(Form):
     userid = TextField('ID')
@@ -32,7 +38,6 @@ class RegisterForm(Form):
     name = TextField('Name')
     userid = TextField('ID')
     passwd = PasswordField('PW')
-    cycle = IntegerField('Cycle')
     email = TextField('E-mail')
     user = None
 
@@ -47,9 +52,71 @@ class RegisterForm(Form):
             return False
 
         user = models.User(self.userid.data, self.passwd.data,
-            self.name.data, self.cycle.data, self.email.data)
+            self.name.data, self.email.data)
         db.session.add(user)
         db.session.commit()
 
         self.user = user
+        return True
+
+class ModifyForm(Form):
+    passwd = PasswordField('PW')
+    email = TextField('E-mail')
+    user = current_user
+
+    def validate(self):
+        rv = Form.validate(self)
+        if not rv:
+            return False
+
+        if self.user.password != self.passwd_original.data:
+            return False
+
+        if self.passwd.data != '':
+            self.user.passwd = self.passwd.data
+        if self.email.data != '':
+            self.user.email = self.email.data
+        db.session.commit()
+        return True
+
+
+class ModifyMemberForm(ModifyForm):
+    cell = TextField('Cell Phone')
+    birthday = TextField('Birthday')
+    cycle = IntegerField('Cycle')
+    photo = FileField('Photo',
+        validators=[FileAllowed(['png', 'jpg'], 'PNG/JPG file only')])
+    department = IntegerField('Department')
+    stem_department = IntegerField('STEM_Department')
+    cv = TextField('CV')
+    passwd_original = PasswordField('PW-original')
+    comment = TextField('Comment')
+
+    def validate(self):
+        rv = ModifyForm.validate(self)
+        if not rv:
+            return False
+
+        if self.cell.data != '':
+            self.user.member.phone = self.cell.data
+        if self.birthday.data != '':
+            self.user.member.birthday = datetime.strptime(self.birthday.data, '%Y-%m-%d').date()
+        if self.photo.data.filename != '':
+            ext = self.photo.data.filename.rsplit('.',1)[1]
+            filename = 'profile/%d.' % self.user.id + ext
+            file_path = os.path.join(app.config.UPLOAD_FOLDER, filename)
+            self.photo.data.save(file_path)
+            self.user.member.img = filename
+        if self.cycle.data != '':
+            self.user.member.cycle = self.cycle.data
+        if self.cv.data != '':
+            self.user.member.cv = self.cv.data
+        if self.comment.data != '':
+            self.user.member.comment = self.comment.data
+
+        self.user.member.dept_id = self.department.data
+        self.user.member.stem_dept_id = self.stem_department.data
+
+        db.session.commit()
+
         return True

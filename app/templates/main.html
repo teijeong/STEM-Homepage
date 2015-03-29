@@ -38,7 +38,7 @@ Set DBcon=Nothing
 {% macro PT_BoardTopList(rec, actpage) -%}
     {% for article in rec %}
         <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
-        {% if article.new %}<img src='../static/images/ico_new.gif'  border='0' alt='NEW' align=absmiddle />{% endif %}
+        {% if article.new %}<img src="{{url_for('static', filename='images/ico_new.gif')}}"  border='0' alt='NEW' align=absmiddle />{% endif %}
         </a><span> {{ article.date }} </span></dd>
     {% endfor %}
 {%- endmacro %}                                
@@ -100,7 +100,7 @@ Set DBcon=Nothing
                 </script>
             </div>
             <div class="m_contents">
-                <!--#include virtual = "{{ url_for('static', filename='inc/right_login.asp') }}"-->
+                {% include "right_login.html" %}
                 <div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="{{ url_for('static', filename='images/m_recruit.gif') }}" /></a></div>
                 <div><a href="javascript:go_menu('sub2_1')"><img src="{{ url_for('static', filename='images/m_activities.gif') }}" /></a></div>
             </div>
