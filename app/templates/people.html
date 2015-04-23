@@ -10,7 +10,7 @@
     {% if member.user.email and member.user.email != "" %}
         {% set mailIcon = '<a href="mailto:%s"><img src="%s" style="margin-top:-6px" /></a>' % (member.email, url_for('static', filename='images/ico_mail.gif'))%}
     {% endif %}
-    <li>
+    <li class="nostyle">
         <div class="thum">{{ imgTag | safe}}</div>
         <dl>
             <dt>{{ member.user.nickname }} ({{ member.department.name }}, {{ member.cycle }}기) {{ mailIcon | safe }}</dt>

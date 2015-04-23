@@ -52,9 +52,9 @@ function sendit(){
                 <!--#include virtual = "/inc/left.asp"-->
             </div>
             <div class="con">
-                <ul>
-                    <li class="stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
-                    <li class="con_img">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
+                    <li class="nostyle con_img">
 
 <p style="padding:10px 5px; line-height:1.8em;">그 동안 불편하셨던 점이나 불만사항을 알려주시면 적극 반영하여 향후 더욱 좋은 서비스로 개선하도록 하겠습니다.<br>정확한 회원탈퇴를 위해서 로그인시 입력하셨던 비밀번호를 다시 한번 입력해주시기 바립니다.</p>
 <form name='exitmember' method='post' action='outOK.asp'>

@@ -31,9 +31,9 @@
                 <img src="/common/memberimg/iconFiles.gif" alt="첨부" /> 
                 <button type="button" class="fileToggle" onclick="changeFileArea()" style="color: #3383AE;">첨부파일보기({{ post.files | length }}</button></dt>
                 <dd>
-                    <ul class="files" style="display:none;" id="fileArea" name="fileArea">
+                    <ul class="nostyle files" style="display:none;" id="fileArea" name="fileArea">
                         {% for file in post.files %}
-                            <li><a href={{ file.path }}>{{ file.name }}</a></li>
+                            <li class="nostyle"><a href={{ file.path }}>{{ file.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </dd></dl>

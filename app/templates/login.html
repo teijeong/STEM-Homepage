@@ -28,7 +28,6 @@
         {% else %}
         <form name="login" method="post" action="{{ url_for('login') }}" onSubmit="mainLoginInputSendit(login);event.returnValue = false;" style='margin:0;'>
         <input name="next" type="hidden" value="{% if mNum >= 1 and mNum <= 5 %}/sub/{{mNum}}-{{sNum}}{% else %}/{% endif %}">
-        <!-- {{mNum }} -->
         <dl>
             <dt>
                 {{ form.hidden_tag() }}
@@ -40,8 +39,8 @@
         </form>
         <p class="m_login_txt"><a href="{{ url_for('register') }}">·회원가입</a><a href="javascript:go_menu('id_seek')">·아이디찾기</a><a href="javascript:go_menu('pw_seek')">·비밀번호찾기</a></p>
         {% endif %}
-        <ul>
-            <li>
+        <ul class="nostyle">
+            <li class="nostyle">
             <a href="javascript:go_menu('modify')"><img src="{{ url_for('static', filename='images/m_mypage.gif') }}"/></a><a href="javascript:go_menu('favorite')"><img src="{{ url_for('static', filename='images/m_bookmark.gif') }}" /></a></li>
         </ul>
     </div>

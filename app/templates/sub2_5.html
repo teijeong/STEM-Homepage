@@ -61,9 +61,9 @@ Set DBcon=Nothing
                 {% include "left.html" %}
             </div>
             <div class="con">
-                <ul>
-                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
-                    <li class="con_img">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
+                    <li class="nostyle con_img">
                         <p style="text-align:right">
                             <select name="bansort" class="" onchange="location.href='./' + this.value">
                             {{ PT_SelectBox(years) }}

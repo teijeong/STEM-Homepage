@@ -25,9 +25,9 @@ function sendit(){
                 <!--#include virtual = "/inc/left.asp"-->
             </div>
             <div class="con">
-                <ul>
-                    <li class="stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
-                    <li class="con_img">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><img src="/images/stit<%=mNum%>_<%=sNum%>.gif" alt="" /></li>
+                    <li class="nostyle con_img">
                         <p style="text-align:center;"><img src="/images/join_info.gif" /></p>
                         <p style="text-align:center; margin-bottom:30px;"><img src="/images/join_1_on.gif" />&nbsp;&nbsp;<img src="/images/btn_step.gif" />&nbsp;&nbsp;<img src="/images/join_2.gif" />&nbsp;&nbsp;<img src="/images/btn_step.gif" />&nbsp;&nbsp;<img src="/images/join_3.gif" /></p>
                         <!-- 이용약관,개인정보 취급방침 -->

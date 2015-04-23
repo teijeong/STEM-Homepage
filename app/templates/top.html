@@ -2,16 +2,16 @@
     <!--top-->
     <div id="header">
         <div class="topmenu">
-            <ul>
-                <li><a href="javascript:go_menu('main')">메인으로</a></li>
-                <li><a href="javascript:go_menu('sub5_2')">문의하기</a></li>
-                <li><a href="javascript:go_menu('favorite')">즐겨찾기 추가</a></li>
+            <ul class="nostyle">
+                <li class="nostyle"><a href="javascript:go_menu('main')">메인으로</a></li>
+                <li class="nostyle"><a href="javascript:go_menu('sub5_2')">문의하기</a></li>
+                <li class="nostyle"><a href="javascript:go_menu('favorite')">즐겨찾기 추가</a></li>
             </ul>
         </div>
         <h1 class="logo"><a href="javascript:go_menu('main')"><img src="{{ url_for('static', filename='images/logo.gif') }}" alt="우수학생센터 공우" /></a></h1>
         <!-- gnb -->
         <div class="headMenu">
-            <ul id="gnb">
+            <ul class="nostyle" id="gnb">
                 <li id="item1"><a href="javascript:go_menu('sub1_1')" onmouseover="onTopNavi(1, 6);" onfocus="onTopNavi(1, 6);"><img src="{{ url_for('static', filename='images/gnb1_off.gif') }}" alt="" /></a>
                     <dl class="m1">
                         <dd id="item11"><a href="javascript:go_menu('sub1_1')" ><img src="{{ url_for('static', filename='images/gnb1_1.gif') }}" alt="" /></a></dd>

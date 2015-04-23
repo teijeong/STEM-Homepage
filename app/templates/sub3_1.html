@@ -63,16 +63,16 @@ Set DBcon=Nothing
                 {% include "left.html" %}
             </div>
             <div class="con">
-                <ul>
-                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
-                    <li class="con_img">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
+                    <li class="nostyle con_img">
                         <div class="board_search">
                             <select name="bansort" class="" onchange="loadPeople(this.value)">
                             <option selected> - 기수선택 - </option>
                             {{ PT_SelectBox(yearRec) }}
                             </select>
                         </div>
-                        <ul class="people">
+                        <ul class="nostyle people">
                         {% include "people.html" %}
                         </ul>
                     </li>

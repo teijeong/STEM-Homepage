@@ -2,9 +2,9 @@
 {% block container %}
     <!-- container -->
     <div id="container">
-        <ul>
-        <li class="tit_s"><img src="{{ url_for('static', filename='/images/stit6_2.png') }}" alt="" /></li>
-        <li>
+        <ul class="nostyle">
+        <li class="nostyle tit_s"><img src="{{ url_for('static', filename='/images/stit6_2.png') }}" alt="" /></li>
+        <li class="nostyle">
 
             <form name="login" method="post" action="{{ url_for('login') }}" onSubmit="mainLoginInputSendit(login);event.returnValue = false;" style='margin:0;'>
             <input type='hidden' name='guestCHK' value='<%=guestCHK%>'>

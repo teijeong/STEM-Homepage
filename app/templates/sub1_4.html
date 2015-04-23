@@ -9,9 +9,9 @@
                 {% include "left.html" %}
             </div>
             <div class="con">
-                <ul>
-                    <li class="stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
-                    <li class="con_img"><iframe id="contentFrame" name="contentFrame" src="http://www.snu.ac.kr/campus/Gwanak/subway" marginwidth="0" marginheight="0" frameborder="0" width="718" height="3000" scrolling="no"></iframe></li>
+                <ul class="nostyle">
+                    <li class="nostyle stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
+                    <li class="nostyle con_img"><iframe id="contentFrame" name="contentFrame" src="http://www.snu.ac.kr/campus/Gwanak/subway" marginwidth="0" marginheight="0" frameborder="0" width="718" height="3000" scrolling="no"></iframe></li>
                 </ul>
             </div>
         </div>

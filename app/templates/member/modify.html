@@ -112,9 +112,9 @@ function sendit(){
                 {% include "left.html" %}
             </div>
             <div class="con">
-                <ul>
-                    <li class="stit"><img src="/images/stit6_3.gif" alt="" /></li>
-                    <li class="con_img">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><img src="/images/stit6_3.gif" alt="" /></li>
+                    <li class="nostyle con_img">
 
 <p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
 <form name="Modify" method="POST" action="{{ url_for('modify')}}" enctype="multipart/form-data">
