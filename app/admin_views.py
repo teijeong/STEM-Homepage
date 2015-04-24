@@ -101,11 +101,10 @@ class HistoryView(AuthModelView):
                 Model instance
         """
         try:
-            print(form.description.data)
             end = None
             if not form.one_day.data:
                 end = form.end.data
-            model.title = form.description.data
+            model.title = form.description.data.replace('<br>','').replace('\r','').replace('\n','<br>')
             startDate = form.start.data
             endDate = end
 
