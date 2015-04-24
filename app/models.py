@@ -113,7 +113,7 @@ class Post(db.Model):
         post = Post(0, title, '', None, 3)
         timezero = datetime.time(tzinfo=datetime.timezone.utc)
         post.timestamp = datetime.datetime.combine(startDate, timezero)
-        if (endDate):
+        if endDate and endDate != startDate:
             endtime = datetime.datetime.combine(endDate, timezero)
             post.body = str(endtime.timestamp())
 

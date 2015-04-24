@@ -14,6 +14,6 @@ db = SQLAlchemy(app)
 api = restful.Api(app)
 lm = LoginManager()
 lm.init_app(app)
-admin = Admin(url='/admin')
+admin = Admin(url='/admin',template_mode='bootstrap3')
 
 from app import views, models, forms, config, admin_views
