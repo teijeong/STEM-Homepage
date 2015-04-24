@@ -7,7 +7,7 @@ from flask.ext.admin import BaseView, expose
 from flask_admin import form
 from flask_wtf import Form
 from wtforms import StringField, DateField, BooleanField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import Optional, DataRequired, ValidationError
 import datetime
 
 admin_users = ['wwee3631', 'stem_admin']
@@ -40,13 +40,16 @@ class HistoryForm(Form):
     start = DateField('Start', validators=[DataRequired()],
         widget=form.DatePickerWidget())
     one_day = BooleanField('One-day event')
-    end = DateField('End', widget=form.DatePickerWidget())
+    end = DateField('End', validators=[Optional()], widget=form.DatePickerWidget())
     description = StringField('description', validators=[DataRequired()])
 
     def validate_end(form, field):
         if not form.one_day.data:
-            if form.start.data > field.data:
-                raise ValidationError('Start date should be earlier than end date')
+            try:
+                if form.start.data > field.data:
+                    raise ValidationError('Start date should be earlier than end date')
+            except Exception:
+                raise ValidationError('Incorrect date format')
 
 
 class HistoryView(AuthModelView):
