@@ -117,7 +117,7 @@ def showHistory(sub, page):
 
     for post in allRec:
         post.period = post.timestamp.strftime('%m.%d')
-        if post.body != '':
+        if post.body and post.body != '':
             endDate = datetime.datetime.utcfromtimestamp(float(post.body))
             post.period = post.period + ' ~ ' + endDate.strftime('%m.%d')
 

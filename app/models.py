@@ -13,7 +13,7 @@ class User(db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     member = db.relationship('Member', uselist=False, backref='user', lazy='joined')
 
-    def __init__(self, username, password, nickname, email):
+    def __init__(self, username='', password='123456', nickname='', email=''):
         self.username = username
         self.password = password
         self.email = email
@@ -52,7 +52,7 @@ class Member(db.Model):
     def __repr__(self):
         return '<Member %d>' % self.id
 
-    def __init__(self, user):
+    def __init__(self, user=None):
         self.user = user
         self.cycle = 0
         self.dept_id = None
@@ -92,7 +92,7 @@ class Post(db.Model):
     board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
     files = db.relationship('File', backref='post', lazy='joined')
 
-    def __init__(self, level, title, body, userid, boardid):
+    def __init__(self, level=0, title='', body='', userid=0, boardid=0):
         self.level = level
         self.title = title
         self.body = body

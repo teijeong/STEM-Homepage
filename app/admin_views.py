@@ -5,7 +5,7 @@ from sqlalchemy import func
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.admin import BaseView
 
-admin_users = ['wwee3631']
+admin_users = ['wwee3631', 'stem_admin']
 
 class AuthView(BaseView):
     @login_required
