@@ -49,6 +49,9 @@ class Member(db.Model):
     birthday = db.Column(db.Date)
     img = db.Column(db.Unicode(256))
 
+    def __repr__(self):
+        return '<Member %d>' % self.id
+
     def __init__(self, user):
         self.user = user
         self.cycle = 0
@@ -66,10 +69,16 @@ class Department(db.Model):
     shortName = db.Column(db.Unicode(10))
     members =  db.relationship('Member', backref='department', lazy='dynamic')
 
+    def __repr__(self):
+        return '<D %r>' % self.name
+
 class StemDepartment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(40))
     members =  db.relationship('Member', backref='stem_department', lazy='dynamic')
+
+    def __repr__(self):
+        return '<SD %r>' % self.name
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -92,6 +101,11 @@ class Post(db.Model):
         self.timestamp = datetime.datetime.now()
         self.hitCount = 0
         self.commentCount = 0
+
+    def __repr__(self):
+        if board_id == 3:
+            return '<History %r>' % self.title
+        return '<Post %r>' % self.title
 
     @classmethod
     def historyPost(self, title, startDate, endDate = None):
@@ -117,11 +131,17 @@ class Board(db.Model):
         self.name = name
         self.description = description
 
+    def __repr__(self):
+        return '<Board %r>' % self.name
+
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(256))
     link = db.Column(db.Unicode(1024))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
+    def __repr__(self):
+        return '<File %r>' % self.name
 
     def __init__(self, name, link, post):
         self.name = name
