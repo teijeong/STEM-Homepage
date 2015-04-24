@@ -6,9 +6,11 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.admin import BaseView, expose
 from flask_admin import form
 from flask_wtf import Form
-from wtforms import StringField, DateField, BooleanField
+from wtforms import TextAreaField, DateField, BooleanField
 from wtforms.validators import Optional, DataRequired, ValidationError
 import datetime
+from flask_admin.helpers import (get_form_data, validate_form_on_submit,
+                                     get_redirect_target, flash_errors)
 
 admin_users = ['wwee3631', 'stem_admin']
 
@@ -41,7 +43,7 @@ class HistoryForm(Form):
         widget=form.DatePickerWidget())
     one_day = BooleanField('One-day event')
     end = DateField('End', validators=[Optional()], widget=form.DatePickerWidget())
-    description = StringField('description', validators=[DataRequired()])
+    description = TextAreaField('description', validators=[DataRequired()])
 
     def validate_end(form, field):
         if not form.one_day.data:
@@ -89,6 +91,18 @@ class HistoryView(AuthModelView):
             self.after_model_change(form, model, True)
 
         return True
+
+    def edit_form(self, obj=None):
+        if not obj:
+            return super.edit_form(obj)
+        form = self._edit_form_class(get_form_data(), obj=obj)
+        form.start.data = obj.timestamp
+        if obj.body and obj.body != '':
+            form.end.data = datetime.datetime.utcfromtimestamp(float(obj.body))
+        else:
+            form.one_day.data = True
+        form.description.data = obj.title
+        return form
 
 
 class HistoryListView(AuthView):
