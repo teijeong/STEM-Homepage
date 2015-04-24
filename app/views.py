@@ -121,7 +121,6 @@ def showHistory(sub, page):
             endDate = datetime.datetime.utcfromtimestamp(float(post.body))
             post.period = post.period + ' ~ ' + endDate.strftime('%m.%d')
 
-    print(allRec)
     return render_template('sub2_5.html',
         mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
         years=yearRec, page=page, history=allRec)

@@ -92,18 +92,54 @@ class HistoryView(AuthModelView):
 
         return True
 
-    def edit_form(self, obj=None):
+    def update_model(self, form, model):
+        """
+            Update model from form.
+            :param form:
+                Form instance
+            :param model:
+                Model instance
+        """
+        try:
+            print(form.description.data)
+            end = None
+            if not form.one_day.data:
+                end = form.end.data
+            model.title = form.description.data
+            startDate = form.start.data
+            endDate = end
+
+            timezero = datetime.time(tzinfo=datetime.timezone.utc)
+            model.timestamp = datetime.datetime.combine(startDate, timezero)
+            if endDate and endDate != startDate:
+                endtime = datetime.datetime.combine(endDate, timezero)
+                model.body = str(endtime.timestamp())
+            self.session.add(model)
+            self._on_model_change(form, model, False)
+            self.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to update record.')
+
+            self.session.rollback()
+
+            return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
+
+    def on_form_prefill(self, form, id):
+        obj = models.Post.query.get(id)
         if not obj:
-            return super.edit_form(obj)
-        form = self._edit_form_class(get_form_data(), obj=obj)
+            return
         form.start.data = obj.timestamp
         if obj.body and obj.body != '':
             form.end.data = datetime.datetime.utcfromtimestamp(float(obj.body))
         else:
             form.one_day.data = True
         form.description.data = obj.title
-        return form
-
 
 class HistoryListView(AuthView):
     @expose('/')
