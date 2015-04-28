@@ -1,11 +1,12 @@
 #-*-coding: utf-8 -*-
 from app import app, api, db, models, lm
-from flask import render_template, Response, redirect, url_for
+from flask import render_template, Response, redirect, url_for, request
 from flask.ext.restful import Resource, reqparse, fields, marshal_with
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
 from sqlalchemy import and_
 import datetime
+
 
 
 @lm.user_loader
@@ -166,27 +167,27 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         login_user(form.user)
-        return redirect('/')
+        return form.redirect()
     else:
-        return render_template('member/register.html', form=form)
+        return render_template('member/register.html', form=form, next=next)
+
 
 @app.route('/member/modify', methods=['GET', 'POST'])
 @login_required
 def modify():
-
     if current_user.member:
         form = ModifyMemberForm()
         if form.validate_on_submit():
-            return redirect('/')
+            return form.redirect()
         departments = models.Department.query.all()
         stem_departments = models.StemDepartment.query.all()
         return render_template('member/modify.html', form=form,
-            departments=departments, stem_departments=stem_departments)
+            departments=departments, stem_departments=stem_departments, next=next)
     else:
         form = ModifyForm()
         if form.validate_on_submit():
-            return redirect('/')
-        return render_template('member/modify.html', form=form)
+            return form.redirect()
+        return render_template('member/modify.html', form=form, next=next)
 
 @app.route('/logout')
 def logout():

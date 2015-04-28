@@ -3,14 +3,49 @@
 import app
 import os
 from flask.ext.wtf import Form
-from wtforms import IntegerField, TextField, PasswordField, validators
+from wtforms import IntegerField, TextField, PasswordField, HiddenField, validators
 from flask_wtf.file import FileField, FileAllowed
 from app import models, db
 from flask.ext.login import current_user
 from datetime import datetime
 from werkzeug import secure_filename
+from urllib.parse import urlparse, urljoin
+from flask import redirect, url_for, request
 
-class LoginForm(Form):
+def is_safe_url(target):
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+def get_redirect_target():
+    for target in request.values.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return target
+
+def redirect_back(endpoint, **values):
+    target = request.form['next']
+    if not target or not is_safe_url(target):
+        target = url_for(endpoint, **values)
+    return redirect(target)
+
+class RedirectForm(Form):
+    next = HiddenField()
+
+    def __init__(self, *args, **kwargs):
+        Form.__init__(self, *args, **kwargs)
+        if not self.next.data:
+            self.next.data = get_redirect_target() or ''
+
+    def redirect(self, endpoint='main', **values):
+        if is_safe_url(self.next.data):
+            return redirect(self.next.data)
+        target = get_redirect_target()
+        return redirect(target or url_for(endpoint, **values))
+
+class LoginForm(RedirectForm):
     userid = TextField('ID')
     passwd = PasswordField('PW')
     next = TextField('next')
@@ -34,7 +69,7 @@ class LoginForm(Form):
         self.user = user
         return True
 
-class RegisterForm(Form):
+class RegisterForm(RedirectForm):
     name = TextField('Name')
     userid = TextField('ID')
     passwd = PasswordField('PW')
@@ -59,7 +94,7 @@ class RegisterForm(Form):
         self.user = user
         return True
 
-class ModifyForm(Form):
+class ModifyForm(RedirectForm):
     passwd = PasswordField('PW')
     email = TextField('E-mail')
     user = current_user

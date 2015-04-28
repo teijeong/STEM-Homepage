@@ -46,7 +46,7 @@ Set DBcon=Nothing
     {% for item in AllRec %}
         <tr>
             <th>{{ item.period }}</th>
-            <td><div id='HKeditorContent' name='HKeditorContent'>{{ item.title | safe}}</div></td>
+            <td><div id='HKeditorContent' name='HKeditorContent'>{{ item.title | nl2br}}</div></td>
         </tr>
     {% endfor %}
 {%- endmacro %}

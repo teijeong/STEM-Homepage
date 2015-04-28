@@ -38,7 +38,7 @@
     {% for item in items %}
         <tr id="H-{{item.id}}">
             <th>{{ item.period }}</th>
-            <td>{{ item.title | safe}}</td>
+            <td>{{ item.title | nl2br}}</td>
         </tr>
     {% endfor %}
 </tbody>

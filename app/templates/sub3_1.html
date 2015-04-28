@@ -1,57 +1,8 @@
-<!--#include virtual = common/dbcon.asp-->
-{#
-<%
-bansort=checkParameter("int",Request("bansort"))
-Search=checkParameter("char",Request("Search"))
-SearchStr=checkParameter("char",Request("SearchStr"))
-IF bansort="" Then bansort=1
-
-Page=GetPage()
-PageSize=5
-
-Sql="select top "&PageSize&" idx,title,filenames,bansort,note1,note2,content1,content2,email from resultadmin WHERE bansort=? AND idx NOT IN (select top "&(Page-1)*PageSize&" idx from resultadmin Where bansort=? order by listnum ASC, Idx DESC) order by listnum ASC, Idx DESC; select count(idx) from resultadmin Where bansort=?"
-Set objCmd = Server.CreateObject("ADODB.Command")
-With objCmd
-    .ActiveConnection = DBcon
-    .CommandType = adCmdText
-    .CommandText = Sql
-    
-    .Parameters.Append .CreateParameter("@Par", adBigint, adParamInput, 8, bansort)
-    .Parameters.Append .CreateParameter("@Par", adBigint, adParamInput, 8, bansort)
-    .Parameters.Append .CreateParameter("@Par", adBigint, adParamInput, 8, bansort)
-End With
-Set Rs = objCmd.Execute()
-Set objCmd = Nothing
-
-IF Not(Rs.Bof Or Rs.Eof) Then
-    Allrec=Rs.GetRows
-    Record_Cnt=Rs.NextRecordSet
-    TotalPage=Int((CInt(Record_Cnt(0))-1)/CInt(PageSize)) +1
-    Count=Record_Cnt(0)
-Else
-    Count=0
-End IF
-
-Sql="SELECT bansort FROM resultadmin Group By bansort Order by bansort ASC"
-Set Rs=DBcon.Execute(Sql)
-IF Not(Rs.Bof Or Rs.Eof) Then YearRec=Rs.GetRows()
-Rs.Close
-
-Set Rs=Nothing
-DBcon.Close
-Set DBcon=Nothing
-
-%>
-#}
-
 {% macro PT_SelectBox(YearRec) -%}
     {% for cycle in YearRec %}
         <option value="{{ cycle }}" {% if loop.first %}selected{% endif %}>{{ cycle }}기</option>
     {% endfor %}
 {%- endmacro %}
-
-
-
 
 {% extends "base.html" %}
 {% block container %}

@@ -28,7 +28,25 @@ class UserView(AuthModelView):
     column_list = ('username', 'nickname', 'email', 'member')
     def __init__(self, session, **kwargs):
         super(UserView, self).__init__(models.User, session, **kwargs)
-    
+
+
+class MemberView(AuthModelView):
+    def __init__(self, session, **kwargs):
+        super(MemberView, self).__init__(models.Member, session, **kwargs)
+
+    def after_model_change(self, form, model, is_created):
+        try:
+            if not model.cycle:
+                model.cycle = 0
+                self.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash(gettext('Failed to update record. %(error)s', error=str(ex)), 'error')
+                log.exception('Failed to update record.')
+
+            self.session.rollback()
+
+
 class PostView(AuthModelView):
     def __init__(self, session, **kwargs):
         super(PostView, self).__init__(models.Post, session, **kwargs)
@@ -104,7 +122,8 @@ class HistoryView(AuthModelView):
             end = None
             if not form.one_day.data:
                 end = form.end.data
-            model.title = form.description.data.replace('<br>','').replace('\r','').replace('\n','<br>')
+            #model.title = form.description.data.replace('<br>','').replace('\r','').replace('\n','<br>')
+            model.title = form.description.data
             startDate = form.start.data
             endDate = end
 
@@ -113,7 +132,6 @@ class HistoryView(AuthModelView):
             if endDate and endDate != startDate:
                 endtime = datetime.datetime.combine(endDate, timezero)
                 model.body = str(endtime.timestamp())
-            self.session.add(model)
             self._on_model_change(form, model, False)
             self.session.commit()
         except Exception as ex:
@@ -154,15 +172,8 @@ class HistoryListView(AuthView):
 
 
 
-def adminUsers():
-
-
-    return render_template('admin_views/user.html', items=items)
-
-
-
 admin.add_view(UserView(db.session))
-admin.add_view(AuthModelView(models.Member, db.session))
+admin.add_view(MemberView(db.session))
 admin.add_view(AuthModelView(models.Board, db.session))
 admin.add_view(AuthModelView(models.Department, db.session))
 admin.add_view(AuthModelView(models.StemDepartment, db.session))

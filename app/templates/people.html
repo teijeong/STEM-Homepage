@@ -15,8 +15,8 @@
         <dl>
             <dt>{{ member.user.nickname }} ({{ member.department.name }}, {{ member.cycle }}기) {{ mailIcon | safe }}</dt>
             <dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ member.stem_department.name }}</em></dd>
-            <dd><span>Awards &amp; Career</span><em style="word-wrap:break-word; line-height:1.4">{{ member.cv }}</em></dd>
-            <dd><span>Comments</span><em style="word-wrap:break-word; line-height:1.4">{{ member.comment }}</em></dd>
+            <dd><span>Awards &amp; Career</span><em style="word-wrap:break-word; line-height:1.4">{{ member.cv | nl2br}}</em></dd>
+            <dd><span>Comments</span><em style="word-wrap:break-word; line-height:1.4">{{ member.comment | nl2br}}</em></dd>
         </dl>
     </li>
 {% endfor %}

@@ -16,4 +16,4 @@ lm = LoginManager()
 lm.init_app(app)
 admin = Admin(url='/admin',template_mode='bootstrap3')
 
-from app import views, models, forms, config, admin_views
+from app import views, models, forms, config, admin_views, filters
