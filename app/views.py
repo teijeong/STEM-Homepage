@@ -135,14 +135,7 @@ def viewPost(id):
         mode='view', post=post,
         form=LoginForm())
 
-@app.route('/post/<int:id>/modify')
-def modifyPost(id):
-    board = {}
-    user = {'id':1, 'name':'Fred'}
-    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
-    return render_template('sub5_2.html',mNum=5, sNum=2,
-        mode='modify', post=post,
-        form=LoginForm())
+
 
 @app.route('/post/<int:id>/reply')
 def replyPost(id):
@@ -228,6 +221,50 @@ class WritePost(Resource):
                 form=LoginForm()),
             mimetype='text/html')
 
+class ModifyPost(Resource):
+    @login_required
+    def get(self, id):
+        post = models.Post.query.get(id)
+
+        if current_user.id != post.user_id:
+            return Response(
+                render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+                    mode='view', post=post,
+                    form=LoginForm()),
+                mimetype='text/html')
+
+        return Response(
+            render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+                mode='modify', post=post,
+                form=LoginForm()),
+            mimetype='text/html')
+
+    @login_required
+    def post(self, id):
+        postParser = reqparse.RequestParser()
+        postParser.add_argument('title', type=str)
+        postParser.add_argument('body', type=str)
+
+        args = postParser.parse_args()
+        post = models.Post.query.get(id)
+
+        if current_user.id != post.user_id:
+            return Response(
+                render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+                    mode='view', post=post,
+                    form=LoginForm()),
+                mimetype='text/html')
+
+        post.title = args['title']
+        post.body = args['body']
+        db.session.commit()
+
+        return Response(
+            render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+                mode='view', post=post,
+                form=LoginForm()),
+            mimetype='text/html')
+
 class IdCheck(Resource):
     def post(self):
         idparser = reqparse.RequestParser()
@@ -247,4 +284,5 @@ class ShowPeople(Resource):
 
 api.add_resource(ShowPeople, '/view/people/<int:cycle>', endpoint='api.show_people')
 api.add_resource(WritePost, '/post/write')
+api.add_resource(ModifyPost, '/post/<int:id>/modify')
 api.add_resource(IdCheck, '/member/register/idcheck')

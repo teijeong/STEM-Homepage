@@ -21,7 +21,7 @@
 <thead>
     <tr>
         <th scope="row">작성자</th>
-        <td colspan="3"><input name="writer" type="text" size="38" maxlength="10" class="input" value="{{ post.author.name }}"></td>
+        <td colspan="3"><input name="writer" type="text" size="38" maxlength="10" class="input" value="{{ post.author.nickname }}"></td>
     </tr>
 </thead>
 <tbody>
@@ -78,7 +78,7 @@
 </table>
 
 <div style="padding:10px; text-align:center;">
-    <input type="button" value="확인" class="button2" onclick="modifysendit();" style="cursor:pointer">
+    <input type="button" value="확인" class="button2" onclick="modifyPost({{post.id}});" style="cursor:pointer">
     <input type="button" value="취소" class="button1" onclick="history.back();" style="cursor:pointer">
 </div>
 </form>
