@@ -3,18 +3,14 @@
 {% block container %}
 
 <script type="text/javascript">
-<!--
+
 function ID_chk() {
     var ID = eval(Join.userid);
 
-    if (hangul_chk(Join.userid.value) != true ){
-        document.getElementById("idMsg").innerHTML="<span style='color:red;'>ID에 한글이나 여백은 사용할 수 없습니다.</span>"
+    if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
+        document.getElementById("idMsg").innerHTML="<span style='color:red;'>4~64자로 입력해주세요.</span>"
         return;
-    }
-    if (Join.userid.value.length < 6 || Join.userid.value.length > 15) {
-        document.getElementById("idMsg").innerHTML="<span style='color:red;'>6~15자로 입력해주세요.</span>"
-        return;
-    }else{
+    } else {
         strID=ID.value;
         new Ajax.Updater('actDiv','/member/register/idcheck', {
             method:'POST',
@@ -36,41 +32,6 @@ function ID_chk() {
     }
 }
 
-// 한글 입력 검색
-function hangul_chk(word) {
-    var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-";
-
-    for (i=0; i< word.length; i++){
-        idcheck = word.charAt(i);
-        for ( j = 0 ;  j < str.length ; j++){
-            if (idcheck == str.charAt(j)) break;
-                 if (j+1 == str.length){
-                   return false;
-             }
-         }
-     }
-    return true;
-}
-
-// 한글 입력 검색
-function email_chk(word) {
-    var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-._@";
-
-    for (i=0; i< word.length; i++)
-    {
-        idcheck = word.charAt(i);
-
-        for ( j = 0 ;  j < str.length ; j++){
-
-            if (idcheck == str.charAt(j)) break;
-
-                 if (j+1 == str.length){
-                   return false;
-                 }
-             }
-         }
-         return true;
-}
 
 function sendit(){
     var Join=document.Join;
@@ -85,33 +46,13 @@ function sendit(){
         Join.userid.focus();
         return;
     }
-    if (hangul_chk(Join.userid.value) != true ){
-        alert("ID에 한글이나 여백은 사용할 수 없습니다.");
-        Join.userid.focus();
-         return;
-    }
-    if (Join.userid.value.length < 6 || Join.userid.value.length > 15) {
-        alert("ID는 6~15자리입니다.");
+    if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
+        alert("ID는 4~64자리입니다.");
         Join.userid.focus();
         return;
     }
     if (Join.passwd.value==""){
         alert("비밀번호를 입력하여 주십시요.");
-        Join.passwd.focus();
-        return;
-    }
-    if (hangul_chk(Join.passwd.value) != true ){
-        alert("비밀번호에 한글이나 여백은 사용할 수 없습니다.");
-        Join.passwd.focus();
-         return;
-    }
-    if (Join.passwd.value.length < 6 || Join.passwd.value.length > 15) {
-        alert("비밀번호는 6~15자리입니다.");
-        Join.passwd.focus();
-        return;
-    }
-    if (Join.passwd.value!==Join.confirm.value){
-        alert("비밀번호가 일치하지 않습니다. 다시 입력하여 주십시요.");
         Join.passwd.focus();
         return;
     }
@@ -128,17 +69,6 @@ function sendit(){
     Join.target="iframes";
     Join.submit();
 }
-function domain_chk()    {
-    if (document.Join.email_domain.value!="") {
-        document.Join.email2.value=document.Join.email_domain.value;
-        document.Join.email2.readOnly=true;
-    } else {
-        document.Join.email2.value="";
-        document.Join.email2.readOnly=false;
-        document.Join.email2.focus();
-    }
-}
-//-->
 </script>
     <!--container-->
     <div id="container">

@@ -213,7 +213,7 @@ function mainLoginSend(form) {
         form.userid.focus();
         return;
     }
-    if(form.userid.value.length < 6 || form.userid.value.length > 15) {
+    if(form.userid.value.length < 4 || form.userid.value.length > 64) {
         alert("회원 아이디는 6~15자로 입력 주세요.");
         form.userid.focus();
         return;
@@ -223,11 +223,7 @@ function mainLoginSend(form) {
         form.passwd.focus();
         return;
     }
-    if(form.passwd.value.length < 6 || form.passwd.value.length > 15) {
-        alert("패스워드는 6~15자로 입력 주세요.");
-        form.passwd.focus();
-        return;
-    }form.submit();
+    form.submit();
 }
 
 function mainLoginInputSendit(form) {

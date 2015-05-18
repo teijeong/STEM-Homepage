@@ -1,82 +1,6 @@
-{#
-<!--#include virtual = common/dbcon.asp-->
-<% HK_returnURL="/member/modify.asp" %>
-<!--#include virtual = common/sessionchk.asp-->
-<%
-Dim Sql,MemberRec,i,strLocation
-Dim id,name,icode,Zip,addr1,addr2,tel,email,phone,job,note,mailling
-
-Sql="Select id,pwd,name,zipcode,addr1,addr2,tel,phone,email,filename,EmailYN,Memsort,smsYN,birthday,sex from members Where idx=?"
-Set objCmd = Server.CreateObject("ADODB.Command")
-With objCmd
-    .ActiveConnection = DBcon
-    .CommandType = adCmdText
-    .CommandText = Sql
-    
-    .Parameters.Append .CreateParameter("@idx", adBigint, adParamInput, 8, Session("useridx"))
-End With
-Set Rs = objCmd.Execute()
-Set objCmd = Nothing
-
-id=ReplaceTextField(Rs("id")) : pwd=Rs("pwd")
-name=ReplaceTextField(Rs("name"))
-Zip=Split(Rs("zipcode"),"-") : addr1=ReplaceTextField(Rs("addr1"))
-addr2=ReplaceTextField(Rs("addr2")) : tel=Split(Rs("tel"),"-")
-phone=Split(Rs("phone"),"-") : email=ReplaceTextField(Rs("email"))
-filename=Rs("filename")
-EmailYN=Rs("EmailYN")
-smsYN=Rs("smsYN")
-Memsort=Rs("memsort")
-
-birthday=Split(Rs("birthday"),"-")
-sex=ReplaceTextField(Rs("sex"))
-
-EmailStr = Split(email,"@")
-
-Set MemberRec=Nothing
-DBcon.Close
-Set DBcon=Nothing
-%>
-#}
 {% extends "base.html" %}
 {% block container %}
 <script type="text/javascript">
-<!--
-// 한글 입력 검색
-function hangul_chk(word) {
-    var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-";
-
-    for (i=0; i< word.length; i++){
-        idcheck = word.charAt(i);
-        for ( j = 0 ;  j < str.length ; j++){
-            if (idcheck == str.charAt(j)) break;
-                 if (j+1 == str.length){
-                   return false;
-             }
-         }
-     }
-    return true;
-}
-
-// 한글 입력 검색
-function email_chk(word) {
-    var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890-._@";
-
-    for (i=0; i< word.length; i++)
-    {
-        idcheck = word.charAt(i);
-
-        for ( j = 0 ;  j < str.length ; j++){
-
-            if (idcheck == str.charAt(j)) break;
-
-                 if (j+1 == str.length){
-                   return false;
-                 }
-             }
-         }
-         return true;
-}
 
 function sendit(){
     var    Modify=document.Modify;
@@ -87,28 +11,11 @@ function sendit(){
         return;
     }
 
-    if (Modify.passwd.value !== ""){
-        if (hangul_chk(Modify.passwd.value) != true ){
-            alert("비밀번호에 한글이나 여백은 사용할 수 없습니다.");
-            Modify.passwd.focus();
-             return;
-        }
-        if (Modify.passwd.value.length < 6 || Modify.passwd.value.length > 15) {
-            alert("비밀번호는 6~15자리입니다.");
-            Modify.passwd.focus();
-            return;
-        }
-        if (Modify.passwd.value!==Modify.passwd_check.value){
-            alert("비밀번호가 일치하지 않습니다. 다시 입력하여 주십시요.");
-            Modify.passwd.focus();
-            return;
-        }
-    }
 
     Modify.target="iframes";
     Modify.submit();
 }
-//-->
+
 </script>
 
     <div id="container">
