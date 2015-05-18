@@ -167,9 +167,9 @@ def register():
     form = RegisterForm()
     if form.validate_on_submit():
         login_user(form.user)
-        return form.redirect()
+        return redirect('/')
     else:
-        return render_template('member/register.html', form=form, next=next)
+        return render_template('member/register.html', form=form)
 
 
 @app.route('/member/modify', methods=['GET', 'POST'])
@@ -182,12 +182,12 @@ def modify():
         departments = models.Department.query.all()
         stem_departments = models.StemDepartment.query.all()
         return render_template('member/modify.html', form=form,
-            departments=departments, stem_departments=stem_departments, next=next)
+            departments=departments, stem_departments=stem_departments)
     else:
         form = ModifyForm()
         if form.validate_on_submit():
             return form.redirect()
-        return render_template('member/modify.html', form=form, next=next)
+        return render_template('member/modify.html', form=form)
 
 @app.route('/logout')
 def logout():

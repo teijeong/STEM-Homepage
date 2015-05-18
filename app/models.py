@@ -5,10 +5,10 @@ from sqlalchemy_utils import PasswordType
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64))
+    username = db.Column(db.String(64), unique=True)
     password = db.Column(PasswordType(
         schemes=['pbkdf2_sha512', 'md5_crypt'], deprecated=['md5_crypt']))
-    nickname = db.Column(db.Unicode(64), index=True, unique=True)
+    nickname = db.Column(db.Unicode(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     member = db.relationship('Member', uselist=False, backref='user', lazy='joined')

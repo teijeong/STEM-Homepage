@@ -193,7 +193,7 @@ function sendit(){
         <th scope="row" class="import">소속 학과(부)</th>
         <td style="padding:5px 0 5px 10px;"><select name="department" class="input">
         {% for dept in departments %}
-        <option value="{{dept.id}}"{% if dept.id == current_user.dept_id %} selected {% endif %}>{{dept.name}}</option>
+        <option value="{{dept.id}}"{% if dept.id == current_user.member.dept_id %} selected {% endif %}>{{dept.name}}</option>
         {% endfor %}
         </select></td>
     </tr>
@@ -201,7 +201,7 @@ function sendit(){
         <th scope="row" class="import">부서</th>
         <td style="padding:5px 0 5px 10px;"><select name="stem_department" class="input">
         {% for dept in stem_departments %}
-        <option value="{{dept.id}}" {% if dept.id == current_user.stem_dept_id %} selected {% endif %}>{{dept.name}}</option>
+        <option value="{{dept.id}}" {% if dept.id == current_user.member.stem_dept_id %} selected {% endif %}>{{dept.name}}</option>
         {% endfor %}
         </select></td>
     </tr>
