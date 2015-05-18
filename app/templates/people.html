@@ -11,7 +11,7 @@
         {% set mailIcon = '<a href="mailto:%s"><img src="%s" style="margin-top:-6px" /></a>' % (member.email, url_for('static', filename='images/ico_mail.gif'))%}
     {% endif %}
     <li class="nostyle">
-        <div class="thum" style="width:230px;height:280px">{{ imgTag | safe}}</div>
+        <div class="thum" style="width:230px;height:280px;text-align:center">{{ imgTag | safe}}</div>
         <dl>
             <dt>{{ member.user.nickname }} ({{ member.department.name }}, {{ member.cycle }}기) {{ mailIcon | safe }}</dt>
             <dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ member.stem_department.name }}</em></dd>

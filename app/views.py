@@ -131,7 +131,7 @@ def viewPost(id):
     post = models.Post.query.get(id)
     post.hitCount = post.hitCount + 1
     db.session.commit()
-    return render_template('sub5_2.html',mNum=5, sNum=2,
+    return render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
         mode='view', post=post,
         form=LoginForm())
 

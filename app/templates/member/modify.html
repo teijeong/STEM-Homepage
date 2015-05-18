@@ -81,6 +81,12 @@ function email_chk(word) {
 function sendit(){
     var    Modify=document.Modify;
 
+    if (Modify.passwd_original.value === "") {
+        alert("맨 아래의 비밀번호 확인을 입력하세요.");
+        Modify.passwd_original.focus();
+        return;
+    }
+
     if (Modify.passwd.value !== ""){
         if (hangul_chk(Modify.passwd.value) != true ){
             alert("비밀번호에 한글이나 여백은 사용할 수 없습니다.");
