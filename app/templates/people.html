@@ -4,14 +4,14 @@
     {% set mailIcon = '' %}
 
     {% if member.img and member.img != "" %}
-        {% set imgTag = '<img src="' + url_for('static', filename=('upload/' + member.img)) + '" border="0" width="230" height="280" align="center">' %}
+        {% set imgTag = '<img src="' + url_for('static', filename=('upload/' + member.img)) + '" border="0"  align="center" style="max-height:100%;max-width:100%">' %}
     {% endif %}
 
     {% if member.user.email and member.user.email != "" %}
         {% set mailIcon = '<a href="mailto:%s"><img src="%s" style="margin-top:-6px" /></a>' % (member.email, url_for('static', filename='images/ico_mail.gif'))%}
     {% endif %}
     <li class="nostyle">
-        <div class="thum">{{ imgTag | safe}}</div>
+        <div class="thum" style="width:230px;height:280px">{{ imgTag | safe}}</div>
         <dl>
             <dt>{{ member.user.nickname }} ({{ member.department.name }}, {{ member.cycle }}기) {{ mailIcon | safe }}</dt>
             <dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ member.stem_department.name }}</em></dd>
