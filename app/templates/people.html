@@ -1,22 +1,48 @@
-{% for member in people %}
-    
-    {% set imgTag = '<img src="' + url_for('static', filename='images/nopic.gif') + '" border="0" width="230" height="280" align="center">' %}
-    {% set mailIcon = '' %}
 
-    {% if member.img and member.img != "" %}
-        {% set imgTag = '<img src="' + url_for('static', filename=('upload/' + member.img)) + '" border="0"  align="center" style="max-height:100%;max-width:100%">' %}
-    {% endif %}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script src="{{url_for('static', filename='js/member_app.js')}}"></script>
+<link rel="stylesheet" href="{{url_for('static', filename='css/member.css')}}" />
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">-->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
-    {% if member.user.email and member.user.email != "" %}
-        {% set mailIcon = '<a href="mailto:%s"><img src="%s" style="margin-top:-6px" /></a>' % (member.email, url_for('static', filename='images/ico_mail.gif'))%}
-    {% endif %}
-    <li class="nostyle">
-        <div class="thum" style="width:230px;height:280px;text-align:center">{{ imgTag | safe}}</div>
-        <dl>
-            <dt>{{ member.user.nickname }} ({{ member.department.name }}, {{ member.cycle }}기) {{ mailIcon | safe }}</dt>
-            <dd><span>Department</span><em style="word-wrap:break-word; line-height:1.4">{{ member.stem_department.name }}</em></dd>
-            <dd><span>Awards &amp; Career</span><em style="word-wrap:break-word; line-height:1.4">{{ member.cv | nl2br}}</em></dd>
-            <dd><span>Comments</span><em style="word-wrap:break-word; line-height:1.4">{{ member.comment | nl2br}}</em></dd>
-        </dl>
-    </li>
-{% endfor %}
+<div ng-app="stemApp" ng-controller="memberList">
+	<div class="members">
+		<a ng-repeat="member in members" class="member-tag" ng-click="openCard(member.id)">
+			<div class="member-picture">
+				<div class="member-picture-container">
+					<img class="member-picture-thumb" src="/static/upload/{[ member.img || 'profile/default.png']}">
+				</div>
+			</div>
+			<h5>{[member.user.nickname]}</h5>
+		</a>
+
+	</div>
+
+	<div class="member-card">
+		<a class="member-card-prev member-card-control" href="javascript:void(0)" ng-click="goPrev()">
+			<span>{[prevMember().user.nickname]}</span>
+			<i class="fa fa-arrow-left"></i>
+		</a>
+		<a class="member-card-next member-card-control" href="javascript:void(0)" ng-click="goNext()">
+			<i class="fa fa-arrow-right"></i>
+			<span>{[nextMember().user.nickname]}</span>
+		</a>
+		<a href="javascript:void(0)" onclick="closeModal()">
+			<i class="modal-close fa fa-remove" style="line-height:22px;"></i>
+		</a>
+		<div class="card-body">
+			<div class="card-photo">
+				<img class="card-cover" src="/static/upload/{[members[pIndex].cover || 'cover/cover_default.gif']}">
+			</div>
+			<div class="card-desc">
+				<h4 class="card-member-name">{[members[pIndex].user.nickname]}</h4>
+				<h6 class="card-member-dept">{[members[pIndex].cycle]}기 {[members[pIndex].stem_dept]}, {[members[pIndex].dept]}</h6>
+				<p class="card-member-description">{[members[pIndex].cv]}</p>
+				<a class="card-member-social-link" href="{[members[pIndex].social]}">{[members[pIndex].social.split('://')[1]]}</a>
+			</div>
+		</div>
+	</div>
+</div>
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="{{url_for('static', filename='js/member.js')}}"></script>

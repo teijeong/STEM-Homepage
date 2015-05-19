@@ -49,8 +49,6 @@ def showSub(sub):
     sNum = sub[2]
     if mNum == '5':
         return showBoard(sub, 1)
-    elif mNum == '3':
-        return redirect('/sub/3-1/1')
     elif mNum == '2' and sNum == '5':
         year = datetime.date.today().year
         return redirect('/sub/2-5/%d' % year)
@@ -75,31 +73,10 @@ def showBoard(sub, page):
                 mNum=int(mNum), sNum=int(sNum),
                 form=LoginForm())
 
-    elif mNum == '3':
-        return showPeople(sub, page)
-
     elif mNum == '2' and sNum == '5':
         return showHistory(sub, page)
 
-
     return showSub(sub)
-
-def showPeople(sub, page):
-    mNum = sub[0]
-    sNum = sub[2]
-
-    yearRec = models.User.query.with_entities(models.Member.cycle).distinct().all()
-    yearRec = sorted([y[0] for y in yearRec])
-    try:
-        yearRec.remove(0)
-    except ValueError:
-        pass
-    if not page in yearRec:
-        page = yearRec[0]
-    allRec = models.Member.query.filter_by(cycle=page)
-    return render_template('sub3_1.html',
-        mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
-        yearRec=yearRec, people=allRec)
 
 def showHistory(sub, page):
     mNum = sub[0]
@@ -277,12 +254,39 @@ class IdCheck(Resource):
         else:
             return {'duplicate':False}
 
-class ShowPeople(Resource):
-    def get(self, cycle):
-        people = models.Member.query.filter_by(cycle=cycle)
-        return Response(render_template('people.html', people=people), mimetype='text/html')
+user_fields = {
+    'nickname': fields.String,
+    'email': fields.String
+}
 
-api.add_resource(ShowPeople, '/view/people/<int:cycle>', endpoint='api.show_people')
+member_fields = {
+    'id': fields.Integer,
+    'cycle': fields.Integer,
+    'stem_dept': fields.String,
+    'dept': fields.String,
+    'cv': fields.String,
+    'comment': fields.String,
+    'img': fields.String,
+    'cover': fields.String,
+    'addr': fields.String,
+    'phone': fields.String,
+    'birthday': fields.String,
+    'user': fields.Nested(user_fields),
+    'social' :fields.String
+}
+
+class Members(Resource):
+    @marshal_with(member_fields)
+    def get(self):
+        people = models.Member.query.filter(models.Member.cycle!=0).all()
+        for person in people:
+            if person.stem_department:
+                person.stem_dept = person.stem_department.name
+            if person.department:
+                person.dept = person.department.name
+        return people
+
+api.add_resource(Members, '/people')
 api.add_resource(WritePost, '/post/write')
 api.add_resource(ModifyPost, '/post/<int:id>/modify')
 api.add_resource(IdCheck, '/member/register/idcheck')

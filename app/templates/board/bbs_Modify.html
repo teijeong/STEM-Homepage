@@ -2,15 +2,6 @@
 
 
 <form name="boardfrm" method="post" action="/board/ok_bbswrite.asp" enctype="multipart/form-data" style="margin:0;">
-<input type="hidden" name="storeidx" value="<%=storeidx%>">
-<input type="hidden" name="bbscode" value="<%=BBsCode%>">
-<input type="hidden" name="prepage" value="<%=prepage%>">
-<input type="hidden" name="sort" value="edit">
-<input type="hidden" name="Idx" value="<%=Idx%>">
-<input type="hidden" name="Page" value="<%=Page%>">
-<input type="hidden" name="Search" value="<%=Search%>">
-<input type="hidden" name="SearchStr" value="<%=SearchStr%>">
-<input type="hidden" name="serboardsort" value="<%=serboardsort%>">
 <table cellspacing="0" border="0" summary="글 내용을 작성" class="tbl_write">
 <colgroup>
 <col width="80">
@@ -31,7 +22,7 @@
     </tr>
     <tr>
         <th scope="row">제목</th>
-        <td colspan="3"><input name="title" type="text" size="50" maxlength="45" class="input" style="width:98%;" value="{{ post.title }}"></td>
+        <td colspan="3"><input id="title" name="title" type="text" size="50" maxlength="45" class="input" style="width:98%;" value="{{ post.title }}"></td>
     </tr>
     {% if post.board.imageSupport %}
     <tr>

@@ -119,13 +119,17 @@ class ModifyMemberForm(ModifyForm):
     cell = TextField('Cell Phone')
     birthday = TextField('Birthday')
     cycle = IntegerField('Cycle')
+    addr = TextField('Address')
     photo = FileField('Photo',
-        validators=[FileAllowed(['png', 'jpg'], 'PNG/JPG file only')])
+        validators=[FileAllowed(['png', 'jpg', 'gif'], 'PNG/JPG/GIF file only')])
+    cover = FileField('Cover',
+        validators=[FileAllowed(['png', 'jpg', 'gif'], 'PNG/JPG/GIF file only')])
     department = IntegerField('Department')
     stem_department = IntegerField('STEM_Department')
     cv = TextField('CV')
     passwd_original = PasswordField('PW-original')
     comment = TextField('Comment')
+    social = TextField('Social Network')
 
     def validate(self):
         rv = ModifyForm.validate(self)
@@ -136,18 +140,33 @@ class ModifyMemberForm(ModifyForm):
             self.user.member.phone = self.cell.data
         if self.birthday.data != '':
             self.user.member.birthday = datetime.strptime(self.birthday.data, '%Y-%m-%d').date()
+
         if self.photo.data.filename != '':
             ext = self.photo.data.filename.rsplit('.',1)[1]
             filename = 'profile/%d.' % self.user.id + ext
             file_path = os.path.join(app.config.UPLOAD_FOLDER, filename)
             self.photo.data.save(file_path)
             self.user.member.img = filename
+
+        if self.cover.data.filename != '':
+            ext = self.cover.data.filename.rsplit('.',1)[1]
+            filename = 'cover/%d.' % self.user.id + ext
+            file_path = os.path.join(app.config.UPLOAD_FOLDER, filename)
+            self.cover.data.save(file_path)
+            self.user.member.cover = filename
+
         if self.cycle.data != '':
             self.user.member.cycle = self.cycle.data
+        if self.addr.data != '':
+            self.user.member.addr = self.addr.data
         if self.cv.data != '':
             self.user.member.cv = self.cv.data
         if self.comment.data != '':
             self.user.member.comment = self.comment.data
+        if self.social.data != '':
+            if self.social.data[0:4] != 'http':
+                self.social.data = 'http://' + self.social.data
+            self.user.member.social = self.social.data
 
         self.user.member.dept_id = self.department.data
         self.user.member.stem_dept_id = self.stem_department.data

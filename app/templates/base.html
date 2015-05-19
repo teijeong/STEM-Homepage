@@ -5,7 +5,7 @@
 <title>Untitled Document</title>
 <script type="text/javascript" src="{{ url_for('static', filename='js/link.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/board.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/navi.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}" />
@@ -22,7 +22,7 @@
     {% include "top.html" %}
     {% block container %}{% endblock %}
     <!--footer-->
-    <div id="footer">
+    <div id="footer" style="z-index:-1">
         <div class="foot"><img src="{{ url_for('static', filename='images/copyright.gif') }}" /></div>
         <div class="foot_familysite">
             <select name="" class="input" style="width:150px;" onChange="navChange3(this); return true;">

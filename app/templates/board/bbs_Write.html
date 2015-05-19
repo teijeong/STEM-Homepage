@@ -1,11 +1,6 @@
 <script type="text/javascript" src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
 
 <form name="boardfrm" id="boardfrm" action="/board/ok_bbswrite.asp" method="post" enctype="multipart/form-data" style="margin:0;">
-<input type="hidden" name="storeidx" id="storeidx" value="<%=storeidx%>" />
-<input type="hidden" name="bbscode" id="bbscode" value="<%=BBsCode%>" />
-<input type="hidden" name="serboardsort" id="serboardsort" value="<%=serboardsort%>" />
-<input type="hidden" name="prePage" id="prePage" value="<%=prePage%>" />
-<input type="hidden" name="useridx" id="useridx" value="<%=Session('useridx')%>" />
 <table cellspacing="0" border="0" summary="글 내용을 작성" class="tbl_write" style="table-layout:fixed;">
     <colgroup>
     <col width="100">

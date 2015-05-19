@@ -49,6 +49,9 @@ class Member(db.Model):
     phone = db.Column(db.String(20))
     birthday = db.Column(db.Date)
     img = db.Column(db.Unicode(256))
+    cover = db.Column(db.Unicode(256))
+    addr = db.Column(db.Unicode(512))
+    social = db.Column(db.Unicode(256))
 
     def __repr__(self):
         return '<Member %d>' % self.id
@@ -61,8 +64,11 @@ class Member(db.Model):
         self.comment = ""
         self.cv = ""
         self.phone = ""
-        self.birthday = datetime.date(1993, 1, 1)
+        self.birthday = datetime.date(1994, 1, 1)
         self.img = ""
+        self.cover = ""
+        self.addr = ""
+        self.social = ""
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)

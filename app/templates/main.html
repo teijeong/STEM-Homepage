@@ -1,43 +1,8 @@
 {% extends "base.html" %}
 
-<!-- #include virtual = common/dbcon.asp -->
-<!--
-<%
-Dim PopStr
-Dim Rs,Sql,MainColRec,NewColRec,PutColRec
-Dim NoticeRec,FreeRec
-
-CALL GET_PopInfo()
-Set Rs=Server.CreateObject("ADODB.RecordSet")
-
-'=============================공지,이벤트,고객게시판 Get============================'
-Sql="Select Top 5 idx,title,regdate,boardidx From BBSList Where boardidx=1 AND ReLevel='A' Order By Idx DESC"
-Rs.Open Sql,DBcon,1
-IF Not(Rs.Bof Or Rs.Eof) Then BoardRec1=Rs.GetRows()
-Rs.Close
-
-Sql="Select Top 5 idx,title,regdate,boardidx From BBSList Where boardidx=2 AND ReLevel='A' Order By Idx DESC"
-Rs.Open Sql,DBcon,1
-IF Not(Rs.Bof Or Rs.Eof) Then BoardRec2=Rs.GetRows()
-Rs.Close
-'==================================================================================='
-
-'================================= 전광판배너 Get ==================================='
-Sql="SELECT Top 5 filenames,linkurl FROM mainbanneradmin WHERE bansort=1 Order BY listnum ASC, idx ASC"
-Rs.Open Sql,DBcon,1
-IF Not(Rs.Bof Or Rs.Eof) Then bannerRec1=Rs.GetRows
-Rs.Close
-'==================================================================================='
-
-Set Rs=Nothing
-DBcon.Close
-Set DBcon=Nothing
-
-%>
--->
 {% macro PT_BoardTopList(rec, actpage) -%}
     {% for article in rec %}
-        <dd><a href="{{ actpage }}"?mode=view&idx="{{ article.idx }}">{{ article.title }}
+        <dd><a href="post/{{article.id}}/view">{{ article.title }}
         {% if article.new %}<img src="{{url_for('static', filename='images/ico_new.gif')}}"  border='0' alt='NEW' align=absmiddle />{% endif %}
         </a><span> {{ article.date }} </span></dd>
     {% endfor %}

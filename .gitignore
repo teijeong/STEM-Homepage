@@ -1,4 +1,6 @@
 *.pyc
 venv*
 
-app.db
+app.db*
+
+app/static/upload/*

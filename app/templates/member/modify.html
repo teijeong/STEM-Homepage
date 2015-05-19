@@ -3,7 +3,7 @@
 <script type="text/javascript">
 
 function sendit(){
-    var    Modify=document.Modify;
+    var Modify=document.Modify;
 
     if (Modify.passwd_original.value === "") {
         alert("맨 아래의 비밀번호 확인을 입력하세요.");
@@ -11,8 +11,6 @@ function sendit(){
         return;
     }
 
-
-    Modify.target="iframes";
     Modify.submit();
 }
 
@@ -127,17 +125,23 @@ function sendit(){
         <td style="padding:5px 0 5px 10px;"><textarea style="width:98%" class="input" rows="5" name="comment">{{ current_user.member.comment }}</textarea></td>
     </tr>
     <tr>
-        <th scope="row" class="import">사진</th>
+        <th scope="row">SNS</th>
+        <td style="padding:5px 0 5px 10px;"><input name="social" type="text" class="input" size="50" value="{{current_user.member.social}}"></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">사진 (140x140px)</th>
         <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="input"></td>
     </tr>
-    <!--
+    <tr>
+        <th scope="row" class="import">커버 사진 (423x200px)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="input"></td>
+    </tr>
     <tr>
         <th scope="row" class="import">사는 곳</th>
         <td style="padding:5px 0 5px 10px;">
-            <p style="padding:4px 0 0 0;"><input name="addr" type="text" class="input" size="50" readonly value=""></p>
+            <p style="padding:4px 0 0 0;"><input name="addr" type="text" class="input" size="50" value="{{current_user.member.addr}}"></p>
         </td>
     </tr>
-    -->
 </tbody>
 </table>
 

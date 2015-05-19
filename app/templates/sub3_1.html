@@ -1,8 +1,3 @@
-{% macro PT_SelectBox(YearRec) -%}
-    {% for cycle in YearRec %}
-        <option value="{{ cycle }}" {% if loop.first %}selected{% endif %}>{{ cycle }}기</option>
-    {% endfor %}
-{%- endmacro %}
 
 {% extends "base.html" %}
 {% block container %}
@@ -16,34 +11,9 @@
             <div class="con">
                 <ul class="nostyle">
                     <li class="nostyle stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
-                    <li class="nostyle con_img">
-                        <div class="board_search">
-                            <select name="bansort" class="" onchange="loadPeople(this.value)">
-                            <option selected> - 기수선택 - </option>
-                            {{ PT_SelectBox(yearRec) }}
-                            </select>
-                        </div>
-                        <ul class="nostyle people">
-                        {% include "people.html" %}
-                        </ul>
-                    </li>
                 </ul>
+                {% include "people.html" %}
             </div>
-            <script type="text/javascript">
-                var loadPeople = function(cycle) {
-                    var url = "{{ url_for('api.show_people', cycle=1) }}";
-                    url = url.substr(0, url.length - 1) + cycle;
-                    (function($) {
-                        $.ajax({
-                            method: "GET",
-                            url: url,
-                            success: function(data) {
-                                $(".people").html(data);
-                            }
-                        });
-                    })(jQuery);
-                };
-            </script>
         </div>
     </div>
     <!--//container-->
