@@ -64,10 +64,10 @@ function goPrev($scope) {
 	$scope.pIndex %= $scope.members.length;
 }
 
-function prevMember($scope) {
+function nextMember($scope) {
 	return $scope.members[($scope.pIndex + 1) % $scope.members.length];
 }
 
-function nextMember($scope) {
+function prevMember($scope) {
 	return $scope.members[($scope.pIndex + $scope.members.length - 1) % $scope.members.length];
 }
