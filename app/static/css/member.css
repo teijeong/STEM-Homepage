@@ -146,6 +146,24 @@
 	max-height: none;
 }
 
+.card-photo {
+	height: 200px;
+	width: 423px;
+	overflow: hidden;
+	position: relative;
+}
+
+.card-cover {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: auto;
+  width: 100%;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
 .card-desc {
 	padding: 6px 20px 20px;
 }
