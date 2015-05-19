@@ -17,7 +17,7 @@ var person = function(id, name, img) {
 
 var memberListScope;
 
-stemApp.controller('memberList', function($scope) {
+stemApp.controller('memberList', function($scope, $timeout) {
 	memberListScope = $scope;
 	$scope.members = [];
 	$scope.pIndex = 0;
@@ -30,6 +30,14 @@ stemApp.controller('memberList', function($scope) {
 			$scope.$apply();
 		}
 	});
+	$timeout(function(){
+		(function($) {
+			$(".member-picture-thumb").each(function(i, elem) {
+				console.log(elem);
+				if (elem.naturalWidth < elem.naturalHeight)
+					$(this).addClass("portrait");
+			});
+		})(jQuery);}, 500);
 	$scope.prevMember = function(){return prevMember($scope);};
 	$scope.nextMember = function(){return nextMember($scope);};
 	$scope.goNext = function(){goNext($scope);};

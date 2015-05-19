@@ -100,10 +100,6 @@
 }
 
 .member-picture-container {
-	width: 140px;
-	height: 140px;
-}
-.member-picture-thumb {
 	height: 140px;
 	width: 140px;
 	border-radius: 140px;
@@ -111,6 +107,24 @@
 	border: 3px solid #EEE;
 	position: relative;
 }
+
+.member-picture-thumb {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 100%;
+  width: auto;
+  -webkit-transform: translate(-50%,-50%);
+      -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+}
+
+.member-picture-thumb.portrait{
+	width: 100%;
+	height: auto;
+}
+
+
 
 .member-picture-thumb:hover {
 	opacity: 0.50;

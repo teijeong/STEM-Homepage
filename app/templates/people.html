@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 
 <div ng-app="stemApp" ng-controller="memberList">
-	<div class="members">
+	<div class="members" ng-view>
 		<a ng-repeat="member in members" class="member-tag" ng-click="openCard(member.id)">
 			<div class="member-picture">
 				<div class="member-picture-container">
