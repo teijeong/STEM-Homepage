@@ -15,11 +15,7 @@ def load_user(id):
 
 @app.route('/')
 def main():
-    bannerRec1 = [
-        {'image':'main_img.gif'}, 
-        {'image':'1.jpg'}, 
-        {'image':'2.jpg'}, 
-        {'image':u'교육기부박람회1.JPG'}]
+    bannerRec1 = db.session.query(models.Banner).all()
 
     boardRec1 = db.session.query(models.Post).filter_by(
         board_id=1).order_by(models.Post.timestamp.desc()).limit(5).all()

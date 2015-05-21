@@ -16,10 +16,10 @@
             <div class="t_panel_{{ index }}">
         {% endif %}
         <div class="t_panel_{{ index }}-wrapper">
-        {% if banner.link %}
-            <a href="{{ banner.link }}"></a><img src="{{ url_for('static', filename=('upload/mainbanner/' + banner.image)) }}" width="{{ width }}" height={{ height }} border="0"></a>
+        {% if banner.href %}
+            <a href="{{ banner.href }}"></a><img src="{{ url_for('static', filename=('upload/mainbanner/' + banner.src)) }}" width="{{ width }}" height="{{ height }}" border="0" alt="{{banner.description}}"></a>
         {% else %}
-            <img src="../static/upload/mainbanner/{{ banner.image }}" width="{{ width }}" height={{ height }} border="0">
+            <img src="../static/upload/mainbanner/{{ banner.src }}" width="{{ width }}" height="{{ height }}" border="0" alt="{{banner.description}}">
         {% endif %}
         </div></div>
     {% endfor %}

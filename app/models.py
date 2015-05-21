@@ -154,3 +154,17 @@ class File(db.Model):
         self.name = name
         self.link = link
         self.post = post
+
+class Banner(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    src = db.Column(db.Unicode(512))
+    href = db.Column(db.Unicode(512))
+    description = db.Column(db.Unicode(1024))
+
+    def __repr__(self):
+        return '<Banner %r -> %r>' % (description, href)
+
+    def __init__(self, src, href, description):
+        self.src = src
+        self.href = href
+        self.description = description
