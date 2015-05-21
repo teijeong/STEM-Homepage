@@ -162,7 +162,7 @@ class Banner(db.Model):
     description = db.Column(db.Unicode(1024))
 
     def __repr__(self):
-        return '<Banner %r -> %r>' % (description, href)
+        return '<Banner %r -> %r>' % (self.description, self.href)
 
     def __init__(self, src, href, description):
         self.src = src
