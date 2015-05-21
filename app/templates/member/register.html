@@ -60,11 +60,6 @@ function sendit(){
         Join.email.focus();
         return;
     }
-    if (email_chk(Join.email.value) != true ){
-        alert("이메일 주소에 한글이나 여백은 사용할 수 없습니다.");
-        Join.email.focus();
-         return;
-    }
     Join.submit();
 }
 </script>
