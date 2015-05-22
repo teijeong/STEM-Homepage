@@ -274,7 +274,10 @@ member_fields = {
 class Members(Resource):
     @marshal_with(member_fields)
     def get(self):
-        people = models.Member.query.filter(models.Member.cycle!=0).all()
+        people = db.session.query(models.Member). \
+            join(models.Member.user).filter(models.Member.cycle != 0). \
+            order_by(models.Member.cycle.desc()). \
+            order_by(models.User.nickname).all()
         for person in people:
             if person.stem_department:
                 person.stem_dept = person.stem_department.name
