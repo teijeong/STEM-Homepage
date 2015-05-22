@@ -12,3 +12,10 @@ def show():
         return render_template('starter.html', member=models.Member.query.all()[0])
     except TemplateNotFound:
         abort(404)
+
+@member_app.route('/people', endpoint='p')
+def show():
+    try:
+        return render_template('memberapp/people.html', member=models.Member.query.all()[0])
+    except TemplateNotFound:
+        abort(404)

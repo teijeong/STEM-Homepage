@@ -9,19 +9,14 @@ function onTopNavi(viewNum, num){
     if ( jQuery('#gnb').hasClass('start') ) {
 
         for(var i = 1; i < num; i++){
-            var onList=dEI("item"+i);
-            var onImg=onList.getElementsByTagName("img").item(0);
-            if(i==viewNum){
-                onList.className="on";
-                var ImgCheck = onImg.src.substring(onImg.src.length-3, onImg.src.length);
-                if (ImgCheck!="on.gif") {
-                    onImg.src = onImg.src.replace("off.gif", "on.gif");
-                }
-            }else{
-                onList.className="";
-                    if (ImgCheck="on.gif") {
-                    onImg.src = onImg.src.replace("on.gif", "off.gif");
-                }
+            var onCategory = document.getElementById("item" + i);
+            var onList = document.getElementById("m" + i);
+            if(i === viewNum){
+                onCategory.className = "on";
+                if (onList) onList.style.visibility = "visible";
+            } else {
+                onCategory.className = "";
+                if (onList) onList.style.visibility = "hidden";
             }
         }
     }
