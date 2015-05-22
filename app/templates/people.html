@@ -18,18 +18,7 @@
 
 	</div>
 
-	<div class="member-card">
-		<a class="member-card-prev member-card-control" href="javascript:void(0)" ng-click="goPrev()">
-			<span>{[prevMember().user.nickname]}</span>
-			<i class="fa fa-arrow-left"></i>
-		</a>
-		<a class="member-card-next member-card-control" href="javascript:void(0)" ng-click="goNext()">
-			<i class="fa fa-arrow-right"></i>
-			<span>{[nextMember().user.nickname]}</span>
-		</a>
-		<a href="javascript:void(0)" onclick="closeModal()">
-			<i class="modal-close fa fa-remove" style="line-height:22px;"></i>
-		</a>
+	<div class="member-card">	
 		<div class="card-body">
 			<div class="card-photo">
 				<img class="card-cover" src="/static/upload/{[members[pIndex].cover || 'cover/cover_default.gif']}">
@@ -42,6 +31,17 @@
 				<a class="card-member-social-link" href="{[members[pIndex].social]}">{[members[pIndex].social.split('://')[1]]}</a>
 			</div>
 		</div>
+		<a class="member-card-prev member-card-control" href="javascript:void(0)" ng-click="goPrev()">
+			<span>{[prevMember().user.nickname]}</span>
+			<i class="fa fa-arrow-left"></i>
+		</a>
+		<a class="member-card-next member-card-control" href="javascript:void(0)" ng-click="goNext()">
+			<i class="fa fa-arrow-right"></i>
+			<span>{[nextMember().user.nickname]}</span>
+		</a>
+		<a href="javascript:void(0)" onclick="closeModal()">
+			<i class="modal-close fa fa-remove" style="line-height:22px;"></i>
+		</a>
 	</div>
 </div>
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
