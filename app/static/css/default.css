@@ -27,22 +27,22 @@ em {font-style:normal;}
 img,input {vertical-align:middle;}
 img, fieldset {border:0;}
 hr, legend {display:none;}
-td, th, dd, div {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height:1.8em;}
+td, th, dd, div {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#666; line-height:1.8em;}
 article {width:90%; margin:auto;margin-top:20px;margin-bottom:20px;font-family: "맑은 고딕","돋움","Arial"; font-size:14px;}
 article p {margin-top:5px; text-indent:10px;}
 
-.input {font-family:"돋움", "Arial", "Verdana"; font-size:12px; color:#777; border:1px solid #dbdbdb; background-color:#fff;}
-.input1 {font-family:"돋움", "Arial", "Verdana"; font-size:11px; color:#777; border:none; background-color:#fff; margin-bottom:5px;  *margin-bottom:0px; padding:none;}
+.input {font-family:"NanumGothic", "Helvetica", "Arial", "돋움", "Verdana"; font-size:12px; color:#777; border:1px solid #dbdbdb; background-color:#fff;}
+.input1 {font-family:"NanumGothic", "Helvetica", "Arial", "돋움", "Verdana"; font-size:11px; color:#777; border:none; background-color:#fff; margin-bottom:5px;  *margin-bottom:0px; padding:none;}
 .input_btn {border-right:expression( (this.type=='checkbox'||this.type=='radio'||this.type=='file'||this.type=='image')?'':''); border-top:expression( (this.type=='checkbox'||this.type=='radio'||this.type=='file'||this.type=='image')?'':''); background:expression( (this.type=='checkbox'||this.type=='radio'||this.type=='file'||this.type=='image')?'':'' ); border-left:expression( (this.type=='checkbox'||this.type=='radio'||this.type=='file'||this.type=='image')?'':''); border-bottom: expression( (this.type=='checkbox'||this.type=='radio'||this.type=='file'||this.type=='image')?'':'');}
 textarea {font-size:12px; line-height:1.5em; padding:2px; color:#777; overflow:hidden; overflow-y:auto; overflow-X:hidden; border:1px solid #dadada; background-color:#fff;}
 form {display:solid;}
-.input_select {behavior:url(../js/selectbox.htc); font-family:"돋움", "Arial"; font-size:12px; color:#a2c7d5; border:none;}
+.input_select {behavior:url(../js/selectbox.htc); font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; color:#a2c7d5; border:none;}
 
 /* 링크 관련 */
-a {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height:1.8em; text-decoration:none;}
-a:visited {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height:1.8em; text-decoration:none;}
-a:hover {font-family:"돋움", "Arial"; font-size:11px; color:#252525; line-height:1.8em; text-decoration:none;}
-a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height:1.8em; text-decoration:none;}
+a {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#666; line-height:1.8em; text-decoration:none;}
+a:visited {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#666; line-height:1.8em; text-decoration:none;}
+a:hover {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#252525; line-height:1.8em; text-decoration:none;}
+a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#666; line-height:1.8em; text-decoration:none;}
 
 /* png24 관련 */
 .png24 {tmp:expression(setPng24(this)); position:relative;}
@@ -249,7 +249,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 .logbox {margin:50px 0 0 350px;}
 .logbox span {width:80px;}
 .logbox th {text-align:right;}
-.logbox .memb {border:1px solid #999; font-family:"돋움", "Arial"; font-size:12px; color:#555; font-weight:normal; line-height:2em;}
+.logbox .memb {border:1px solid #999; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; color:#555; font-weight:normal; line-height:2em;}
 .logbox a {padding-right:17px; vertical-align:middle;}
 
 
@@ -258,7 +258,7 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 #seek {overflow:hidden; background:none !important; border:solid 5px #70839e;}
 .seek {margin:15px auto;}
 .seek * {vertical-align:middle;}
-.seek .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:5px; font-family:"돋움", "Arial"; font-size:16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
+.seek .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:5px; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
 .seek .condition {text-align:center; padding:10px 0; font-size:12px; font-weight:bold; color:#888; line-height:1.5em;}
 .seek .id_search {border-top:1px solid #d2d2d2; border-bottom:1px solid #d2d2d2; margin-bottom:20px;}
 .seek .id_search span.cate {background:url('../images/ico_arrow_red.gif') 0 50% no-repeat; padding:5px 0px 5px 10px; font-size:11px; font-weight:bold; color:#999; display:inline-block; width:80px;}
@@ -271,15 +271,15 @@ a:active {font-family:"돋움", "Arial"; font-size:11px; color:#666; line-height
 #check {overflow:hidden; background:none !important; border:solid 5px #70839e;}
 .check {margin:15px auto;}
 .check * {vertical-align:middle;}
-.check .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:10px; font-family:"돋움", "Arial"; font-size:16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
+.check .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:10px; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
 .check .id_result {border-top:1px solid #d2d2d2; border-bottom:1px solid #d2d2d2; background-color:#f5f5f5; text-align:center; margin-bottom:20px;}
-.check .id_result td {font-family:"돋움", "Arial"; font-size:11px; color:#999; line-height:1.5em; letter-spacing:-1px;}
+.check .id_result td {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#999; line-height:1.5em; letter-spacing:-1px;}
 .check .id_btn {padding:2px 0; text-align:center;}
 
 /* 우편번호 검색 */
 .post01 {overflow:hidden; width:330px; background-color:#fff; border:solid 5px #70839e;}
 .post01 * {vertical-align:middle;}
-.post01 .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:10px; font-family:"돋움", "Arial"; font-size: 16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
+.post01 .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:10px; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size: 16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
 .post01 .id_result {border-top:1px solid #d2d2d2; border-bottom:1px solid #d2d2d2; background-color:#f5f5f5; text-align:center;}
 .post01 .id_btn {padding:15px 0; text-align:center;}
 .post01 .post_list {height:215px; overflow:auto; margin-top:15px;}
