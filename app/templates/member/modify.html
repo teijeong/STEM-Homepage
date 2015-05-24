@@ -122,7 +122,17 @@ function sendit(){
     </tr>
     <tr>
         <th scope="row">자기소개(STEM 내부용)</th>
-        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%" class="input" rows="5" name="comment">{{ current_user.member.comment or ''}}</textarea></td>
+        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%" class="input" rows="5" name="comment">{% if current_user.member.comment and  current_user.member.comment != '' %}{{ current_user.member.comment }}
+{% else %}Example)
+학번
+주량/술버릇
+최근의 경력사항
+장래 희망
+스트레스 해소법
+STEM에게 하고 싶은 말
+좋아하는 음식은?
+좋아하는 연예인은?
+자신이 생각하는 자신의 챠밍 포인트는?{% endif %}</textarea></td>
     </tr>
     <tr>
         <th scope="row">SNS</th>
