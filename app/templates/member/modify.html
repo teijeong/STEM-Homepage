@@ -14,6 +14,12 @@ function sendit(){
     Modify.submit();
 }
 
+function autoGrow (oField) {
+  if (oField.scrollHeight > oField.clientHeight) {
+    oField.style.height = oField.scrollHeight + "px";
+  }
+}
+
 </script>
 
     <div id="container">
@@ -24,7 +30,7 @@ function sendit(){
             </div>
             <div class="con">
                 <ul class="nostyle">
-                    <li class="nostyle stit"><img src="{{url_for('static', filename='images/stit6_3.gif')}}" alt="" /></li>
+                    <li class="nostyle stit"><div class="title-img"><span>My Page</span></div></li>
                     <li class="nostyle con_img">
 
 <p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
@@ -117,12 +123,12 @@ function sendit(){
         </select></td>
     </tr>
     <tr>
-        <th scope="row">자기소개(공개용)</th>
-        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%"class="input" rows="5" name="cv">{{ current_user.member.cv or ''}}</textarea></td>
+        <th scope="row">자기소개<br>(공개용)</th>
+        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%;overflow:hidden;"class="input" rows="5" name="cv" onkeyup="autoGrow(this);">{{ current_user.member.cv or ''}}</textarea></td>
     </tr>
     <tr>
-        <th scope="row">자기소개(STEM 내부용)</th>
-        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%" class="input" rows="5" name="comment">{% if current_user.member.comment and  current_user.member.comment != '' %}{{ current_user.member.comment }}
+        <th scope="row">자기소개<br>(STEM 내부용)</th>
+        <td style="padding:5px 0 5px 10px;"><textarea onkeyup="autoGrow(this);" style="width:98%;overflow:hidden;" class="input" rows="5" name="comment">{% if current_user.member.comment and  current_user.member.comment != '' %}{{ current_user.member.comment }}
 {% else %}Example)
 학번
 주량/술버릇
@@ -139,15 +145,15 @@ STEM에게 하고 싶은 말
         <td style="padding:5px 0 5px 10px;"><input name="social" type="text" class="input" size="50" value="{{current_user.member.social or ''}}"></td>
     </tr>
     <tr>
-        <th scope="row" class="import">사진 (140x140px)</th>
-        <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="input"></td>
+        <th scope="row">프로필 사진<br>(140x140px)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="input">{% if current_user.member.img %} (프로필 사진 있음){% endif %}</td>
     </tr>
     <tr>
-        <th scope="row" class="import">커버 사진 (423x200px)</th>
-        <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="input"></td>
+        <th scope="row">커버 사진<br>(423x200px)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="input">{% if current_user.member.cover %} (커버 사진 있음){% endif %}</td>
     </tr>
     <tr>
-        <th scope="row" class="import">사는 곳</th>
+        <th scope="row">사는 곳</th>
         <td style="padding:5px 0 5px 10px;">
             <p style="padding:4px 0 0 0;"><input name="addr" type="text" class="input" size="50" value="{{current_user.member.addr or ''}}"></p>
         </td>
@@ -158,7 +164,7 @@ STEM에게 하고 싶은 말
 {% endif %}
 
 <br>
-<h4>비밀번호 확인</h4>
+<h4><strong>정보 수정 확인</strong></h4>
 <table cellspacing="0" class="tbl_join tbl_member" summary="비밀번호 확인">
 <caption>비밀번호 확인</caption>
 <colgroup>
@@ -167,7 +173,7 @@ STEM에게 하고 싶은 말
 </colgroup>
 <tbody>
     <tr>
-        <th scope="row" class="import">비밀번호</th>
+        <th scope="row" class="import">현재 비밀번호</th>
         <td style="padding:5px 0 5px 10px;">
             <input name="passwd_original" type="password" class="input" size="20" maxlength="20">
         </td>

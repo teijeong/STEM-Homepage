@@ -1,41 +1,3 @@
-<!--#include virtual = common/dbcon.asp-->
-{#
-<%
-bansort=Request("bansort")
-Search=Replaceensine(ReplaceNoHtml(Request("Search")))
-SearchStr=Replaceensine(ReplaceNoHtml(Request("SearchStr")))
-
-IF bansort="" Then bansort=Year(Date())
-IF Search<>"" Then strWhere = strWhere & " And "&Search&" LIKE N'%"&SearchStr&"%' "
-
-Page=GetPage()
-PageSize=1000
-
-Set Rs=Server.CreateObject("ADODB.RecordSet")
-Sql="select top "&PageSize&" idx,title,bansort,content from historyadmin WHERE bansort="&bansort&""&strWhere&" AND idx NOT IN (select top "&(Page-1)*PageSize&" idx from historyadmin Where bansort="&bansort&""&strWhere&" order by listnum ASC, Idx ASC) order by listnum ASC, Idx ASC"
-Rs.Open Sql,DBcon,1
-
-IF Not(Rs.Bof Or Rs.Eof) Then
-    Record_Cnt=Dbcon.Execute("select count(idx) from historyadmin Where bansort="&bansort&""&strWhere)
-    TotalPage=Int((CInt(Record_Cnt(0))-1)/CInt(PageSize)) +1
-    Allrec=Rs.GetRows
-    Count=Record_Cnt(0)
-Else
-    Count=0
-End IF
-Rs.Close
-
-Sql="SELECT bansort FROM historyadmin Group By bansort Order by bansort ASC"
-Set Rs=DBcon.Execute(Sql)
-IF Not(Rs.Bof Or Rs.Eof) Then YearRec=Rs.GetRows()
-Rs.Close
-
-Set Rs=Nothing
-DBcon.Close
-Set DBcon=Nothing
-%>
-#}
-
 {% macro PT_SelectBox(years) -%}
     {% for year in years %}
         <option value="{{ year }}" {% if year==page %}selected{% endif %}>{{ year }}년</option>
@@ -62,7 +24,7 @@ Set DBcon=Nothing
             </div>
             <div class="con">
                 <ul class="nostyle">
-                    <li class="nostyle stit"><img src="{{ url_for('static', filename='images/stit%d_%d.gif' % (mNum, sNum)) }}" alt="" /></li>
+                    <li class="nostyle stit"><div class="title-img"><span>History</span></div></li>
                     <li class="nostyle con_img">
                         <p style="text-align:right">
                             <select name="bansort" class="" onchange="location.href='./' + this.value">

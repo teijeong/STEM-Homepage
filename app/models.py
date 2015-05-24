@@ -134,7 +134,7 @@ class Board(db.Model):
     description = db.Column(db.Unicode(200))
     posts = db.relationship('Post', backref='board', lazy='dynamic')
 
-    def __init__(self, name, description):
+    def __init__(self, name='', description=''):
         self.name = name
         self.description = description
 
@@ -150,7 +150,7 @@ class File(db.Model):
     def __repr__(self):
         return '<File %r>' % self.name
 
-    def __init__(self, name, link, post):
+    def __init__(self, name='', link='', post=None):
         self.name = name
         self.link = link
         self.post = post
@@ -164,7 +164,7 @@ class Banner(db.Model):
     def __repr__(self):
         return '<Banner %r -> %r>' % (self.description, self.href)
 
-    def __init__(self, src, href, description):
+    def __init__(self, src='', href='', description=''):
         self.src = src
         self.href = href
         self.description = description

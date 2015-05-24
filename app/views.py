@@ -61,11 +61,12 @@ def showBoard(sub, page):
             board_id=int(sNum)).order_by(
             models.Post.timestamp.desc()).paginate(
             page, per_page=10)
+        board = models.Board.query.get(int(sNum))
 
         
-        return render_template('sub' + mNum + '_' + sNum + '.html',
+        return render_template('sub' + mNum + '.html',
                 page=page,totalpage=pagenation.pages,
-                posts=pagenation.items,
+                posts=pagenation.items, board=board,
                 mNum=int(mNum), sNum=int(sNum),
                 form=LoginForm())
 
@@ -102,10 +103,13 @@ def showHistory(sub, page):
 @app.route('/post/<int:id>/view')
 def viewPost(id):
     post = models.Post.query.get(id)
+    if not post:
+        return redirect('/sub/5-1')
     post.hitCount = post.hitCount + 1
+    board = models.Board.query.get(post.board_id)
     db.session.commit()
-    return render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
-        mode='view', post=post,
+    return render_template('sub5.html', mNum=5, sNum=post.board_id,
+        mode='view', post=post, board=board,
         form=LoginForm())
 
 
@@ -136,6 +140,7 @@ def register():
         return redirect('/')
     else:
         return render_template('member/register.html', form=form)
+
 
 
 @app.route('/member/modify', methods=['GET', 'POST'])
@@ -170,7 +175,7 @@ class WritePost(Resource):
         board = models.Board.query.get(args['board'])
         user = models.User.query.get(1)
         return Response(
-            render_template('sub5_%d.html' % args['board'],
+            render_template('sub5.html',
                 mNum=5, sNum=args['board'], mode='write', board=board,
                 form=LoginForm()),
             mimetype='text/html')
@@ -182,6 +187,7 @@ class WritePost(Resource):
         postParser.add_argument('userID', type=int)
         postParser.add_argument('boardID', type=int)
         postParser.add_argument('level', type=int)
+        postParser.add_argument('files', type=int, action='append')
 
         args = postParser.parse_args()
         post = models.Post(
@@ -189,8 +195,9 @@ class WritePost(Resource):
         db.session.add(post)
         db.session.commit()
         return Response(
-            render_template('sub5_%d.html' % args['boardID'],
+            render_template('sub5.html',
                 mNum=5, sNum=args['boardID'],
+                board=models.Board.query.get(args['boardID']),
                 form=LoginForm()),
             mimetype='text/html')
 
@@ -201,14 +208,16 @@ class ModifyPost(Resource):
 
         if current_user.id != post.user_id:
             return Response(
-                render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+                render_template('sub5.html', mNum=5, sNum=post.board_id,
                     mode='view', post=post,
+                    board=models.Board.query.get(post.board_id),
                     form=LoginForm()),
                 mimetype='text/html')
 
         return Response(
-            render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+            render_template('sub5.html', mNum=5, sNum=post.board_id,
                 mode='modify', post=post,
+                board=models.Board.query.get(post.board_id),
                 form=LoginForm()),
             mimetype='text/html')
 
@@ -225,6 +234,7 @@ class ModifyPost(Resource):
             return Response(
                 render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
                     mode='view', post=post,
+                    board=models.Board.query.get(post.board_id),
                     form=LoginForm()),
                 mimetype='text/html')
 
@@ -233,8 +243,9 @@ class ModifyPost(Resource):
         db.session.commit()
 
         return Response(
-            render_template('sub5_%d.html' % post.board_id, mNum=5, sNum=post.board_id,
+            render_template('sub5.html', mNum=5, sNum=post.board_id,
                 mode='view', post=post,
+                board=models.Board.query.get(post.board_id),
                 form=LoginForm()),
             mimetype='text/html')
 
