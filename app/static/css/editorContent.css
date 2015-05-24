@@ -1,5 +1,5 @@
 td.HK_noBoarder{padding:1px 0; border:0px solid #ffffff}
-.input { font-size:12px;  font-family:굴림; border:1px solid #DBDBDB }
+.input { font-size:12px;  font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; border:1px solid #DBDBDB }
 #textareaDIV td {color:#555555;padding:2px 2px 2px 2px; border-bottom: 1px solid #FFFFFF;}
 .textareaDIV td {color:#555555;padding:2px 2px 2px 2px; border-bottom: 1px solid #FFFFFF; margin:0;}
 /*li.listing {float:left; padding:3px 15px 0 8px; list-style:none; background:url(/images/category_icon_b.gif) no-repeat left 10px; white-space:nowrap;}*/
@@ -18,12 +18,12 @@ li.homelistings {float:left; width:190px; list-style:none; white-space:nowrap; f
 .attachedFile ul.files a{ position:relative; background-repeat:no-repeat; background-position:left center; *zoom:1; text-decoration:none !important;}
 .attachedFile ul.files a{ padding:2px 0 0 15px; background-image:url(/common/memberimg/iconFile.gif); color:#4d4d4d;}
 
-#HKeditorContent { line-height:1.3; margin: 0px; font-family: 굴림, tahoma; font-size:12px; border: 0px; word-wrap:break-word; word-break:break-all; }
-#HKeditorContent p{ line-height:1.3; font-family: 굴림, tahoma; font-size:12px; margin:0; padding:0;}
-#HKeditorContent br{ line-height:1.3; font-family: 굴림, tahoma; font-size:12px;}
+#HKeditorContent { line-height:1.3; margin: 0px; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; border: 0px; word-wrap:break-word; word-break:break-all; }
+#HKeditorContent p{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; margin:0; padding:0;}
+#HKeditorContent br{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px;}
 #HKeditorContent table { border-collapse: collapse; }
-#HKeditorContent td{ line-height:1.3; font-family: 굴림, tahoma; font-size:12px; padding:3px; margin:0;}
-#HKeditorContent th{ line-height:1.3; font-family: 굴림, tahoma; font-size:12px; font-weight:bold; background-color:#ffffff; border:1px solid #8F8F8F; padding:3px; margin:0;}
+#HKeditorContent td{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; padding:3px; margin:0;}
+#HKeditorContent th{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; font-weight:bold; background-color:#ffffff; border:1px solid #8F8F8F; padding:3px; margin:0;}
 #HKeditorContent caption{display:block;}
 
 /* 기본 링크 스타일 */
