@@ -51,12 +51,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
   |               | sidebar-mini                            |
   |---------------------------------------------------------|
   -->
-  {% if not current_user.member %}
-    <script type="text/javascript">
-      location.href = "/"
-    </script>
-  {% endif %}
+{% if not current_user.member %}
+  <script type="text/javascript">
+    location.href = "/"
+  </script>
+{% else %}
   <body class="skin-yellow sidebar-mini">
+
     <div class="wrapper">
 
       <!-- Main Header -->
@@ -387,4 +388,5 @@ scratch. This page gets rid of all links and provides the needed markup only.
           user experience. Slimscroll is required when using the
           fixed layout. -->
   </body>
+{% endif %}
 </html>
