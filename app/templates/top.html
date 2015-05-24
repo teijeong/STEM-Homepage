@@ -31,6 +31,9 @@
                         </dl>
                     </li>
                     <li id="item3" ><a href="javascript:go_menu('sub3_1')" onmouseover="onTopNavi(3, 6);" onfocus="onTopNavi(3, 6);" target="_self" ><span class="main-list">People</span></a></li>
+                    {% if current_user.member %}
+                    <li id="item4" ><a href="/stem" onmouseover="onTopNavi(4, 6);" onfocus="onTopNavi(4, 6);" target="_self" ><span class="main-list">Member Page</span></a>
+                    {% else %}
                     <li id="item4" ><a href="javascript:go_menu('sub4_1')" onmouseover="onTopNavi(4, 6);" onfocus="onTopNavi(4, 6);" target="_self" ><span class="main-list">Join Us</span></a>
                         <dl id="m4">
                             <dd id="item41"><a href="javascript:go_menu('sub4_1')" ><span class="sub-list">Recruiting</span></a></dd>
@@ -38,6 +41,7 @@
                             <dd id="item42"><a href="javascript:go_menu('sub4_3')" ><span class="sub-list">Donation</span></a></dd>
                         </dl>
                     </li>
+                    {% endif %}
                     <li id="item5" ><a href="javascript:go_menu('sub5_1')" onmouseover="onTopNavi(5, 6);" onfocus="onTopNavi(5, 6);" target="_self" ><span class="main-list">Board</span></a>
                         <dl id="m5">
                             <dd id="item51"><a href="javascript:go_menu('sub5_1')" ><span class="sub-list">Notice</span></a></dd>
