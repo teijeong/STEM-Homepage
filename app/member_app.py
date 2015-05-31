@@ -62,6 +62,12 @@ def showSuggestion():
     except TemplateNotFound:
         abort(404)
 
+simple_issue_fields = {
+    'id': fields.Integer,
+    'name': fields.String,
+    'description': fields.String
+}
+
 class Issue(Resource):
 
     issueParser = reqparse.RequestParser()
@@ -71,6 +77,7 @@ class Issue(Resource):
     issueParser.add_argument('milestone', type=int, default=-1)
 
     @member_required
+    @marshal_with(simple_issue_fields)
     def post(self):
         args = self.issueParser.parse_args()
         issue = models.Issue(args['name'], args['description'],
@@ -81,7 +88,7 @@ class Issue(Resource):
                 issue.milestones.append(milestone)
         db.session.add(issue)
         db.session.commit()
-        return str(issue)
+        return issue
 
     @member_required
     def get(self, issueID):

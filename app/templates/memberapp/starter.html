@@ -228,8 +228,32 @@
 </section>
 {% endblock %}
 
+{% block modals %}
+<div id="suggestion-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#suggestion-modal').trigger('closeModal');"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">등록되었습니다.</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="$('#suggestion-modal').trigger('closeModal');">Close</button>
+        <button type="button" class="btn btn-primary" onclick="location.href='/stem/suggestion'">Go to suggestions</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+{% endblock %}
+
 {% block scripts %}
+<script type="text/javascript" src="/static/js/jquery.easyModal.js"></script>
+
 <script type="text/javascript">
+
+$("#suggestion-modal").easyModal();
+
 function addIssue() {
   var name = $("#issue-title").val();
   var description = $("#issue-description").val();
@@ -242,8 +266,11 @@ function addIssue() {
       description: description,
       milestone: 0
     },
-    success: function(data) {
-      alert("등록되었습니다.");
+    success: function(issue) {
+      $("#suggestion-modal .modal-body").html(
+        "<h4><small>#" + issue.id + "</small> " + issue.name + "</h4>" +
+        "<p>" + issue.description.split("\n").join("<br>") + "</p>");
+      $("#suggestion-modal").trigger("openModal");
     }
   });
 }
