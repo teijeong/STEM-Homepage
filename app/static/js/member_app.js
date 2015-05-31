@@ -33,7 +33,6 @@ stemApp.controller('memberList', function($scope, $timeout) {
     $timeout(function(){
         (function($) {
             $(".member-picture-thumb").each(function(i, elem) {
-                console.log(elem);
                 if (elem.naturalWidth < elem.naturalHeight)
                     $(this).addClass("portrait");
             });

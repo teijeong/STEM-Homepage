@@ -128,6 +128,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         login_user(form.user)
+        if current_user.member:
+            return redirect('/stem')
         return redirect(form.next.data)
 
     return render_template('member/login.html', form=form)
@@ -282,8 +284,30 @@ member_fields = {
     'social' :fields.String
 }
 
+restricted_user_fields = {
+    'nickname': fields.String
+}
+
+restricted_member_fields = {
+    'id': fields.Integer,
+    'cycle': fields.Integer,
+    'stem_dept': fields.String,
+    'dept': fields.String,
+    'cv': fields.String,
+    'img': fields.String,
+    'cover': fields.String,
+    'user': fields.Nested(restricted_user_fields)
+}
+
 class Members(Resource):
     @marshal_with(member_fields)
+    def full_get(self, people):
+        return people
+
+    @marshal_with(restricted_member_fields)
+    def restricted_get(self, people):
+        return people
+
     def get(self):
         people = db.session.query(models.Member). \
             join(models.Member.user).filter(models.Member.cycle != 0). \
@@ -294,7 +318,10 @@ class Members(Resource):
                 person.stem_dept = person.stem_department.name
             if person.department:
                 person.dept = person.department.name
-        return people
+
+        if not current_user.is_anonymous() and current_user.member:
+            return self.full_get(people)
+        return self.restricted_get(people)
 
 api.add_resource(Members, '/people')
 api.add_resource(WritePost, '/post/write')

@@ -3,7 +3,6 @@ jQuery(".member-card").easyModal({
 	overlay:0.2,
     overlayParent: jQuery(".con"),
     opOpen: function(modal) {
-        concole.log(memberListScope.pIndex);
     }
 });
 
