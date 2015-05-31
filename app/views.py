@@ -251,6 +251,18 @@ class ModifyPost(Resource):
                 form=LoginForm()),
             mimetype='text/html')
 
+class DeletePost(Resource):
+    @login_required
+    def post(self, id):
+        post = models.Post.query.get(id)
+        if current_user.id != post.user_id:
+            return "Not Allowed", 403
+
+        board_id = post.board_id
+        db.session.delete(post)
+        db.session.commit()
+        return "Success", 200
+
 class IdCheck(Resource):
     def post(self):
         idparser = reqparse.RequestParser()
@@ -326,4 +338,5 @@ class Members(Resource):
 api.add_resource(Members, '/people')
 api.add_resource(WritePost, '/post/write')
 api.add_resource(ModifyPost, '/post/<int:id>/modify')
+api.add_resource(DeletePost, '/post/<int:id>/delete')
 api.add_resource(IdCheck, '/member/register/idcheck')

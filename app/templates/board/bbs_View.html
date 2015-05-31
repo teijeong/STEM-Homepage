@@ -72,10 +72,10 @@
 
     {% if (not current_user.is_authenticated() and post.board.isPublic) or (current_user.is_authenticated() and post.author.id == current_user.id) %}
         <button class="button2" onclick="location.href='modify'">수정</button>
-        <button class="button2" onclick="javascript:deletePost({{ post.id }})">삭제</button>
+        <button class="button2" onclick="deletePost({{ post.id }}, {{post.board.id}})">삭제</button>
     {% elif post.board.isPublic %}
         <button class="button2" onclick="javascript:modifyPostPwd({{ post.id }})">수정</button>
-        <button class="button2" onclick="javascript:deletePostPwd({{ post.id }})">삭제</button>
+        <button class="button2" onclick="javascript:deletePostPwd({{ post.id }}, {{post.board.id}})">삭제</button>
     {% endif %}
 
     <button class="button2" onClick="location.href='/sub/5-{{post.board.id }}'" style="cursor:pointer">목록</button>
@@ -86,3 +86,18 @@
     <script type="text/javascript">viewBoardCommentArea("<%=idx%>","<%=BBscode%>","")</script>
 {% endif %}
 <div style="height:50px;"></div>
+
+<script type="text/javascript">
+function deletePost(id, bid) {
+    var r = confirm("정말로 삭제하시겠습니까?");
+    if (r) {
+        jQuery.ajax({
+            url: "/post/" + id + "/delete",
+            type: "POST",
+            success: function(data) {
+                location.href="/sub/5-" + bid;
+            }
+        });
+    }
+}
+</script>
