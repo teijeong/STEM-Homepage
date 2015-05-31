@@ -11,7 +11,7 @@
             <div class="con">
                 <ul class="nostyle">
                     <li class="nostyle stit"><div class="title-img"><span>{{board.name}}</span></div></li>
-                    <li class="nostyle con_img">
+                </ul>
                         {% if mode == "write" %}
                             {% include "board/bbs_Write.html" %}
                         {% elif mode == "view" %}
@@ -26,8 +26,6 @@
                             {% include "board/bbs_List.html" %}
                         {% endif %}
 
-                    </li>
-                </ul>
             </div>
         </div>
     </div>

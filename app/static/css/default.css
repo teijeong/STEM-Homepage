@@ -5,6 +5,7 @@
     width:750px;
     height:130px;
     background-image:url('/static/images/stit.gif');
+    margin-bottom: 10px;
 }
 .title-img span {
     line-height: 130px;
