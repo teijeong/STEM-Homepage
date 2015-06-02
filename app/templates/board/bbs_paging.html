@@ -1,0 +1,30 @@
+<div class="pagenation">
+    <a href="javascript:goFront()"><img src="{{ url_for('static', filename='images/btn_icon1.gif') }}" alt="맨앞으로"/></a>
+    <a href="javascript:goForward()"><img src="{{ url_for('static', filename='images/btn_icon2.gif') }}" alt="이전"/></a>
+    <span id="pages"></span>
+    <a href="javascript:goBackward()"><img src="{{ url_for('static', filename='images/btn_icon3.gif') }}" alt="다음"/></a>
+    <a href="javascript:goBack()"><img src="{{ url_for('static', filename='images/btn_icon4.gif') }}" alt="맨끝으로"/></a>
+</div>
+
+<script type="text/javascript">
+function loadPages($, page, totalpage) {
+    var blockpage = parseInt((page - 1) / 10) * 10 + 1;
+    $("#pages").append(" | ")
+    for (var i = 0; i < 10 && blockpage <= totalpage; i++) {
+        if (blockpage == page) {
+            $("#pages").append(
+                "<span style='font-weight:bold'>" + blockpage + "</span> | ");
+        } else {
+            $("#pages").append(
+                "<a href='javascript:gotoPage(" + blockpage + ");'>" + blockpage + "</a> | ");
+        }
+        blockpage++;
+    }
+}
+
+function gotoPage(page) {
+    location.href = "/sub/5-{{ sNum }}/" + page;
+}
+
+loadPages(jQuery, {{ page }}, {{ totalpage }});
+</script>

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block container %}
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>Donation</span></div></li>
+                    <li class="nostyle con_img"><img src="{{ url_for('static', filename='images/sub4_3_2.gif') }}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

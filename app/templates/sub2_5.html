@@ -1,0 +1,52 @@
+{% macro PT_SelectBox(years) -%}
+    {% for year in years %}
+        <option value="{{ year }}" {% if year==page %}selected{% endif %}>{{ year }}년</option>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro PT_ItemList(AllRec) -%}
+    {% for item in AllRec %}
+        <tr>
+            <th>{{ item.period }}</th>
+            <td><div id='HKeditorContent' name='HKeditorContent'>{{ item.title | nl2br}}</div></td>
+        </tr>
+    {% endfor %}
+{%- endmacro %}
+
+{% extends "base.html" %}
+{% block container %}
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>History</span></div></li>
+                    <li class="nostyle con_img">
+                        <p style="text-align:right">
+                            <select name="bansort" class="" onchange="location.href='./' + this.value">
+                            {{ PT_SelectBox(years) }}
+                            </select>
+                        </p>
+                        <table cellspacing="0" cellpadding="0" class="history">
+                        <colgroup><col width="30%" /><col /></colgroup>
+                        <thead>
+                            <tr>
+                            <th>일 시</th>
+                            <th>활동내용</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ PT_ItemList(history) }}
+                        </tbody>
+                        </table>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

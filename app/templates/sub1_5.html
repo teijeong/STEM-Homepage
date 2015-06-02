@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block container %}
+<!--#include virtual = "{{ url_for('static', filename='inc/top.asp') }}"-->
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>Contact</span></div></li>
+                </ul>
+                <article>
+<dl>
+    <dt>회장</dt>
+    <dd>김성훈</dd>
+    <dt>주소</dt>
+    <dd><address>서울시 관악구 관악로 1 서울대학교 공과대학 신양학술정보관(44-1동) 4층 공과대학우수학생센터</address></dd>
+</dl>
+                </article>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

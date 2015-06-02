@@ -1,0 +1,188 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+<section class="content-header">
+  <h1>
+    Timeline
+    <small>example</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="#">UI</a></li>
+    <li class="active">Timeline</li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+              <div class="box-header with-border">
+                <h3 class="box-title"><small>#34</small> <strong>Making issue page</strong></h3>
+                <div class="box-tools pull-right">
+                  <!-- Buttons, labels, and many other things can be placed here! -->
+                  <!-- Here is a label for example -->
+                  <span class="label label-primary">Opened</span>
+                  <span class="label label-danger">Blocker</span>
+                </div><!-- /.box-tools -->
+              </div><!-- /.box-header -->
+              <div class="box-body">
+                  <div class="row">
+                    <div class="col-sm-10">
+                    <div class="progress progress-sm">
+                        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" style="width: 42%">
+                            <span class="sr-only">42% Complete (success)</span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="text-green">42% Complete</span>
+                    </div>
+                  </div>
+                <h4>This issue consists of following requirements.</h4>
+                <ol>
+                    <li>Present issue on the top</li>
+                    <li>Show timeline of issue</li>
+                    <li>CRUD subgoals</li>
+                    <li>Show progress</li>
+                    <li>Make Milestone page with least modification to structure</li>
+                </ol>
+              </div><!-- /.box-body -->
+              <div class="box-footer">
+                <h5>Milestones</h5>
+                <span class="label label-info"><small>[M#1]</small> Member page construction</span>
+                <span class="label label-info"><small>[M#3]</small> Issue Tracker</span>
+                <h5>Issued started by <span class="label label-primary">Taehee Jeong</span><br></h5>
+                <h5>Contributors</h5>
+                <span class="label label-primary">Sunghoon Kim</span>
+                <span class="label label-primary">Dongwoo Lee</span>
+                <span class="label label-primary">Cham Seungwoo</span>
+                <span class="label label-primary">Sejin Kim</span>
+              </div><!-- box-footer -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+
+
+  <!-- row -->
+  <div class="row">
+    <div class="col-md-12">
+      <!-- The time line -->
+      <ul class="timeline">
+        <!-- timeline time label -->
+        <li class="time-label">
+          <span class="bg-red">
+            30 May. 2015
+          </span>
+        </li>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-trophy bg-yellow"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 12:05 by <a href="#">Sunghoon Kim</a></span>
+            <h3 class="timeline-header">Subtask <small>[#34-2]</small> <em>Lets'get started</em> is done!
+            <br><small>Issue progress is now 42%</small></h3>
+            
+            <div class="timeline-body">
+                <blockquote>
+                Let's get started, in any ways.
+                </blockquote>
+              <h4>Results:</h4>
+              Started Member-only page using AdminLTE, and protype designs are filling out!
+            </div>
+            <div class='timeline-footer'>
+                <p><span class="label label-info">subtask #34-2</span></p>
+                
+              <a class="btn btn-primary btn-xs">See detailed subtask</a>
+              <a class="btn btn-danger btn-xs">Modify subtask</a>
+            </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-user bg-aqua"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 1 hour ago</span>
+            <h3 class="timeline-header no-border"><a href="#">Sejin Kim</a> joined this issue</h3>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-gears bg-green"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 3 hours ago by <a href="#">Dongwoo Lee</a></span>
+            <h3 class="timeline-header">Subtask <small>[#34-3]</small> <em>Test CRUD</em> is created</h3>
+            <div class="timeline-body">
+                <p class="text-green">Subtask progress set to 25%</p>
+                <blockquote>
+                Test CRUD of subtasks
+                </blockquote>
+            </div>
+            <div class='timeline-footer'>
+                <p><span class="label label-info">subtask #34-3</span></p>
+              <a class="btn btn-danger btn-xs">Modify subtask</a>
+            </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline time label -->
+        <li class="time-label">
+          <span class="bg-red">
+            28 May. 2015
+          </span>
+        </li>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-camera bg-purple"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 2 days ago by <a href="#">Cham Seungwoo</a></span>
+            <h3 class="timeline-header">3 photos were uploaded for subtask <small>[#34-1]</small> <em>Issue structure</em></h3>
+            <div class="timeline-body">
+              <img src="http://placehold.it/200x150" alt="..." class='margin' />
+              <img src="http://placehold.it/200x150" alt="..." class='margin'/>
+              <img src="http://placehold.it/200x150" alt="..." class='margin'/>
+            </div>      
+              <div class="timeline-footer">
+                    <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">photo</span></p>
+              </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline time label -->
+        <li class="time-label">
+          <span class="bg-red">
+            25 May. 2015
+          </span>
+        </li>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-upload bg-purple"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 5 days ago by <a href="#">Cham Seungwoo</a></span>
+            <h3 class="timeline-header">A file was uploaded for subtask <small>[#34-1]</small> <em>Issue structure</em></h3>
+            <div class="timeline-body">
+                <blockquote>
+                <a href="#"><i class="fa fa-file"></i> Requirements.txt</a>
+                </blockquote>
+            </div>
+              <div class="timeline-footer">
+                    <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">file</span></p>
+              </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <li>
+          <i class="fa fa-clock-o bg-gray"></i>
+        </li>
+      </ul>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+
+</section><!-- /.content -->
+{% endblock %}

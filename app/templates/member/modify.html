@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% block container %}
+<script type="text/javascript">
+
+function sendit(){
+    var Modify=document.Modify;
+
+    if (Modify.passwd_original.value === "") {
+        alert("맨 아래의 비밀번호 확인을 입력하세요.");
+        Modify.passwd_original.focus();
+        return;
+    }
+
+    Modify.submit();
+}
+
+function autoGrow (oField) {
+  if (oField.scrollHeight > oField.clientHeight) {
+    oField.style.height = oField.scrollHeight + "px";
+  }
+}
+
+</script>
+
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>My Page</span></div></li>
+                    <li class="nostyle con_img">
+
+<p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+<form name="Modify" method="POST" action="{{ url_for('modify')}}" enctype="multipart/form-data">
+{{ form.hidden_tag() }}
+<input type=hidden value="{{ next or '' }}" name=next>
+<table cellspacing="0" class="tbl_join" summary="개인회원정보수정">
+<caption>개인회원정보수정</caption>
+<colgroup>
+    <col width="110">
+    <col>
+</colgroup>
+<tbody>
+    <tr>
+        <th scope="row" height='20'>이름</th>
+        <td style="padding:5px 0 5px 10px;">{{ current_user.nickname }}</td>
+    </tr>
+    <tr>
+        <th scope="row">아이디</th>
+        <td style="padding:5px 0 5px 10px;">{{ current_user.username }}</td>
+    </tr>
+    <!--
+    
+    <tr>
+        <th scope="row" class="import">성별</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input type="radio" name="sex" value="남" <%=ChangeChecked("남",Sex)%>>남
+            <input type="radio" name="sex" value="여" <%=ChangeChecked("여",Sex)%>>여
+        </td>
+    </tr>
+    -->
+    <tr>
+        <th scope="row">비밀번호</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'> * 6~15자로 입력해주세요.</td>
+    </tr>
+    <tr>
+        <th scope="row">비밀번호 확인</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd_check" type="password" class="input" size="15" maxlength='15'></td>
+    </tr>
+    <tr>
+        <th scope="row">E-mail</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="email" size="46" maxlength="50" type="text" class="input" value="{{ current_user.email }}">
+             * 아이디/비번 분실시 필수.
+        </td>
+    </tr>
+</tbody>
+</table>
+
+{% if current_user.member %}
+<br>
+<h4>공우 회원 정보 수정</h4>
+<table cellspacing="0" class="tbl_join tbl_member" summary="공우 회원 정보 수정">
+<caption>공우 회원 정보 수정</caption>
+<colgroup>
+    <col width="110">
+    <col>
+</colgroup>
+<tbody>
+    <tr>
+        <th scope="row" class="import">핸드폰번호</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="cell" type="text" class="input" size="20" maxlength="20" onKeyPress='if( event.keyCode !== 45 && (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value="{{current_user.member.phone or ''}}">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">생년월일</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="birthday" maxlength="10" type="date" class="input" value="{{current_user.member.birthday or ''}}"/>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">기수</th>
+        <td style="padding:5px 0 5px 10px;"><input name="cycle" type="text" class="input" size="3" maxlength='3' value="{{current_user.member.cycle}}">기</td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">소속 학과(부)</th>
+        <td style="padding:5px 0 5px 10px;"><select name="department" class="input">
+        {% for dept in departments %}
+        <option value="{{dept.id}}"{% if dept.id == current_user.member.dept_id %} selected {% endif %}>{{dept.name}}</option>
+        {% endfor %}
+        </select></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">부서</th>
+        <td style="padding:5px 0 5px 10px;"><select name="stem_department" class="input">
+        {% for dept in stem_departments %}
+        <option value="{{dept.id}}" {% if dept.id == current_user.member.stem_dept_id %} selected {% endif %}>{{dept.name}}</option>
+        {% endfor %}
+        </select></td>
+    </tr>
+    <tr>
+        <th scope="row">자기소개<br>(공개용)</th>
+        <td style="padding:5px 0 5px 10px;"><textarea style="width:98%;overflow:hidden;"class="input" rows="5" name="cv" onkeyup="autoGrow(this);">{{ current_user.member.cv or ''}}</textarea></td>
+    </tr>
+    <tr>
+        <th scope="row">자기소개<br>(STEM 내부용)</th>
+        <td style="padding:5px 0 5px 10px;"><textarea onkeyup="autoGrow(this);" style="width:98%;overflow:hidden;" class="input" rows="5" name="comment">{% if current_user.member.comment and  current_user.member.comment != '' %}{{ current_user.member.comment }}
+{% else %}Example)
+학번
+주량/술버릇
+최근의 경력사항
+장래 희망
+스트레스 해소법
+STEM에게 하고 싶은 말
+좋아하는 음식은?
+좋아하는 연예인은?
+자신이 생각하는 자신의 챠밍 포인트는?{% endif %}</textarea></td>
+    </tr>
+    <tr>
+        <th scope="row">SNS</th>
+        <td style="padding:5px 0 5px 10px;"><input name="social" type="text" class="input" size="50" value="{{current_user.member.social or ''}}"></td>
+    </tr>
+    <tr>
+        <th scope="row">프로필 사진<br>(140x140px)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="input">{% if current_user.member.img %} (프로필 사진 있음){% endif %}</td>
+    </tr>
+    <tr>
+        <th scope="row">커버 사진<br>(423x200px)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="input">{% if current_user.member.cover %} (커버 사진 있음){% endif %}</td>
+    </tr>
+    <tr>
+        <th scope="row">사는 곳</th>
+        <td style="padding:5px 0 5px 10px;">
+            <p style="padding:4px 0 0 0;"><input name="addr" type="text" class="input" size="50" value="{{current_user.member.addr or ''}}"></p>
+        </td>
+    </tr>
+</tbody>
+</table>
+
+{% endif %}
+
+<br>
+<h4><strong>정보 수정 확인</strong></h4>
+<table cellspacing="0" class="tbl_join tbl_member" summary="비밀번호 확인">
+<caption>비밀번호 확인</caption>
+<colgroup>
+    <col width="110">
+    <col>
+</colgroup>
+<tbody>
+    <tr>
+        <th scope="row" class="import">현재 비밀번호</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="passwd_original" type="password" class="input" size="20" maxlength="20">
+        </td>
+    </tr>
+</tbody>
+</table>
+</form>
+<iframe name='iframes' frameborder='0' width='0' height='0'></iframe>
+<p style="padding:15px 0; text-align:center;">
+    <input type="button" title="" value="회원정보수정" class="button2" style='cursor:pointer;' onclick="sendit()">
+    <input type="button" title="" value="취 소" class="button1" style='cursor:pointer;' onclick="history.back()">
+</p>
+
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,83 @@
+td.HK_noBoarder{padding:1px 0; border:0px solid #ffffff}
+.input { font-size:12px;  font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; border:1px solid #DBDBDB }
+#textareaDIV td {color:#555555;padding:2px 2px 2px 2px; border-bottom: 1px solid #FFFFFF;}
+.textareaDIV td {color:#555555;padding:2px 2px 2px 2px; border-bottom: 1px solid #FFFFFF; margin:0;}
+/*li.listing {float:left; padding:3px 15px 0 8px; list-style:none; background:url(/images/category_icon_b.gif) no-repeat left 10px; white-space:nowrap;}*/
+li.listing {float:left; padding:0 10px 0 0px; list-style:none; white-space:nowrap;}
+li.listings {float:left; width:180px; list-style:none; white-space:nowrap;}
+li.homelistings {float:left; width:190px; list-style:none; white-space:nowrap; font-size:11px;}
+
+/* Attached File */
+.attachedFile { position:relative; float:left; width:100%; padding-bottom:5px;}
+.attachedFile *{ margin:0; padding:0; font-size:11px; vertical-align:middle;}
+.attachedFile dt img{ margin-right:5px; vertical-align: middle;}
+.attachedFile dt .fileToggle{ border:0; padding:0; overflow:visible; cursor:pointer; font-size:12px; background:none; vertical-align:middle; font-weight:bold;}
+.attachedFile dd { padding-bottom:10px;}
+.attachedFile ul.files *{ display:inline-block; *display:inline; padding:0; margin:0; font-size:11px;}
+.attachedFile ul.files li{ position:relative; margin:0 10px 0 0;}
+.attachedFile ul.files a{ position:relative; background-repeat:no-repeat; background-position:left center; *zoom:1; text-decoration:none !important;}
+.attachedFile ul.files a{ padding:2px 0 0 15px; background-image:url(/common/memberimg/iconFile.gif); color:#4d4d4d;}
+
+#HKeditorContent { line-height:1.3; margin: 0px; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; border: 0px; word-wrap:break-word; word-break:break-all; }
+#HKeditorContent p{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; margin:0; padding:0;}
+#HKeditorContent br{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px;}
+#HKeditorContent table { border-collapse: collapse; }
+#HKeditorContent td{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; padding:3px; margin:0;}
+#HKeditorContent th{ line-height:1.3; font-family: "NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; font-weight:bold; background-color:#ffffff; border:1px solid #8F8F8F; padding:3px; margin:0;}
+#HKeditorContent caption{display:block;}
+
+/* 기본 링크 스타일 */
+#HKeditorContent A:link {text-decoration:none;color:#005E6C;}
+#HKeditorContent A:visited {text-decoration:none;color:#005E6C;}
+#HKeditorContent A:active {text-decoration:none;color:#005E6C;}
+#HKeditorContent A:hover {text-decoration:none;color:#78C5CE;}
+
+#HKeditorContent ol{padding:0 30px;margin:0;}
+#HKeditorContent ul{padding:0 30px;margin:0;}
+#HKeditorContent dl{padding:0 30px;margin:0;}
+
+#HKeditorContent ol li{list-style:decimal;}
+#HKeditorContent ul li{list-style:disc;}
+#HKeditorContent h1{font-weight: normal;line-height: 1.2em;margin:0; padding:0;}
+#HKeditorContent h2{font-weight: normal;line-height: 1.2em;margin:0; padding:0;}
+#HKeditorContent h3{font-weight: normal;line-height: 1.2em;margin:0; padding:0;}
+#HKeditorContent h4{font-weight: normal;line-height: 1.2em;margin:0; padding:0;}
+#HKeditorContent h5{font-weight: normal;line-height: 1.2em;margin:0; padding:0;}
+#HKeditorContent h6{font-weight: normal;line-height: 1.2em;margin:0; padding:0;}
+
+#HKeditorContent hr{border: 0px;border-top: 1px solid #ccc; display:block; }
+
+img.right {
+    border: 1px solid #ccc;
+    float: right;
+    margin-left: 15px;
+    padding: 5px;
+}
+
+img.left {
+    border: 1px solid #ccc;
+    float: left;
+    margin-right: 15px;
+    padding: 5px;
+}
+
+#HKeditorContent blockquote{
+    font-style: italic;
+    font-family: Georgia, Times, "Times New Roman", serif;
+    padding: 2px 0;
+    border-style: solid;
+    border-color: #ccc;
+    border-width: 0;
+}
+
+.cke_contents_ltr blockquote{
+    padding-left: 20px;
+    padding-right: 8px;
+    border-left-width: 5px;
+}
+
+.cke_contents_rtl blockquote{
+    padding-left: 8px;
+    padding-right: 20px;
+    border-right-width: 5px;
+}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block container %}
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>Cooperation</span></div></li>
+                    <li class="nostyle con_img">
+                        <table>
+                            <tr>
+                                <td style="padding:40px 60px 40px 60px; "><a href="http://eng.snu.ac.kr/" target="_blank"><img src="{{ url_for('static', filename='images/a1.gif') }}"></a></td>
+                                <td><a href="http://gwanak.go.kr/" target="_blank"><img src="{{ url_for('static', filename='images/a2.gif') }}"></a></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:0 60px 0 60px; "><a href="http://www.dongbuhitek.co.kr/" target="_blank"><img src="{{ url_for('static', filename='images/a3.gif') }}"><a/></td>
+                                <td><a href="http://www.postech.ac.kr/" target="_blank"><img src="{{ url_for('static', filename='images/a4.gif') }}"></a></td>
+                            </tr>
+                            <tr>
+                                <td style="padding:40px 60px 40px 60px; "><a href="#"><img src="{{ url_for('static', filename='images/a5.gif') }}"></a></td>
+                            </tr>
+                        </table>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

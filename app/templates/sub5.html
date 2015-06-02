@@ -1,0 +1,33 @@
+<!--#include virtual = common/dbcon.asp-->
+{% extends "base.html" %}
+{% block container %}
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>{{board.name}}</span></div></li>
+                </ul>
+                        {% if mode == "write" %}
+                            {% include "board/bbs_Write.html" %}
+                        {% elif mode == "view" %}
+                            {% include "board/bbs_View.html" %}
+                        {% elif mode == "modify" %}
+                            {% include "board/bbs_Modify.html" %}
+                        {% elif mode == "reply" %}
+                            {% include "board/bbs_Reply.html" %}
+                        {% elif mode == "pwdinput" %}
+                            {% include "board/bbs_pwdinput.html" %}
+                        {% else %}
+                            {% include "board/bbs_List.html" %}
+                        {% endif %}
+
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

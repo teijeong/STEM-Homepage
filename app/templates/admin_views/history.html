@@ -1,0 +1,46 @@
+{%extends "admin/base.html"%}
+{%block title%}STEM - History{%endblock%}
+{%block body%}
+<form type="POST">
+    <div class="form-inline">
+        <div class="form-group">
+            <label for="start">Start</label>
+            <input type="date" id="start" name="start" placeholder="2015-04-21">
+        </div>
+        <div class="form-group">
+            <label for="start">End</label>
+            <input type="date" id="end" name="end" placeholder="2015-04-21">
+        </div>
+        <div class="checkbox">
+            <label>
+                <input type="checkbox" id="same-date" onclick="change()">One-day event
+            </label>
+        </div>
+    </div>
+    <div class="form-horizontal">
+        <div class="form-group">
+            <label for="description" class="col-sm-2 control-label">Description</label>
+            <input class="col-sm-9" type="text" id="description" name="description">
+        </div>
+        <button type="submit" class="btn btn-default pull-right">Add</button>
+    </div>
+</form>
+
+<table class="table">
+<colgroup><col width="30%" /><col /></colgroup>
+<thead>
+    <tr>
+        <th>일시</th>
+        <th>활동내용</th>
+    </tr>
+</thead>
+<tbody>
+    {% for item in items %}
+        <tr id="H-{{item.id}}">
+            <th>{{ item.period }}</th>
+            <td>{{ item.title | nl2br}}</td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+{%endblock%}

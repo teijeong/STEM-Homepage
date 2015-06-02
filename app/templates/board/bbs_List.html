@@ -1,0 +1,105 @@
+{#
+    TopSortListTag            : 
+    BBsSelectField            : category selection
+
+    BoardSort table
+    0   idx
+    1   pdsYN       : 
+    2   memYN       : member only(?)
+    3   repYN       : reply
+    4   comYN       : comment 
+    5   notYN       : notice (?)
+    6   pubYN       : public/secret
+    7   imgYN       : album (?)
+    8   ViewMode    :
+    9   ComMode
+    10  langSort
+    11  imgViewYN   : image view addon
+    12  vodUrlYN    : vod?
+    13  listNum
+    14  downMode
+
+    Session['Membership']    :
+    SelCheck(v1,v2)            : 
+#}
+
+<div class="board_search">
+    <form name='searchfrm' method='get' style='margin:0' onsubmit="searchGo();event.returnValue= false;">
+        <input type='hidden' name='storeidx' value='<%=storeidx%>'>
+        <select name="search" class="input">
+            <option value="title" selected="selected">제목</option>
+            <option value="writer">글쓴이</option>
+            <option value="content">글내용</option>
+        </select>
+        <input name="searchstr" type="text" style="width:150px;" class="input">
+        <input type='button' value='검색' class='button1' onclick='searchGo();' style='cursor:pointer'>
+        {% if current_user.is_authenticated() %}
+            <input type='button' value='쓰기' class='button1' onclick="location.href='/post/write?board={{ sNum }}'" style='cursor:pointer'>
+        {% endif %}
+    </form>
+</div>
+<table cellspacing="0" border="0" summary="게시판의 글제목 리스트" class="tbl_type" style='table-layout:fixed; word-wrap:break-word;'>
+    <colgroup>
+        <col width="70">
+        <col>
+        <col width="115">
+        <col width="80">
+        <col width="55">
+    </colgroup>
+    <thead>
+        <tr>
+            <th scope="col">번호</th>
+            <th scope="col">제목</th>
+            <th scope="col">글쓴이</th>
+            <th scope="col">날짜</th>
+            <th scope="col">조회수</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for post in posts %}
+            {#
+            {% if post.level > 1 %}
+                {% set levelView = "padding-left:%dpx;" % (post.level * 10) %}
+            {% endif %}
+            #}
+            <tr {{ trBg }}>
+                <td class="num" style="text-align:center">{{ post.id }}</td>
+                <td class="title" style="text-align:left;padding:5px0 5px 0;{{levelView}}">
+                    <div>
+                        {% if post.isSecret %}<img src="{{ url_for('static', filename='common/memberimg/public.gif') }}" />&nbsp;{% endif %}
+                        {#
+                        {% if post.level > 1 %}<img src="{{ url_for('static', filename='images/ico_reply.gif') }}" />&nbsp;{% endif %}
+                        #}
+                        <a href="/post/{{ post.id }}/view">{{ post.title }}</a>&nbsp;
+                        {#
+                        {% if post.commentCount > 0 %}
+                            <span style='font-size:11px;font-weight:bold;color:#6FA2FF;'>[{{ post.commentCount }}]</span>&nbsp;
+                        {% endif %}
+                        #}
+                        {% if post.isNew %}<img src="{{ url_for('static', filename='images/ico_new.gif') }}" />{% endif %}
+                    </div>
+                </td>
+                {% if post.author %}
+                <td class="name" style="text-align:center">{{ post.author.nickname }}</td>
+                <td class="date" style="text-align:center">{{ post.timestamp.strftime('%y-%m-%d') }}</td>
+                <td class="hit" style="text-align:center">{{ post.hitCount }}</td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% include "board/bbs_paging.html" %}
+
+<form name='boardActfrm' id='boardActfrm' method='get' action='' style='margin:0;'>
+    <input type='hidden' name='mode'>
+    <input type='hidden' name='sort'>
+    <input type='hidden' name='idx'>
+    <input type='hidden' name='Page' value='<%=Page%>'>
+    <input type='hidden' name='BBSCode' value='<%=BBSCode%>'>
+    <input type='hidden' name='serboardsort' value='<%=serboardsort%>'>
+    <input type='hidden' name='Search' value='<%=Search%>'>
+    <input type='hidden' name='SearchStr' value='<%=SearchStr%>'>
+    <input type='hidden' name='storeidx' value='<%=storeidx%>'>
+</form>

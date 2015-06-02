@@ -1,0 +1,278 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+<section class="content-header">
+    <h1>
+        Welcome to STEM workbench
+        <small>Have a good day!</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li class="active"><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    </ol>
+</section>
+
+<section class="content">
+  <div class="row">
+      <div class="col-md-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">건의 사항</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              <div class="form-group">
+                <label>Title</label>
+                <input class="form-control" type="text" placeholder="Title" id="issue-title">
+              </div>
+              <div class="form-group">
+                <label>Description</label>
+                <textarea class="form-control" rows="3" id="issue-description"></textarea>
+              </div>
+              <div class="form-group">
+              <button onclick="addIssue()" type="add" class="btn btn-primary pull-right">등록</button>
+              </div>
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->
+      </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">STEM Tasks</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <table class="table table-bordered">
+            <tbody><tr>
+              <th style="width: 10px">#</th>
+              <th>Task</th>
+              <th>Progress</th>
+              <th style="width: 40px">Label</th>
+            </tr>
+            <tr>
+              <td>1.</td>
+              <td>Vision Mentoring</td>
+              <td>
+                <div class="progress progress-xs">
+                  <div class="progress-bar progress-bar-danger" style="width: 55%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-red">55%</span></td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>Tech<sup>2</sup></td>
+              <td>
+                <div class="progress progress-xs">
+                  <div class="progress-bar progress-bar-yellow" style="width: 70%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-yellow">70%</span></td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>Practical Seminar</td>
+              <td>
+                <div class="progress progress-xs progress-striped active">
+                  <div class="progress-bar progress-bar-primary" style="width: 30%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-light-blue">30%</span></td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>2015 Spring MT</td>
+              <td>
+                <div class="progress progress-xs progress-striped active">
+                  <div class="progress-bar progress-bar-success" style="width: 90%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-green">90%</span></td>
+            </tr>
+          </tbody></table>
+        </div><!-- /.box-body -->
+        <div class="box-footer clearfix">
+          <ul class="pagination pagination-sm no-margin pull-right">
+            <li><a href="#">«</a></li>
+            <li><a href="#">1</a></li>
+            <li><a href="#">2</a></li>
+            <li><a href="#">3</a></li>
+            <li><a href="#">»</a></li>
+          </ul>
+        </div>
+      </div><!-- /.box -->
+    </div><!-- /.col -->
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Section Tasks</h3>
+          <div class="box-tools">
+            <ul class="pagination pagination-sm no-margin pull-right">
+              <li><a href="#">«</a></li>
+              <li><a href="#">1</a></li>
+              <li><a href="#">2</a></li>
+              <li><a href="#">3</a></li>
+              <li><a href="#">»</a></li>
+            </ul>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body no-padding">
+          <table class="table">
+            <tbody><tr>
+              <th style="width: 10px">#</th>
+              <th>Task</th>
+              <th>Progress</th>
+              <th style="width: 40px">Label</th>
+            </tr>
+            <tr>
+              <td>1.</td>
+              <td>ALPHA</td>
+              <td>
+                <div class="progress progress-xs">
+                  <div class="progress-bar progress-bar-danger" style="width: 67%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-red">67%</span></td>
+            </tr>
+            <tr>
+              <td>2.</td>
+              <td>KPF</td>
+              <td>
+                <div class="progress progress-xs">
+                  <div class="progress-bar progress-bar-yellow" style="width: 42%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-yellow">42%</span></td>
+            </tr>
+            <tr>
+              <td>3.</td>
+              <td>TU Delft</td>
+              <td>
+                <div class="progress progress-xs progress-striped active">
+                  <div class="progress-bar progress-bar-primary" style="width: 3%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-light-blue">3%</span></td>
+            </tr>
+            <tr>
+              <td>4.</td>
+              <td>Honkong Polytechnique</td>
+              <td>
+                <div class="progress progress-xs progress-striped active">
+                  <div class="progress-bar progress-bar-success" style="width: 12%"></div>
+                </div>
+              </td>
+              <td><span class="badge bg-green">12%</span></td>
+            </tr>
+          </tbody></table>
+        </div><!-- /.box-body -->
+      </div><!-- /.box -->
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Milestones</h3>
+          <div class="box-tools">
+            <div class="input-group">
+              <input name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="Search" type="text">
+              <div class="input-group-btn">
+                <button class="btn btn-sm btn-default"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div><!-- /.box-header -->
+        <div class="box-body table-responsive no-padding">
+          <table class="table table-hover">
+            <tbody><tr>
+              <th>Cycle</th>
+              <th>User</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Description</th>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Seungmin Yoo</td>
+              <td>2015-05-20</td>
+              <td><span class="label label-success">Approved</span></td>
+              <td>MT materials.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>Kyunam Lee</td>
+              <td>2015-05-22</td>
+              <td><span class="label label-warning">Pending</span></td>
+              <td>MT Games.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Haesung Lee</td>
+              <td>2015-05-22</td>
+              <td><span class="label label-primary">Approved</span></td>
+              <td>I will go MT.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Taehee Jeong</td>
+              <td>2015-05-05</td>
+              <td><span class="label label-danger">Denied</span></td>
+              <td>Homepage register please.</td>
+            </tr>
+          </tbody></table>
+        </div><!-- /.box-body -->
+      </div><!-- /.box -->
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block modals %}
+<div id="suggestion-modal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="$('#suggestion-modal').trigger('closeModal');"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">등록되었습니다.</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="$('#suggestion-modal').trigger('closeModal');">Close</button>
+        <button type="button" class="btn btn-primary" onclick="location.href='/stem/suggestion'">Go to suggestions</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/js/jquery.easyModal.js"></script>
+
+<script type="text/javascript">
+
+$("#suggestion-modal").easyModal();
+
+function addIssue() {
+  var name = $("#issue-title").val();
+  var description = $("#issue-description").val();
+
+  $.ajax({
+    url: "/stem/api/issue",
+    type:"POST",
+    data: {
+      name: name,
+      description: description,
+      milestone: 0
+    },
+    success: function(issue) {
+      $("#suggestion-modal .modal-body").html(
+        "<h4><small>#" + issue.id + "</small> " + issue.name + "</h4>" +
+        "<p>" + issue.description.split("\n").join("<br>") + "</p>");
+      $("#suggestion-modal").trigger("openModal");
+    }
+  });
+}
+</script>
+{% endblock %}

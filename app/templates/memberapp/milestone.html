@@ -1,0 +1,374 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+<!-- Content Header (Page header) -->
+<section class="content-header">
+  <h1>
+    Milestone
+    <small>example</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="#">UI</a></li>
+    <li class="active">Milestone</li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="box">
+              <div class="box-header with-border">
+                <h3 class="box-title"><small>#1</small> <strong>Member page construction</strong></h3>
+                <div class="box-tools pull-right">
+                  <!-- Buttons, labels, and many other things can be placed here! -->
+                  <!-- Here is a label for example -->
+                  <span class="label label-primary">Opened</span>
+                  <span class="label label-danger">Blocker</span>
+                </div><!-- /.box-tools -->
+              </div><!-- /.box-header -->
+              <div class="box-body">
+                  <div class="row">
+                    <div class="col-sm-10">
+                    <div class="progress progress-sm">
+                        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="10" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+                            <span class="sr-only">10% Complete</span>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="col-sm-2">
+                    <span class="text-green">10% Complete</span>
+                    </div>
+                  </div>
+                <h4>Member page should have</h4>
+                <ol>
+                    <li>Information and contact means for STEM Members</li>
+                    <li>Easy track of STEM workflow</li>
+                    <li>STEM Calendar w/ google/fb events</li>
+                    <li>Work assist
+                        <ol>
+                            <li>Report generator</li>
+                            <li>Task Notification - via web/email and other SNS</li>
+                        </ol>
+                    </li>
+                    <li>Archive and easy retrival of former works</li>
+                </ol>
+                <div class="box-group" id="accordion">
+                    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+                    <div class="panel box box-primary">
+                      <div class="box-header with-border">
+                        <h4 class="box-title">
+                          <span class="" aria-expanded="true" data-toggle="collapse" data-parent="#accordion" href="#collapse-opened" style="cursor:pointer">
+                            Opened Issues
+                          </span>
+                        </h4>
+                      </div>
+                      <div style="" aria-expanded="true" id="collapse-opened" class="panel-collapse collapse in">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-red">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#34</span>
+                                          <span class="info-box-text">Making issue page</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 42%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            42% Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-aqua">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#36</span>
+                                          <span class="info-box-text">An issue with really long long title that might not fit</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 90%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            90% Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-yellow">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#26</span>
+                                          <span class="info-box-text">Tag selection</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 5%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            5% complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="panel box box-danger">
+                      <div class="box-header with-border">
+                        <h4 class="box-title">
+                          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-closed" style="cursor:pointer">
+                            Closed Issues
+                          </span>
+                        </h4>
+                      </div>
+                      <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-green">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#34</span>
+                                          <span class="info-box-text">Making issue page</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 100%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-green">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#36</span>
+                                          <span class="info-box-text">An issue with really long long title that might not fit</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 100%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-green">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#26</span>
+                                          <span class="info-box-text">Tag selection</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 100%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="panel box box-success">
+                      <div class="box-header with-border">
+                        <h4 class="box-title">
+                          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-archived" style="cursor:pointer">
+                            Archived Issues
+                          </span>
+                        </h4>
+                      </div>
+                      <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-gray">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#34</span>
+                                          <span class="info-box-text">Making issue page</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 100%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-gray">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#36</span>
+                                          <span class="info-box-text">An issue with really long long title that might not fit</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 100%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                                <div class="col-md-4 col-sm-6 col-xs-12">
+                                    <div class="info-box bg-gray">
+                                        <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+                                        <div class="info-box-content">
+                                          <span class="info-box-number">#26</span>
+                                          <span class="info-box-text">Tag selection</span>
+                                          <div class="progress">
+                                            <div class="progress-bar" style="width: 100%"></div>
+                                          </div>
+                                          <span class="progress-description">
+                                            Complete
+                                          </span>
+                                        </div><!-- /.info-box-content -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div><!-- /.box-body -->
+              <div class="box-footer">
+                <h5>Contributors</h5>
+                <span class="label label-primary"><i class="fa fa-star"></i> Taehee Jeong</span>
+                <span class="label label-primary">Sunghoon Kim</span>
+                <span class="label label-primary">Dongwoo Lee</span>
+                <span class="label label-primary">Cham Seungwoo</span>
+                <span class="label label-primary">Sejin Kim</span>
+              </div><!-- box-footer -->
+            </div><!-- /.box -->
+        </div>
+    </div>
+
+
+  <!-- row -->
+  <div class="row">
+    <div class="col-md-12">
+      <!-- The time line -->
+      <ul class="timeline">
+        <!-- timeline time label -->
+        <li class="time-label">
+          <span class="bg-red">
+            30 May. 2015
+          </span>
+        </li>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-trophy bg-yellow"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 12:05 by <a href="#">Sunghoon Kim</a></span>
+            <h3 class="timeline-header">Subtask <small>[#34-2]</small> <em>Lets'get started</em> is done!
+            <br><small>Issue progress is now 42%</small></h3>
+            
+            <div class="timeline-body">
+                <blockquote>
+                Let's get started, in any ways.
+                </blockquote>
+              <h4>Results:</h4>
+              Started Member-only page using AdminLTE, and protype designs are filling out!
+            </div>
+            <div class='timeline-footer'>
+                <p><span class="label label-info">subtask #34-2</span></p>
+                
+              <a class="btn btn-primary btn-xs">See detailed subtask</a>
+              <a class="btn btn-danger btn-xs">Modify subtask</a>
+            </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-user bg-aqua"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 1 hour ago</span>
+            <h3 class="timeline-header no-border"><a href="#">Sejin Kim</a> joined this issue</h3>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-gears bg-green"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 3 hours ago by <a href="#">Dongwoo Lee</a></span>
+            <h3 class="timeline-header">Subtask <small>[#34-3]</small> <em>Test CRUD</em> is created</h3>
+            <div class="timeline-body">
+                <p class="text-green">Subtask progress set to 25%</p>
+                <blockquote>
+                Test CRUD of subtasks
+                </blockquote>
+            </div>
+            <div class='timeline-footer'>
+                <p><span class="label label-info">subtask #34-3</span></p>
+              <a class="btn btn-danger btn-xs">Modify subtask</a>
+            </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline time label -->
+        <li class="time-label">
+          <span class="bg-red">
+            28 May. 2015
+          </span>
+        </li>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-camera bg-purple"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 2 days ago by <a href="#">Cham Seungwoo</a></span>
+            <h3 class="timeline-header">3 photos were uploaded for subtask <small>[#34-1]</small> <em>Issue structure</em></h3>
+            <div class="timeline-body">
+              <img src="http://placehold.it/200x150" alt="..." class='margin' />
+              <img src="http://placehold.it/200x150" alt="..." class='margin'/>
+              <img src="http://placehold.it/200x150" alt="..." class='margin'/>
+            </div>      
+              <div class="timeline-footer">
+                    <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">photo</span></p>
+              </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <!-- timeline time label -->
+        <li class="time-label">
+          <span class="bg-red">
+            25 May. 2015
+          </span>
+        </li>
+        <!-- /.timeline-label -->
+        <!-- timeline item -->
+        <li>
+          <i class="fa fa-upload bg-purple"></i>
+          <div class="timeline-item">
+            <span class="time"><i class="fa fa-clock-o"></i> 5 days ago by <a href="#">Cham Seungwoo</a></span>
+            <h3 class="timeline-header">A file was uploaded for subtask <small>[#34-1]</small> <em>Issue structure</em></h3>
+            <div class="timeline-body">
+                <blockquote>
+                <a href="#"><i class="fa fa-file"></i> Requirements.txt</a>
+                </blockquote>
+            </div>
+              <div class="timeline-footer">
+                    <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">file</span></p>
+              </div>
+          </div>
+        </li>
+        <!-- END timeline item -->
+        <li>
+          <i class="fa fa-clock-o bg-gray"></i>
+        </li>
+      </ul>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+
+</section><!-- /.content -->
+{% endblock %}

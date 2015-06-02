@@ -1,0 +1,60 @@
+{%extends "admin/base.html"%}
+{%block title%}STEM - Users{%endblock%}
+{%block container%}
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="ID" class="col-sm-2 control-label">ID</label>
+        <input class="col-sm-10" type="text" id="ID" name="ID" placeholder="crowbar">
+    </div>
+    <div class="form-group">
+        <label for="name" class="col-sm-2 control-label">Name</label>
+        <input class="col-sm-10" type="text" id="name" name="name" placeholder="Gordon Freeman">
+    </div>
+    <div class="form-group">
+        <label for="nickname" class="col-sm-2 control-label">E-Mail</label>
+        <input class="col-sm-10" type="text" id="nickname" name="nickname">
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" id="member">STEM member
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-default">Add</button>
+        </div>
+    </div>
+</form>
+
+<table class="table">
+<thead>
+    <tr>
+        <th>Action</th>
+        <th>No</th>
+        <th></th>
+        <th>ID</th>
+        <th>Name</th>
+        <th>E-Mail</th>
+    </tr>
+</thead>
+<tbody>
+    {% for item in items %}
+        <tr id="P-{{item.id}}">
+            <td>
+                <a style="color:#000000" href="#"><span class="glyphicon glyphicon-trash"></a>
+                <a style="color:#000000" href="#"><span class="glyphicon glyphicon-pencil"></a>
+            </td>
+            <td>{{ item.id }}</td>
+            <td>{%if item.member %}<span class="glyphicon glyphicon-user"></span>{%endif%}</td>
+            <td>{{ item.username }}</td>
+            <td>{{ item.nickname }}</td>
+            <td>{{ item.email }}</td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
+{%endblock%}

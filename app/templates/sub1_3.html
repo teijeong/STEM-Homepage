@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block container %}
+<!--#include virtual = "{{ url_for('static', filename='inc/top.asp') }}"-->
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>Organization</span></div></li>
+                    <li class="nostyle con_img"><img src="{{ url_for('static', filename='images/sub1_3.gif') }}"></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

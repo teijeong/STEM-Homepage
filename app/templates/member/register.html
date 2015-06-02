@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block container %}
+
+<script type="text/javascript">
+
+function ID_chk() {
+    var ID = eval(Join.userid);
+
+    if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
+        document.getElementById("idMsg").innerHTML="<span style='color:red;'>4~64자로 입력해주세요.</span>"
+        return;
+    } else {
+        strID=ID.value;
+        new Ajax.Updater('actDiv','/member/register/idcheck', {
+            method:'POST',
+            evalScripts:true,
+            parameters: {userid: strID},
+            encoding : 'utf-8',
+            onComplete: function(request){
+                json=JSON.parse(request.responseText)
+
+                if(!json.duplicate) {
+                    document.getElementById("idMsg").innerHTML="<span style='color:blue;'>사용가능한 ID입니다.</span>"
+                    f.email_check.value="true";
+                }else{
+                    document.getElementById("idMsg").innerHTML="<span style='color:red;'>이미 사용중인 ID입니다.</span>"
+                    f.email_check.value="";
+                }
+            }
+        });
+    }
+}
+
+
+function sendit(){
+    var Join=document.Join;
+
+    if(Join.name.value==""){
+        alert("이름을 입력하세요.");
+        Join.name.focus();
+        return;
+    }
+    if (Join.userid.value==""){
+        alert("ID 를 입력하여 주십시요.");
+        Join.userid.focus();
+        return;
+    }
+    if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
+        alert("ID는 4~64자리입니다.");
+        Join.userid.focus();
+        return;
+    }
+    if (Join.passwd.value==""){
+        alert("비밀번호를 입력하여 주십시요.");
+        Join.passwd.focus();
+        return;
+    }
+    if(Join.email.value==""){
+        alert("이메일을 입력하세요");
+        Join.email.focus();
+        return;
+    }
+    Join.submit();
+}
+</script>
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>Sign Up</span></div></li>
+                    <li class="nostyle con_img">
+<p style="text-align:center;"><img src="{{ url_for('static', filename='images/join_info.gif') }}" /></p>
+<p style="text-align:center; margin-bottom:30px;"><img src="{{ url_for('static', filename='images/join_1.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/btn_step.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/join_2_on.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/btn_step.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/join_3.gif') }}" /></p>
+<p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+
+<form action="{{ url_for('register')}}" method="POST" name="Join" enctype="multipart/form-data">
+{{ form.hidden_tag() }}
+<input type=hidden value="{{ next or '' }}" name=next>
+<table cellspacing="0" class="tbl_join" summary="개인회원정보입력">
+<caption>개인회원정보입력</caption>
+<colgroup>
+    <col width="110">
+    <col>
+</colgroup>
+<tbody>
+    <tr>
+        <th scope="row" height='20' class="import">이름</th>
+        <td style="padding:5px 0 5px 10px;"><input name="name" maxlength='10' type="text" class="input" style="width:100px" /></td>
+    </tr>
+    <tr>
+    <tr>
+        <th scope="row" class="import">아이디</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="userid" type="text" class="input" size="15" maxlength='15' onBlur="ID_chk()">
+            &nbsp;<span id='idMsg'><span style='color:red;'>6~15자로 입력해주세요.</span></span>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">비밀번호</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">비밀번호 확인</th>
+        <td style="padding:5px 0 5px 10px;"><input name="confirm" type="password" class="input" size="15" maxlength='15'></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import">E-mail</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="email" size="46" maxlength="50" type="text" class="input" value="">
+
+             * 아이디/비번 분실시 필수.
+        </td>
+    </tr>
+
+</tbody>
+</table>
+<p style="padding:10px 0; text-align:center;">
+    <input type="button" title="" value="확인" class="button2" style='cursor:pointer;' onClick="sendit()">
+    <input type="button" title="" value="취소" class="button1" style='cursor:pointer;' onClick="history.back()">
+</p>
+</form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

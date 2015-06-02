@@ -1,0 +1,20 @@
+
+{% extends "base.html" %}
+{% block container %}
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>People</span></div></li>
+                </ul>
+                {% include "people.html" %}
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

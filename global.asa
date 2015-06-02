@@ -1,52 +1,52 @@
 <!--METADATA TYPE="TypeLib" NAME="Microsoft ActiveX Data Objects 2.7 Library" UUID="{EF53050B-882E-4776-B643-EDA472E8E3F2}" VERSION="2.7"-->
 <SCRIPT LANGUAGE="VBScript" RUNAT="Server">
 Sub Session_OnStart   
-	Dim strconnect, DBCon
-	
-	set fso = Server.CreateObject("Scripting.FileSystemObject")
-	set f = fso.OpenTextFile("C:\ConnectString4Web\stem\stem.dat")
-	strconnect = f.Readline
+    Dim strconnect, DBCon
+    
+    set fso = Server.CreateObject("Scripting.FileSystemObject")
+    set f = fso.OpenTextFile("C:\ConnectString4Web\stem\stem.dat")
+    strconnect = f.Readline
 
-	Set DBCon = Server.CreateObject("ADODB.Connection") 
-	DBCon.Open strConnect
+    Set DBCon = Server.CreateObject("ADODB.Connection") 
+    DBCon.Open strConnect
 
-	Set Fso=Nothing
-	Set F=Nothing
+    Set Fso=Nothing
+    Set F=Nothing
 
-	REFERER = Request.ServerVariables("HTTP_REFERER")
-	V_IP = Request.ServerVariables("REMOTE_ADDR")
-	V_AGENT = Request.ServerVariables("HTTP_USER_AGENT")
+    REFERER = Request.ServerVariables("HTTP_REFERER")
+    V_IP = Request.ServerVariables("REMOTE_ADDR")
+    V_AGENT = Request.ServerVariables("HTTP_USER_AGENT")
 
-	IF Not IsNull(V_AGENT) AND V_Agent<>"" Then
-		IF (Instr(V_AGENT, "(") + 1 > 0) and (InstrRev(V_AGENT, ")") > 0) Then
-			PAgent = mid(V_AGENT, Instr(V_AGENT, "(") + 1, InstrRev(V_AGENT, ")") - Instr(V_AGENT, "(") + 1)
-			PAgent = trim(PAgent)
-			tAgent = split(PAgent, ";")
-			IF UBound(tAgent) >= 2 Then
-				strBrowser = Trim(tAgent(1))
-				strWindow = Trim(tAgent(2))
-			End IF
-		End IF
-	End IF
+    IF Not IsNull(V_AGENT) AND V_Agent<>"" Then
+        IF (Instr(V_AGENT, "(") + 1 > 0) and (InstrRev(V_AGENT, ")") > 0) Then
+            PAgent = mid(V_AGENT, Instr(V_AGENT, "(") + 1, InstrRev(V_AGENT, ")") - Instr(V_AGENT, "(") + 1)
+            PAgent = trim(PAgent)
+            tAgent = split(PAgent, ";")
+            IF UBound(tAgent) >= 2 Then
+                strBrowser = Trim(tAgent(1))
+                strWindow = Trim(tAgent(2))
+            End IF
+        End IF
+    End IF
 
-	IF INSTR(Request.ServerVariables("HTTP_URL"),"/admin")=0 Then
-		Set objCmd = Server.CreateObject("ADODB.Command")
-		With objCmd
-			.ActiveConnection = DBCon
-			.CommandType = adCmdStoredProc
-			.CommandText = "visit_counter_add"
+    IF INSTR(Request.ServerVariables("HTTP_URL"),"/admin")=0 Then
+        Set objCmd = Server.CreateObject("ADODB.Command")
+        With objCmd
+            .ActiveConnection = DBCon
+            .CommandType = adCmdStoredProc
+            .CommandText = "visit_counter_add"
 
-			.Parameters.Append .CreateParameter("@V_REFERER", adVarWChar, adParamInput, 256, Left(REFERER,255))
-			.Parameters.Append .CreateParameter("@V_IP", adVarWChar, adParamInput, 20, V_IP)
-			.Parameters.Append .CreateParameter("@V_AGENT", adVarWChar, adParamInput, 256, Left(V_AGENT,255))
-			.Parameters.Append .CreateParameter("@strBrowser", adVarWChar, adParamInput, 256, Left(strBrowser,255))
-			.Parameters.Append .CreateParameter("@strWindow", adVarWChar, adParamInput, 256, Left(strWindow,255))
+            .Parameters.Append .CreateParameter("@V_REFERER", adVarWChar, adParamInput, 256, Left(REFERER,255))
+            .Parameters.Append .CreateParameter("@V_IP", adVarWChar, adParamInput, 20, V_IP)
+            .Parameters.Append .CreateParameter("@V_AGENT", adVarWChar, adParamInput, 256, Left(V_AGENT,255))
+            .Parameters.Append .CreateParameter("@strBrowser", adVarWChar, adParamInput, 256, Left(strBrowser,255))
+            .Parameters.Append .CreateParameter("@strWindow", adVarWChar, adParamInput, 256, Left(strWindow,255))
 
-			.Execute,,adExecuteNoRecords
-		End With
-		Set objCmd = Nothing
-	End IF
-	DBCon.close()
-	Set DBCon = nothing
+            .Execute,,adExecuteNoRecords
+        End With
+        Set objCmd = Nothing
+    End IF
+    DBCon.close()
+    Set DBCon = nothing
 End Sub
 </SCRIPT>
