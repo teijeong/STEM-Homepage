@@ -147,7 +147,7 @@
                 <!-- Menu Toggle Button -->
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                   <!-- The user image in the navbar-->
-                  {% if member.img != "" %}
+                  {% if member.img and member.img != "" %}
                     <img src="{{url_for('static', filename=('upload/' + member.img))}}" class="user-image" alt="User Image" />
                   {% else %}
                     <img src="{{url_for('static', filename='upload/profile/default.png')}}" class="user-image" alt="User Image" />
@@ -204,7 +204,7 @@
           <!-- Sidebar user panel (optional) -->
           <div class="user-panel">
             <div class="pull-left image">
-              {% if member.img != "" %}
+              {% if member.img and member.img != "" %}
                 <img src="{{url_for('static', filename=('upload/' + member.img))}}" class="img-circle" alt="User Image" />
               {% else %}
                 <img src="{{url_for('static', filename='upload/profile/default.png')}}" class="img-circle" alt="User Image" />
