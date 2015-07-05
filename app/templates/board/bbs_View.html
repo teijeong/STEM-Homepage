@@ -43,6 +43,29 @@
             <div><div id="HKeditorContent" name="HKeditorContent">{{ post.body | safe}}</div></div>
         </td>
     </tr>
+    <tr>
+        <td colspan="6">
+            <ul id="comments">
+                {% for comment in post.comments %}
+                <li>
+                    <h3>{{comment.author.nickname}}<small>{{post.timestamp.strftime('%Y-%m-%d %H:%M')}}</small></h3>
+                    {{comment.body | nl2br}}
+                </li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+    <tr>
+        <th>
+            Comment
+        </th>
+        <td colspan="4">
+            <textarea rows="3" style="width:100%" id="comment-text"></textarea>
+        </td>
+        <td>
+            <button onclick="submitComment()">Post</button>
+        </td>
+    </tr>
 </tbody>
 </table>
 
@@ -99,5 +122,27 @@ function deletePost(id, bid) {
             }
         });
     }
+}
+
+function submitComment() {
+    (function ($) {
+        if($("#comment-text").val() === "") return;
+        $.ajax({
+            url: "/post/comment",
+            type: "POST",
+            data: {
+                body: $("#comment-text").val(),
+                postID: {{post.id}},
+                userID: {{current_user.id}}
+            },
+            success: function(data) {
+                data.body.replace("\n","<br>");
+                var text = "<li><h3>"+data.author.nickname+"<small>"+data.timestamp+"</small></h3>"
+                    +data.body+"</li>";
+                $("#comments").append(text);
+                $("comment-text").val("");
+            }
+        })
+    })(jQuery);
 }
 </script>

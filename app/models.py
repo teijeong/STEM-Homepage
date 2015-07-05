@@ -11,6 +11,7 @@ class User(db.Model):
     nickname = db.Column(db.Unicode(64), index=True)
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
+    comments = db.relationship('Comment', backref='author', lazy='dynamic')
     member = db.relationship('Member', uselist=False, backref='user', lazy='joined')
 
     def __init__(self, username='', password='123456', nickname='', email=''):
@@ -101,6 +102,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
     files = db.relationship('File', backref='post', lazy='joined')
+    comments = db.relationship('Comment', backref='post', lazy='joined')
 
     def __init__(self, level=0, title='', body='', userid=0, boardid=0):
         self.level = level
@@ -127,6 +129,23 @@ class Post(db.Model):
             post.body = str(endtime.timestamp())
 
         return post
+
+
+class Comment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Unicode(512))
+    timestamp = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+
+    def __init__(self, body='', userid=0, postid=0):
+        self.body = body
+        self.user_id = userid
+        self.post_id = postid
+        self.timestamp = datetime.datetime.now()
+
+    def __repr__(self):
+        return '<Comment %r of Post %r>' % (self.id, self.post_id)
 
 class Board(db.Model):
     id = db.Column(db.Integer, primary_key=True)

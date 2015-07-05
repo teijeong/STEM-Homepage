@@ -263,6 +263,43 @@ class DeletePost(Resource):
         db.session.commit()
         return "Success", 200
 
+user_fields = {
+    'nickname': fields.String,
+    'username': fields.String,
+    'email': fields.String
+}
+
+comment_fields = {
+    'author': fields.Nested(user_fields),
+    'body': fields.String,
+    'timestamp': fields.DateTime
+}
+
+class Comment(Resource):
+
+    @marshal_with(comment_fields)
+    def get(self, commentID):
+        comment = models.Comment.query.get(commentID)
+        if comment:
+            return comment
+        return None, 404
+
+    @login_required
+    @marshal_with(comment_fields)
+    def post(self):
+        commentParser = reqparse.RequestParser()
+        commentParser.add_argument('body', type=str)
+        commentParser.add_argument('userID', type=int)
+        commentParser.add_argument('postID', type=int)
+
+        args = commentParser.parse_args()
+        comment = models.Comment(
+            args['body'], args['userID'], args['postID'])
+        db.session.add(comment)
+        db.session.commit()
+
+        return comment, 201
+
 class IdCheck(Resource):
     def post(self):
         idparser = reqparse.RequestParser()
@@ -274,11 +311,6 @@ class IdCheck(Resource):
             return {'duplicate':True}
         else:
             return {'duplicate':False}
-
-user_fields = {
-    'nickname': fields.String,
-    'email': fields.String
-}
 
 member_fields = {
     'id': fields.Integer,
@@ -339,4 +371,5 @@ api.add_resource(Members, '/people')
 api.add_resource(WritePost, '/post/write')
 api.add_resource(ModifyPost, '/post/<int:id>/modify')
 api.add_resource(DeletePost, '/post/<int:id>/delete')
+api.add_resource(Comment, '/post/comment', '/post/comment/<int:id>')
 api.add_resource(IdCheck, '/member/register/idcheck')
