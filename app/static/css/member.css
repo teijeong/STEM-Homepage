@@ -6,6 +6,11 @@
     box-sizing: border-box;
 }
 
+.members h3 {
+    border-bottom: 3px solid #f47a35;
+    position: absolute;
+}
+
 .members h5 {
     font-size: 14px;
 }

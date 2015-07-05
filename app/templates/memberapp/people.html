@@ -21,14 +21,18 @@
 
 <div ng-app="stemApp" ng-controller="memberList">
     <div class="members" ng-view>
-        <a ng-repeat="mem in members" class="member-tag" ng-click="openCard(mem.id)">
-            <div class="member-picture">
-                <div class="member-picture-container">
-                    <img class="member-picture-thumb" src="/static/upload/{[ mem.img || 'profile/default.png']}">
+        <div ng-repeat="cycle in all_members">
+            <h3>{[cycle[0].cycle]}기</h3>
+            <a ng-repeat="mem in cycle" class="member-tag" ng-click="openCard(mem.id)">
+
+                <div class="member-picture">
+                    <div class="member-picture-container">
+                        <img class="member-picture-thumb" src="/static/upload/{[ mem.img || 'profile/default.png']}">
+                    </div>
                 </div>
-            </div>
-            <h5>{[mem.user.nickname]}</h5>
-        </a>
+                <h5>{[mem.user.nickname]}</h5>
+            </a>
+        </div>
 
     </div>
 

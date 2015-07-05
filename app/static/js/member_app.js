@@ -27,6 +27,14 @@ stemApp.controller('memberList', function($scope, $timeout) {
         type: "GET",
         success: function(data){
             $scope.members = data;
+            $scope.all_members = [[data[0]]];
+            var cnt = 0;
+            for (var i=1; i < data.length; i++) {
+                if (data[i-1].cycle !== data[i].cycle) {
+                    cnt++;
+                    $scope.all_members.push([data[i]]);
+                } else $scope.all_members[cnt].push(data[i]);
+            }
             $scope.$apply();
         }
     });

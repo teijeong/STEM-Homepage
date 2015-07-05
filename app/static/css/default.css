@@ -63,9 +63,10 @@
     font-size:18px;
     text-transform: uppercase;
 }
-.headMenu a:hover {
+.headMenu li.on > a, .headMenu a:hover, .headMenu dd.on2 a {
     color:#f47a35;
 }
+
 .headMenu dd .sub-list {
     font-size:12px;
     font-weight: bold;
