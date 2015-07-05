@@ -113,7 +113,7 @@ class Post(db.Model):
         self.commentCount = 0
 
     def __repr__(self):
-        if board_id == 3:
+        if self.board_id == 3:
             return '<History %r>' % self.title
         return '<Post %r>' % self.title
 

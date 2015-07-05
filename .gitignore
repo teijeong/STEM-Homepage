@@ -5,3 +5,5 @@ app.db*
 dbinfo
 
 app/static/upload/*
+
+uwsgi.ini
