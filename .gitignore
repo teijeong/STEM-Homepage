@@ -2,5 +2,6 @@
 venv*
 
 app.db*
+dbinfo
 
 app/static/upload/*

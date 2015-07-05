@@ -7,13 +7,13 @@
 
 <div ng-app="stemApp" ng-controller="memberList">
 	<div class="members" ng-view>
-		<a ng-repeat="member in members" class="member-tag" ng-click="openCard(member.id)">
+		<a ng-repeat="mem in members" class="member-tag" ng-click="openCard(mem.id)">
 			<div class="member-picture">
 				<div class="member-picture-container">
-					<img class="member-picture-thumb" src="/static/upload/{[ member.img || 'profile/default.png']}">
+					<img class="member-picture-thumb" src="/static/upload/{[ mem.img || 'profile/default.png']}">
 				</div>
 			</div>
-			<h5>{[member.user.nickname]}</h5>
+			<h5>{[mem.user.nickname]}</h5>
 		</a>
 
 	</div>

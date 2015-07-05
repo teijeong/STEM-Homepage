@@ -44,7 +44,7 @@ stemApp.controller('memberList', function($scope, $timeout) {
 });
 
 function openCard($scope, id) {
-    for (var i in $scope.members) {
+    for (var i = 0; i < $scope.members.length; i++) {
         if($scope.members[i].id === id) {
             $scope.pIndex = i;
             jQuery(".member-card").trigger('openModal');

@@ -14,6 +14,50 @@
     position: absolute;
 }
 
+.menu-title {
+    background-image: url('/static/images/menu_tit.gif');
+    width: 220px;
+    height: 130px;
+}
+
+.menu-title span {
+    line-height: 130px;
+    font-family: 'Helvetica';
+    font-size: 30px;
+    font-weight: bold;
+    left: 5px;
+    color: #fff;
+    text-shadow: 1px 1px 1px #0f0f0f;
+    position: absolute;
+}
+
+.menu-item {
+    background-image: url('/static/images/menu_bg.gif');
+    width: 220px;
+    height: 30px;
+}
+
+.menu-item a {
+    width: 220px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 14px;
+    padding-left: 20px;
+    position: absolute;
+    font-weight: bold;
+    color: #aaa;
+}
+
+.menu-item a:hover {
+    color: #fff;
+    font-size: 14px;
+    line-height: 30px;
+}
+
+.menu-item.on, .menu-item:hover {
+    background-position: -220px 0px;
+}
+
 .headMenu li .main-list{
     font-weight:bold;
     font-size:18px;
@@ -132,7 +176,7 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 
 
 /* 왼쪽 메뉴 */
-.left {position:relative; width:220px; float:left; background:url('../images/category_bg.gif') left repeat-y; margin-top:20px;}
+.left {position:relative; width:220px; float:left; left repeat-y; margin-top:20px;}
 .category {position:relative; width:220px; overflow:hidden; padding-bottom:20px;}
 .category dt {margin-bottom:15px;}
 .category dd a.on img,.category dd a:focus img,.category dd a:hover img {margin-left:-220px;}
