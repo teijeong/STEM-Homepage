@@ -1,5 +1,6 @@
 *.pyc
 venv*
+*.swp
 
 app.db*
 dbinfo

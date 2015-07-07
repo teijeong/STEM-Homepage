@@ -19,35 +19,45 @@
         <div class="col-md-12">
             <div class="box">
               <div class="box-header with-border">
-                <h3 class="box-title"><small>#34</small> <strong>Making issue page</strong></h3>
+                <h3 class="box-title"><small>#{{issue.id}}</small> <strong>{{issue.name}}</strong></h3>
                 <div class="box-tools pull-right">
                   <!-- Buttons, labels, and many other things can be placed here! -->
                   <!-- Here is a label for example -->
+				  {% if issue.status == 0 %}
                   <span class="label label-primary">Opened</span>
+				  {% elif issue.status == 1 %}
+                  <span class="label label-primary">Closed</span>
+				  {% elif issue.status == 2 %}
+                  <span class="label label-primary">Archived</span>
+				  {% elif issue.status == 3 %}
+                  <span class="label label-primary">Inactive</span>
+				  {% endif %}
+
+				  {% if issue.priority == 0 %}
                   <span class="label label-danger">Blocker</span>
+				  {% elif issue.priority == 1 %}
+                  <span class="label label-danger">Important</span>
+				  {% elif issue.priority == 2 %}
+                  <span class="label label-danger">Normal</span>
+				  {% elif issue.priority == 3 %}
+                  <span class="label label-danger">Trivial</span>
+				  {% endif %}
                 </div><!-- /.box-tools -->
               </div><!-- /.box-header -->
               <div class="box-body">
                   <div class="row">
                     <div class="col-sm-10">
                     <div class="progress progress-sm">
-                        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="42" aria-valuemin="0" aria-valuemax="100" style="width: 42%">
-                            <span class="sr-only">42% Complete (success)</span>
+                        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{issue.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{issue.progress}}%">
+                            <span class="sr-only">{{issue.progress}}% Complete</span>
                         </div>
                     </div>
                     </div>
                     <div class="col-sm-2">
-                    <span class="text-green">42% Complete</span>
+                    <span class="text-green">{{issue.progress}}% Complete</span>
                     </div>
                   </div>
-                <h4>This issue consists of following requirements.</h4>
-                <ol>
-                    <li>Present issue on the top</li>
-                    <li>Show timeline of issue</li>
-                    <li>CRUD subgoals</li>
-                    <li>Show progress</li>
-                    <li>Make Milestone page with least modification to structure</li>
-                </ol>
+				  {{issue.description | safe }}
               </div><!-- /.box-body -->
               <div class="box-footer">
                 <h5>Milestones</h5>

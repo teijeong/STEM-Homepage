@@ -210,6 +210,14 @@ subtask_member_table = db.Table('subtask_users',
     db.Column('member_id', db.Integer, db.ForeignKey('member.id'))
 )
 
+issue_tag_table = db.Table('issue_tags',
+    db.Column('issue_id', db.Integer, db.ForeignKey('issue.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+)
+subtask_tag_table = db.Table('subtask_tags',
+    db.Column('subtask_id', db.Integer, db.ForeignKey('subtask.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+)
 class Milestone(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(256))
@@ -236,6 +244,13 @@ class Issue(db.Model):
     description = db.Column(db.Unicode(2048))
     subtasks = db.relationship('Subtask', backref='issue', lazy='dynamic')
     progress = db.Column(db.Integer)
+    priority = db.Column(db.Integer)
+    secret = db.Column(db.Boolean)
+    status = db.Column(db.Integer)
+
+    timestamp = db.Column(db.DateTime)
+    deadline = db.Column(db.DateTime)
+
     comments = db.relationship('IssueComment', backref='issue', lazy='dynamic')
     contributors = db.relationship('Member', secondary=issue_member_table,
         backref=db.backref('issues', lazy='dynamic'))
@@ -256,6 +271,10 @@ class Subtask(db.Model):
     description = db.Column(db.Unicode(2048))
     issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'))
     progress = db.Column(db.Integer)
+
+    timestamp = db.Column(db.DateTime)
+    deadline = db.Column(db.DateTime)
+
     contributors = db.relationship('Member', secondary=subtask_member_table,
         backref=db.backref('subtasks', lazy='dynamic'))
     creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
@@ -280,6 +299,8 @@ class IssueComment(db.Model):
     title = db.Column(db.Unicode(256))
     body = db.Column(db.Unicode(2048))
     timestamp = db.Column(db.DateTime)
+    comment_type = db.Column(db.Integer)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'))
     tags = db.relationship('Tag', secondary=comment_tag_table,
@@ -294,6 +315,46 @@ class IssueComment(db.Model):
 
     def __repr__(self):
         return '<Comment %r for Issue #%r>' % (self.id, self.issue_id)
+
+class MilestoneComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Unicode(256))
+    body = db.Column(db.Unicode(2048))
+    timestamp = db.Column(db.DateTime)
+    comment_type = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    milestone_id = db.Column(db.Integer, db.ForeignKey('milestone.id'))
+
+    def __init__(self, title='', body='', userid=0, boardid=0):
+        self.title = title
+        self.body = body
+        self.user_id = userid
+        self.board_id = boardid
+        self.timestamp = datetime.datetime.now()
+
+    def __repr__(self):
+        return '<Comment %r for Issue #%r>' % (self.id, self.milestone_id)
+
+class SubtaskComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.Unicode(256))
+    body = db.Column(db.Unicode(2048))
+    timestamp = db.Column(db.DateTime)
+    comment_type = db.Column(db.Integer)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    subtask_id = db.Column(db.Integer, db.ForeignKey('subtask.id'))
+
+    def __init__(self, title='', body='', userid=0, boardid=0):
+        self.title = title
+        self.body = body
+        self.user_id = userid
+        self.board_id = boardid
+        self.timestamp = datetime.datetime.now()
+
+    def __repr__(self):
+        return '<Comment %r for Subtask #%r>' % (self.id, self.subtask_id)
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)

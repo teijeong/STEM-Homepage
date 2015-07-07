@@ -70,12 +70,11 @@
                         {#
                         {% if post.level > 1 %}<img src="{{ url_for('static', filename='images/ico_reply.gif') }}" />&nbsp;{% endif %}
                         #}
-                        <a href="/post/{{ post.id }}/view">{{ post.title }}</a>&nbsp;
-                        {#
-                        {% if post.commentCount > 0 %}
-                            <span style='font-size:11px;font-weight:bold;color:#6FA2FF;'>[{{ post.commentCount }}]</span>&nbsp;
-                        {% endif %}
-                        #}
+                    <a href="/post/{{ post.id }}/view">{{ post.title}}
+                    {% if post.commentCount > 0 %}
+                    <span class="comment-count">[{{post.commentCount}}]</span>
+                    {% endif %}
+                    </a>&nbsp;
                         {% if post.isNew %}<img src="{{ url_for('static', filename='images/ico_new.gif') }}" />{% endif %}
                     </div>
                 </td>

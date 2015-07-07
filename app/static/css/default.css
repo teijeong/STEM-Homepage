@@ -1,6 +1,11 @@
 @charset "utf-8";
 /* Web Designer (pusher17@naver.com) SSONG 120418 */
 
+title .comment-count {
+    font-weight:bold;
+    color:#6FA2FF;
+}
+
 .title-img {
     width:750px;
     height:130px;

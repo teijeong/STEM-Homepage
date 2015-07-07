@@ -181,7 +181,7 @@ class WritePost(Resource):
                 mNum=5, sNum=args['board'], mode='write', board=board,
                 form=LoginForm()),
             mimetype='text/html')
-    
+ 
     def post(self):
         postParser = reqparse.RequestParser()
         postParser.add_argument('title', type=str)
@@ -293,8 +293,14 @@ class Comment(Resource):
         commentParser.add_argument('postID', type=int)
 
         args = commentParser.parse_args()
+        post = models.Post.query.get(args['postID'])
+        if not post:
+            return None, 404
         comment = models.Comment(
             args['body'], args['userID'], args['postID'])
+
+        post.commentCount++;
+
         db.session.add(comment)
         db.session.commit()
 
