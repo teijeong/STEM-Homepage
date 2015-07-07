@@ -61,14 +61,14 @@
               </div><!-- /.box-body -->
               <div class="box-footer">
                 <h5>Milestones</h5>
-                <span class="label label-info"><small>[M#1]</small> Member page construction</span>
-                <span class="label label-info"><small>[M#3]</small> Issue Tracker</span>
-                <h5>Issued started by <span class="label label-primary">Taehee Jeong</span><br></h5>
+                {% for milestone in issue.milestones %}
+				<span class="label label-info"><small>[M#{{milestone.id}}]</small> {{milestone.name}}</span>
+				{% endfor %}
+                <h5>Issued started by <span class="label label-primary">{{issue.creator.name}}</span><br></h5>
                 <h5>Contributors</h5>
-                <span class="label label-primary">Sunghoon Kim</span>
-                <span class="label label-primary">Dongwoo Lee</span>
-                <span class="label label-primary">Cham Seungwoo</span>
-                <span class="label label-primary">Sejin Kim</span>
+				{% for member in issue.contributors %}
+                <span class="label label-primary">{{member.user.nickname}}</span>
+				{% endfor %}
               </div><!-- box-footer -->
             </div><!-- /.box -->
         </div>
@@ -88,28 +88,43 @@
         </li>
         <!-- /.timeline-label -->
         <!-- timeline item -->
+		{% for item in issue.comments %}
+		{% if loop.first or 
+			(not loop.last and 
+				item.timestamp.strftime('%Y%m%d') != issue.comments[loop.index0-1].timestamp.strftime('%Y%m%d')) %}
+		  <li class="time-label">
+			<span class="bg-red">
+              {{ item.timestamp.strftime('%Y.%m.%d') }}
+            </span>
+          </li>
+        {% endif %}
         <li>
+		  {% if comment.comment_type == 0 %}
           <i class="fa fa-trophy bg-yellow"></i>
+		  {% else %}
+          <i class="fa fa-trophy bg-yellow"></i>
+		  {% endif %}
           <div class="timeline-item">
-            <span class="time"><i class="fa fa-clock-o"></i> 12:05 by <a href="#">Sunghoon Kim</a></span>
-            <h3 class="timeline-header">Subtask <small>[#34-2]</small> <em>Lets'get started</em> is done!
-            <br><small>Issue progress is now 42%</small></h3>
+            <span class="time"><i class="fa fa-clock-o"></i> {{ item.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{item.author.user.nickname}}</a></span>
+            <h3 class="timeline-header">{{item.title}}</h3>
             
             <div class="timeline-body">
-                <blockquote>
-                Let's get started, in any ways.
-                </blockquote>
-              <h4>Results:</h4>
-              Started Member-only page using AdminLTE, and protype designs are filling out!
+				{{item.body}}
             </div>
             <div class='timeline-footer'>
-                <p><span class="label label-info">subtask #34-2</span></p>
-                
+				<p>
+				{% for tag in item.tags %}
+                <span class="label label-info">{{tag.title}}</span>
+				{% endfor %}
+				</p>
+			  {% if comment.comment_type == 0 %}
               <a class="btn btn-primary btn-xs">See detailed subtask</a>
               <a class="btn btn-danger btn-xs">Modify subtask</a>
+			  {% endif %}
             </div>
           </div>
         </li>
+		{% endfor %}
         <!-- END timeline item -->
         <!-- timeline item -->
         <li>
