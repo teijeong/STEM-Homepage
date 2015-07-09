@@ -2,6 +2,7 @@
 from app import db
 import datetime
 from sqlalchemy_utils import PasswordType
+from sqlalchemy.ext.declarative import declarative_base
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -53,9 +54,8 @@ class Member(db.Model):
     cover = db.Column(db.Unicode(256))
     addr = db.Column(db.Unicode(512))
     social = db.Column(db.Unicode(256))
-    owned_milestone = db.relationship('Milestone', backref='creator', lazy='dynamic')
-    owned_issue = db.relationship('Issue', backref='creator', lazy='dynamic')
-    owned_subtask = db.relationship('Subtask', backref='creator', lazy='dynamic')
+    owned_task = db.relationship('Task', backref='creator', lazy='dynamic')
+    task_comments = db.relationship('TaskComment', backref='member',lazy='joined')
 
     def __repr__(self):
         return '<Member %d>' % self.id
@@ -188,71 +188,45 @@ class Banner(db.Model):
         self.href = href
         self.description = description
 
-milestone_issue_table = db.Table('issues',
-    db.Column('milestone_id', db.Integer, db.ForeignKey('milestone.id')),
-    db.Column('issue_id', db.Integer, db.ForeignKey('issue.id'))
+
+task_task_table = db.Table('task_task_table',
+    db.Column('parent_id', db.Integer, db.ForeignKey('task.id')),
+    db.Column('child_id', db.Integer, db.ForeignKey('task.id'))
 )
 
-milestone_member_table = db.Table('milestone_users',
-    db.Column('milestone_id', db.Integer, db.ForeignKey('milestone.id')),
+task_member_table = db.Table('task_users',
+    db.Column('task_id', db.Integer, db.ForeignKey('task.id')),
     db.Column('member_id', db.Integer, db.ForeignKey('member.id'))
 )
-
-
-issue_member_table = db.Table('issue_users',
-    db.Column('issue_id', db.Integer, db.ForeignKey('issue.id')),
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id'))
-)
-
-
-subtask_member_table = db.Table('subtask_users',
-    db.Column('subtask_id', db.Integer, db.ForeignKey('subtask.id')),
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id'))
-)
-
-issue_tag_table = db.Table('issue_tags',
-    db.Column('issue_id', db.Integer, db.ForeignKey('issue.id')),
+task_tag_table = db.Table('task_tags',
+    db.Column('task_id', db.Integer, db.ForeignKey('task.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
-subtask_tag_table = db.Table('subtask_tags',
-    db.Column('subtask_id', db.Integer, db.ForeignKey('subtask.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-)
-class Milestone(db.Model):
+
+
+class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    local_id = db.Column(db.Integer)
+
     name = db.Column(db.Unicode(256))
     description = db.Column(db.Unicode(2048))
-    issues = db.relationship('Issue', secondary=milestone_issue_table,
-        backref=db.backref('milestones', lazy='dynamic'))
-    contributors = db.relationship('Member', secondary=milestone_member_table,
-        backref=db.backref('milestones', lazy='dynamic'))
-    progress = db.Column(db.Integer)
-    creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
 
-    def __init__(self, name='', description='', creator=None):
-        self.name = name
-        self.description = description
-        self.progress = 0
-        self.creator = creator
-
-    def __repr__(self):
-        return '<M#%r %r / %r%%>' % (self.id, self.name, self.progress / 100.0)
-
-class Issue(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(256))
-    description = db.Column(db.Unicode(2048))
-    subtasks = db.relationship('Subtask', backref='issue', lazy='dynamic')
     progress = db.Column(db.Integer)
     priority = db.Column(db.Integer)
     secret = db.Column(db.Boolean)
     status = db.Column(db.Integer)
 
+    level = db.Column(db.Integer)
+    children = db.relationship('Task', secondary=task_task_table,
+        primaryjoin=id==task_task_table.c.parent_id,
+        secondaryjoin=id==task_task_table.c.child_id,
+        backref="parents")
+
     timestamp = db.Column(db.DateTime)
     deadline = db.Column(db.DateTime)
 
-    comments = db.relationship('IssueComment', backref='issue', lazy='dynamic')
-    contributors = db.relationship('Member', secondary=issue_member_table,
+    comments = db.relationship('TaskComment', backref='task', lazy='dynamic')
+    contributors = db.relationship('Member', secondary=task_member_table,
         backref=db.backref('issues', lazy='dynamic'))
     creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
 
@@ -265,46 +239,22 @@ class Issue(db.Model):
     def __repr__(self):
         return '<#%r %r / %r%%>' % (self.id, self.name, self.progress / 100.0)
 
-class Subtask(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.Unicode(256))
-    description = db.Column(db.Unicode(2048))
-    issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'))
-    progress = db.Column(db.Integer)
-
-    timestamp = db.Column(db.DateTime)
-    deadline = db.Column(db.DateTime)
-
-    contributors = db.relationship('Member', secondary=subtask_member_table,
-        backref=db.backref('subtasks', lazy='dynamic'))
-    creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
-
-    def __init__(self, name='', description='', issue=None, creator=None):
-        self.name = name
-        self.description = description
-        self.issue = issue
-        self.progress = 0
-        self.creator = creator
-
-    def __repr__(self):
-        return '<Subtask #%r-%r / %r%%>' % (self.issue_id, self.id, self.progress / 100.0)
 
 comment_tag_table = db.Table('comment_tags',
-    db.Column('comment_id', db.Integer, db.ForeignKey('issue_comment.id')),
+    db.Column('comment_id', db.Integer, db.ForeignKey('task_comment.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
 
-class IssueComment(db.Model):
+
+class TaskComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Unicode(256))
     body = db.Column(db.Unicode(2048))
     timestamp = db.Column(db.DateTime)
     comment_type = db.Column(db.Integer)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    issue_id = db.Column(db.Integer, db.ForeignKey('issue.id'))
-    tags = db.relationship('Tag', secondary=comment_tag_table,
-        backref=db.backref('comments', lazy='dynamic'))
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
 
     def __init__(self, title='', body='', userid=0, boardid=0):
         self.title = title
@@ -314,47 +264,7 @@ class IssueComment(db.Model):
         self.timestamp = datetime.datetime.now()
 
     def __repr__(self):
-        return '<Comment %r for Issue #%r>' % (self.id, self.issue_id)
-
-class MilestoneComment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(256))
-    body = db.Column(db.Unicode(2048))
-    timestamp = db.Column(db.DateTime)
-    comment_type = db.Column(db.Integer)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    milestone_id = db.Column(db.Integer, db.ForeignKey('milestone.id'))
-
-    def __init__(self, title='', body='', userid=0, boardid=0):
-        self.title = title
-        self.body = body
-        self.user_id = userid
-        self.board_id = boardid
-        self.timestamp = datetime.datetime.now()
-
-    def __repr__(self):
-        return '<Comment %r for Issue #%r>' % (self.id, self.milestone_id)
-
-class SubtaskComment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.Unicode(256))
-    body = db.Column(db.Unicode(2048))
-    timestamp = db.Column(db.DateTime)
-    comment_type = db.Column(db.Integer)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    subtask_id = db.Column(db.Integer, db.ForeignKey('subtask.id'))
-
-    def __init__(self, title='', body='', userid=0, boardid=0):
-        self.title = title
-        self.body = body
-        self.user_id = userid
-        self.board_id = boardid
-        self.timestamp = datetime.datetime.now()
-
-    def __repr__(self):
-        return '<Comment %r for Subtask #%r>' % (self.id, self.subtask_id)
+        return '<Comment %r for Task #%r>' % (self.id, self.task_id)
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)

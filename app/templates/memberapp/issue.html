@@ -19,7 +19,7 @@
         <div class="col-md-12">
             <div class="box">
               <div class="box-header with-border">
-                <h3 class="box-title"><small>#{{issue.id}}</small> <strong>{{issue.name}}</strong></h3>
+                <h3 class="box-title"><small>#{{issue.local_id}}</small> <strong>{{issue.name}}</strong></h3>
                 <div class="box-tools pull-right">
                   <!-- Buttons, labels, and many other things can be placed here! -->
                   <!-- Here is a label for example -->
@@ -61,10 +61,10 @@
               </div><!-- /.box-body -->
               <div class="box-footer">
                 <h5>Milestones</h5>
-                {% for milestone in issue.milestones %}
-				<span class="label label-info"><small>[M#{{milestone.id}}]</small> {{milestone.name}}</span>
+                {% for milestone in issue.parents %}
+				<span class="label label-info"><small>[M#{{milestone.local_id}}]</small> {{milestone.name}}</span>
 				{% endfor %}
-                <h5>Issued started by <span class="label label-primary">{{issue.creator.name}}</span><br></h5>
+                <h5>Issued started by <span class="label label-primary">{{issue.creator.user.nickname}}</span><br></h5>
                 <h5>Contributors</h5>
 				{% for member in issue.contributors %}
                 <span class="label label-primary">{{member.user.nickname}}</span>
@@ -88,13 +88,13 @@
         </li>
         <!-- /.timeline-label -->
         <!-- timeline item -->
-		{% for item in issue.comments %}
+		{% for comment in issue.children %}
 		{% if loop.first or 
 			(not loop.last and 
-				item.timestamp.strftime('%Y%m%d') != issue.comments[loop.index0-1].timestamp.strftime('%Y%m%d')) %}
+				comment.timestamp.strftime('%Y%m%d') != issue.children[loop.index0-1].timestamp.strftime('%Y%m%d')) %}
 		  <li class="time-label">
 			<span class="bg-red">
-              {{ item.timestamp.strftime('%Y.%m.%d') }}
+              {{ comment.timestamp.strftime('%Y.%m.%d') }}
             </span>
           </li>
         {% endif %}
@@ -105,15 +105,15 @@
           <i class="fa fa-trophy bg-yellow"></i>
 		  {% endif %}
           <div class="timeline-item">
-            <span class="time"><i class="fa fa-clock-o"></i> {{ item.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{item.author.user.nickname}}</a></span>
+            <span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.author.user.nickname}}</a></span>
             <h3 class="timeline-header">{{item.title}}</h3>
             
             <div class="timeline-body">
-				{{item.body}}
+				{{comment.body}}
             </div>
             <div class='timeline-footer'>
 				<p>
-				{% for tag in item.tags %}
+				{% for tag in comment.tags %}
                 <span class="label label-info">{{tag.title}}</span>
 				{% endfor %}
 				</p>
@@ -208,6 +208,8 @@
       </ul>
     </div><!-- /.col -->
   </div><!-- /.row -->
-
 </section><!-- /.content -->
+{% endblock %}
+
+{% block scripts %}
 {% endblock %}

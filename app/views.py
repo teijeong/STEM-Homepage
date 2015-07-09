@@ -299,7 +299,7 @@ class Comment(Resource):
         comment = models.Comment(
             args['body'], args['userID'], args['postID'])
 
-        post.commentCount++;
+        post.commentCount += 1 ;
 
         db.session.add(comment)
         db.session.commit()
