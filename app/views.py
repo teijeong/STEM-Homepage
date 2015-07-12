@@ -129,7 +129,10 @@ def login():
     if form.validate_on_submit():
         login_user(form.user)
         if current_user.member:
-            return redirect('/stem')
+            if current_user.member.cycle:
+                return redirect('/stem')
+            else:
+                return redirect('/member/modify')
         return redirect(form.next.data)
 
     return render_template('member/login.html', form=form)
