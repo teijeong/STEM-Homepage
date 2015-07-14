@@ -230,11 +230,47 @@ class Task(db.Model):
         backref=db.backref('issues', lazy='dynamic'))
     creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
 
-    def __init__(self, name='', description='', creator=None):
+    def __init__(self, level = 0, name='', description='',
+        creator=None, priority = 0, secret = False, deadline = None, parent =
+        None):
+
+        self.level = level
         self.name = name
         self.description = description
+
         self.progress = 0
         self.creator = creator
+
+        self.prority = priority
+        self.secret = secret
+        self.timestamp = datetime.datetime.now()
+        self.deadline = deadline or datetime.datetime.now()
+        self.status = 0
+
+        if parent:
+            self.level = parent.level + 1;
+
+        if self.level == 0 or self.level == 1:
+            recent_task = Task.query.filter_by(level=level). \
+                order_by(Task.local_id.desc()).first()
+            self.local_id = recent_task.local_id + 1
+
+        if self.level == 2:
+            if parent:
+                subtasks = sorted(parent.children,
+                    key=lambda task: task.local_id, reverse=True)
+                self.local_id = subtasks[0].local_id + 1
+
+    def add_parent(self, parent):
+        if len(self.parents) != 0:
+            if self.parents[0].level != parent.level:
+                return
+        else:
+            self.level = parent.level + 1
+        self.parents.append(parent)
+
+    def filter_children(self, status):
+        return [c for c in self.children if c.status == status]
 
     def __repr__(self):
         return '<#%r %r / %r%%>' % (self.id, self.name, self.progress / 100.0)
@@ -256,11 +292,14 @@ class TaskComment(db.Model):
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
 
-    def __init__(self, title='', body='', userid=0, boardid=0):
+    def __init__(self, title='', body='', comment_type=0,
+        member=None, task=None):
+
         self.title = title
         self.body = body
-        self.user_id = userid
-        self.board_id = boardid
+        self.member = member
+        self.task = task
+        self.comment_type = comment_type
         self.timestamp = datetime.datetime.now()
 
     def __repr__(self):
@@ -274,4 +313,13 @@ class Tag(db.Model):
         self.title = title
 
     def __repr__(self):
+wq
+
+
+w
+
+
+
+
+
         return '<Tag %r>' % self.title

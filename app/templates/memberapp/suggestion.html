@@ -44,7 +44,7 @@
     <div class="col-md-12">
       <!-- The time line -->
       <ul class="timeline">
-        {% for issue in milestone.issues[::-1] %}
+        {% for issue in milestone.children[::-1] %}
         <!-- timeline item -->
         <li>
           <i class="fa fa-gears bg-green"></i>

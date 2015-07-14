@@ -19,8 +19,7 @@
                 <div class="col-md-12">
                     <div class="box">
                       <div class="box-header with-border">
-                        <h3
-                        class="box-title"><small>#{{milestone.local_id}}</small> <strong>{{milestone.name}}</strong></h3>
+                        <h3 class="box-title"><small>#{{milestone.local_id}}</small> <strong>{{milestone.name}}</strong></h3>
                         <div class="box-tools pull-right">
                           <!-- Buttons, labels, and many other things can be placed here! -->
                           <!-- Here is a label for example -->
@@ -39,7 +38,9 @@
                             <span class="text-green">{{milestone.progress}}% Complete</span>
                             </div>
                           </div>
+                          <div style="margin-bottom:10px;">
                           {{milestone.description | safe }}
+                          </div>
                           <!--
                         <h4>Member page should have</h4>
                         <ol>
@@ -70,7 +71,7 @@
                                     <div class="row">
                                         {% for issue in milestone.filter_children(0) %}
                                         <div class="col-md-4 col-sm-6 col-xs-12">
-											{% if isssue.priority == 0 %}
+											{% if issue.priority == 0 %}
                                             <div class="info-box bg-red">
 											{% else %}
                                             <div class="info-box bg-red">
@@ -89,6 +90,7 @@
                                             </div>
                                         </div>
                                         {% endfor %}
+                                        <!--
                                         <div class="col-md-4 col-sm-6 col-xs-12">
                                             <div class="info-box bg-aqua">
                                                 <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
@@ -101,7 +103,7 @@
                                                   <span class="progress-description">
                                                     90% Complete
                                                   </span>
-                                                </div><!-- /.info-box-content -->
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-4 col-sm-6 col-xs-12">
@@ -116,9 +118,10 @@
                                                   <span class="progress-description">
                                                     5% complete
                                                   </span>
-                                                </div><!-- /.info-box-content -->
+                                                </div>
                                             </div>
                                         </div>
+                                        -->
                                     </div>
                                 </div>
                               </div>
@@ -134,9 +137,11 @@
                               <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
                                 <div class="box-body">
                                     <div class="row">
-                                        {% for issue in milestone.filter_children(0) %}
+                                        {% for issue in milestone.filter_children(1) %}
                                         <div class="col-md-4 col-sm-6 col-xs-12">
-											{% if isssue.priority == 0 %}
+											{%
+                                                                                        if
+                                                                                            issue.priority == 0 %}
                                             <div class="info-box bg-red">
 											{% else %}
                                             <div class="info-box bg-red">
@@ -155,51 +160,6 @@
                                             </div>
                                         </div>
                                         {% endfor %}
-                                        <div class="col-md-4 col-sm-6 col-xs-12">
-                                            <div class="info-box bg-green">
-                                                <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-                                                <div class="info-box-content">
-                                                  <span class="info-box-number">#34</span>
-                                                  <span class="info-box-text">Making issue page</span>
-                                                  <div class="progress">
-                                                    <div class="progress-bar" style="width: 100%"></div>
-                                                  </div>
-                                                  <span class="progress-description">
-                                                    Complete
-                                                  </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-6 col-xs-12">
-                                            <div class="info-box bg-green">
-                                                <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-                                                <div class="info-box-content">
-                                                  <span class="info-box-number">#36</span>
-                                                  <span class="info-box-text">An issue with really long long title that might not fit</span>
-                                                  <div class="progress">
-                                                    <div class="progress-bar" style="width: 100%"></div>
-                                                  </div>
-                                                  <span class="progress-description">
-                                                    Complete
-                                                  </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-6 col-xs-12">
-                                            <div class="info-box bg-green">
-                                                <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-                                                <div class="info-box-content">
-                                                  <span class="info-box-number">#26</span>
-                                                  <span class="info-box-text">Tag selection</span>
-                                                  <div class="progress">
-                                                    <div class="progress-bar" style="width: 100%"></div>
-                                                  </div>
-                                                  <span class="progress-description">
-                                                    Complete
-                                                  </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                               </div>
@@ -215,7 +175,7 @@
                               <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
                                 <div class="box-body">
                                     <div class="row">
-                                        {% for issue in milestone.filter_children(0) %}
+                                        {% for issue in milestone.filter_children(2) %}
                                         <div class="col-md-4 col-sm-6 col-xs-12">
 											{% if isssue.priority == 0 %}
                                             <div class="info-box bg-red">
@@ -236,52 +196,6 @@
                                             </div>
                                         </div>
                                         {% endfor %}
-                                        <div class="col-md-4 col-sm-6 col-xs-12">
-                                            <div class="info-box bg-gray">
-                                                <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-                                                <div class="info-box-content">
-                                                  <span class="info-box-number">#34</span>
-                                                  <span class="info-box-text">Making issue page</span>
-                                                  <div class="progress">
-                                                    <div class="progress-bar" style="width: 100%"></div>
-                                                  </div>
-                                                  <span class="progress-description">
-                                                    Complete
-                                                  </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-6 col-xs-12">
-                                            <div class="info-box bg-gray">
-                                                <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-                                                <div class="info-box-content">
-                                                  <span class="info-box-number">#36</span>
-                                                  <span class="info-box-text">An issue with really long long title that might not fit</span>
-                                                  <div class="progress">
-                                                    <div class="progress-bar" style="width: 100%"></div>
-                                                  </div>
-                                                  <span class="progress-description">
-                                                    Complete
-                                                  </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 col-sm-6 col-xs-12">
-                                            <div class="info-box bg-gray">
-                                                <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-                                                <div class="info-box-content">
-                                                  <span class="info-box-number">#26</span>
-                                                  <span class="info-box-text">Tag selection</span>
-                                                  <div class="progress">
-                                                    <div class="progress-bar" style="width: 100%"></div>
-                                                  </div>
-                                                  <span class="progress-description">
-                                                    Complete
-                                                  </span>
-                                                </div><!-- /.info-box-content -->
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                               </div>
                             </div>
@@ -289,14 +203,34 @@
                       </div><!-- /.box-body -->
                       <div class="box-footer">
                         <h5>Contributors</h5>
-                        <span class="label label-primary"><i class="fa fa-star"></i> Taehee Jeong</span>
-                        <span class="label label-primary">Sunghoon Kim</span>
-                        <span class="label label-primary">Dongwoo Lee</span>
-                        <span class="label label-primary">Cham Seungwoo</span>
-                        <span class="label label-primary">Sejin Kim</span>
+                        <span class="label label-primary"><i class="fa fa-star"></i> {{milestone.creator.user.nickname}}</span>
+                        {% for member in milestone.contributors %}
+						<span class="label label-primary">{{member.user.nickname}}</span>
+						{% endfor %}
                       </div><!-- box-footer -->
                     </div><!-- /.box -->
                 </div>
+
+				<div class="col-md-12">
+                    <div class="box">
+                      <div class="box-header with-border">
+					  Comment
+					  </div>
+					  <div class="box-body">
+                  		<div class="form-group">
+                    		<label>Title</label>
+                    		<input class="form-control" type="text" placeholder="Title" id="comment-title">
+                  		</div>
+                  		<div class="form-group">
+                    		<label>Content</label>
+                    		<textarea class="form-control" rows="3" id="comment-body"></textarea>
+                  		</div>
+                  		<div class="form-group">
+                  			<button onclick="addComment()" type="add" class="btn btn-primary pull-right">Add</button>
+                  		</div>
+                </div>
+
+                
             </div>
 
 
@@ -305,7 +239,46 @@
             <div class="col-md-12">
               <!-- The time line -->
               <ul class="timeline">
-                <!-- timeline time label -->
+{% for comment in milestone.comments[::-1] %}
+	{% if loop.first or (not loop.last and 
+		comment.timestamp.strftime('%Y%m%d') != 
+		milestone.comments[loop.revindex0 - 1].timestamp.strftime('%Y%m%d')) %}
+
+		<li class="time-label">
+			<span class="bg-red">
+				{{ comment.timestamp.strftime('%Y.%m.%d') }}    
+			</span>
+		</li>
+    {% endif %}
+
+    <li>
+	{% if comment.comment_type == 0 %}
+    	<i class="fa fa-trophy bg-yellow"></i>
+	{% else %}
+        <i class="fa fa-trophy bg-yellow"></i>
+	{% endif %}
+    <div class="timeline-item">
+    	<span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.member.user.nickname}}</a></span>
+        <h3 class="timeline-header">{{comment.title}}</h3>
+            
+        <div class="timeline-body">
+			{{comment.body}}
+        </div>
+        <div class='timeline-footer'>
+			<p>
+			{% for tag in comment.tags %}
+            	<span class="label label-info">{{tag.title}}</span>
+			{% endfor %}
+			</p>
+			{% if comment.comment_type == 0 %}
+            	<a class="btn btn-primary btn-xs">See detailed subtask</a>
+            	<a class="btn btn-danger btn-xs">Modify subtask</a>
+			{% endif %}
+        </div>
+	</div>
+    </li>
+{% endfor %} 
+				<!-- timeline time label -->
                 <li class="time-label">
                   <span class="bg-red">
                     30 May. 2015
@@ -422,4 +395,22 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="text/javascript">
+function addComment() {
+  var title = $("#comment-title").val();
+  var body = $("#comment-body").val();
+  $.ajax({
+    url: "/stem/api/task_comment",
+    type:"POST",
+    data: {
+      title: title,
+      body: body,
+      task_id: {{milestone.id}}
+    },
+    success: function(data) {
+      location.reload();
+    }
+  });
+}
+</script>
 {% endblock %}
