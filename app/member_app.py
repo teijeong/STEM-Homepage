@@ -63,6 +63,26 @@ def showIssue(id):
     except TemplateNotFound:
             abort(404)
 
+@member_app.route('/issue')
+@member_required
+def showIssues():
+    try:
+        issues = models.Task.query.filter_by(level=1).all()
+        return render_template('issue_list.html', member=current_user.member,
+            issues=issues)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/milestone')
+@member_required
+def showMilestones():
+    try:
+        milestones = models.Task.query.filter_by(level=0).all()
+        return render_template('milestone_list.html', member=current_user.member,
+            milestones=milestones)
+    except TemplateNotFound:
+        abort(404)
+
 @member_app.route('/suggestion')
 @member_required
 def showSuggestion():
@@ -73,42 +93,62 @@ def showSuggestion():
     except TemplateNotFound:
         abort(404)
 
-simple_issue_fields = {
+simple_task_fields = {
     'id': fields.Integer,
+    'local_id': fields.Integer,
+    'level': fields.Integer,
+    'status': fields.Integer,
+    'priority': fields.Integer,
+    'progress': fields.Float,
     'name': fields.String,
     'description': fields.String
 }
 
-class Issue(Resource):
+class Task(Resource):
 
-    issueParser = reqparse.RequestParser()
-    issueParser.add_argument('name', type=str, required=True,
+    taskParser = reqparse.RequestParser()
+    taskParser.add_argument('name', type=str, required=True,
         help='Name is required')
-    issueParser.add_argument('description', type=str, default='')
-    issueParser.add_argument('milestone', type=int, default=-1)
+    taskParser.add_argument('description', type=str, default='')
+    taskParser.add_argument('level', type=int, default=1)
+    taskParser.add_argument('parent', type=int, default=[], action='append')
 
     @member_required
-    @marshal_with(simple_issue_fields)
+    @marshal_with(simple_task_fields)
     def post(self):
-        args = self.issueParser.parse_args()
-        issue = models.Task(1, args['name'], args['description'],
+        args = self.taskParser.parse_args()
+        task = models.Task(args['level'], args['name'], args['description'],
             current_user.member)
-        if args['milestone'] >= 0:
-            milestone = models.Task.query.get(args['milestone'])
-            if milestone:
-                issue.parents.append(milestone)
-        db.session.add(issue)
+        if args['parent'] != []:
+            for parent_id in args['parent']:
+                parent = models.Task.query.get(parent_id)
+                if parent:
+                    task.parents.append(parent)
+        db.session.add(task)
         db.session.commit()
-        return issue
+        return task
 
     @member_required
-    def get(self, issueID):
-        issue = models.Task.query.get(issueID)
-        if issue:
-            return str(issue)
+    def get(self, taskID):
+        issue = models.Task.query.get(taskID)
+        if task:
+            return str(task)
         return {}
 
-api.add_resource(Issue, '/api/issue', '/api/issue/<int:issueID>')
+api.add_resource(Task, '/api/task', '/api/task/<int:taskID>')
+
+datatable_task_fields = {
+    'data': fields.List(fields.Nested(simple_task_fields))
+}
+
+class Issue(Resource):
+    @member_required
+    @marshal_with(datatable_task_fields)
+    def get(self):
+        data = models.Task.query.filter_by(level=1).all()
+        return {'data':data}
+
+api.add_resource(Issue, '/api/issue')
 
 class TaskComment(Resource):
 
@@ -119,7 +159,6 @@ class TaskComment(Resource):
     issueParser.add_argument('task_id', type=int, default=-1)
 
     @member_required
-    @marshal_with(simple_issue_fields)
     def post(self):
         args = self.issueParser.parse_args()
         print(args)

@@ -1,0 +1,19 @@
+.editor {
+    background-color: #ccc;
+    min-height: 100px;
+}
+
+.add-task {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+    line-height: 30px;
+    position: absolute;
+    color: #fff;
+    background: #dd4b39;
+    border-radius: 50%;
+    text-align: center;
+    right: 150px;
+    top: 70px;
+    z-index: 5;
+}

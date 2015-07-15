@@ -313,13 +313,4 @@ class Tag(db.Model):
         self.title = title
 
     def __repr__(self):
-wq
-
-
-w
-
-
-
-
-
         return '<Tag %r>' % self.title

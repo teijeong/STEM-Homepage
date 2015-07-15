@@ -1,0 +1,171 @@
+ {% extends "memberapp/base.html" %}
+ {% block content %}
+ <section class="content-header">
+  <h1>
+    Issues
+    <small>example</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="#">UI</a></li>
+    <li class="active">issue</li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <i class="add-task fa fa-plus" onclick="showModal()"></i>
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+            <div class="box-body">
+            <table id="issues" class="table table-bordered table-hover dataTable">
+                <thead>
+                    <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    </tr>
+                </thead>
+                <tfoot>
+                    <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Progress</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    </tr>
+                </tfoot>
+            </table>
+            </div>
+            </div>
+        </div>
+    </div>
+</section><!-- /.content -->
+{% endblock %}
+
+{% block modals %}
+<div class="modal-dialog" id="add-issue">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">New Issue</h4>
+      </div>
+      <div class="modal-body">
+        <form role="form">
+            <div class="form-group">
+              <label for="issue-name">Issue Name</label>
+              <input class="form-control" id="issue-name" type="text">
+            </div>
+            <div class="form-group">
+              <label for="issue-description">Description</label>
+              <div id="issue-description" contenteditable="true" class="editor"></div>
+            </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
+        <button type="button" class="btn btn-primary" onclick="addIssue()">Add</button>
+      </div>
+    </div><!-- /.modal-content -->
+</div>
+{% endblock %}
+
+{% block styles %}
+    <link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block scripts %}
+    <script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+    <script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+    <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+$("#add-issue").easyModal();
+var editor = CKEDITOR.inline('issue-description');
+
+
+var priority = [
+    "bg-light-blue'>Trivial",
+    "bg-green'>Normal",
+    "bg-yellow'>Important",
+    "bg-red'>BLOCKER"];
+
+
+var stats = [
+    "bg-green'>Opened",
+    "bg-light-blue'>Closed",
+    "'>Archived"];
+
+var table = $('#issues').DataTable({
+    ajax: "/stem/api/issue",
+    processing: true,
+    columns: [
+        {data:"local_id"},
+        {data:"name"},
+        {data:"progress"},
+        {data:"status"},
+        {data:"priority"},
+        {data:"id"}
+        ],
+    "columnDefs": [
+        {targets:[1],
+            render: function(data, type, row) {
+                console.log(row);
+                return "<a href='/stem/issue/" + row.id +
+                    "'>" + data + "</a>";
+            }
+        },
+        {targets:[2],
+            render: function(data, type, row) {
+                return "<div class='progress progress-xs'>"+
+                    "<div class='progress-bar' style='width:"+
+                    data+"%'></div></div>";
+            }
+        },
+        {targets:[3],
+            render: function(data, type, row) {
+                return "<span class='badge "+stats[data]+"</span>";
+            }
+        },
+        {targets:[4],
+            render: function(data, type, row) {
+                return "<span class='badge "+priority[data]+"</span>";
+            }
+        },
+        {visible:false, targets:[5]}
+    ]
+});
+
+
+function showModal() {
+    $("#add-issue").trigger("openModal");
+}
+
+function closeModal() {
+    $("#add-issue").trigger("closeModal");
+}
+
+function addIssue() {
+    var name = $("#issue-name").val();
+    var description = editor.getData();
+    $.ajax({
+        url: "/stem/api/task",
+        type: "POST",
+        data: {
+            name: name,
+            description: description,
+            level: 1
+        },
+        success: function(data) {
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}
+
