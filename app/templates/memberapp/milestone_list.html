@@ -82,8 +82,14 @@
 
 <script type="text/javascript">
 
-$("#add-milestone").easyModal();
-var editor = CKEDITOR.inline('milestone-description');
+var editor;
+$("#add-milestone").easyModal({
+	onOpen: function() {
+		CKEDITOR.instances['milestone-description'].destroy();
+		editor = CKEDITOR.inline('milestone-description');
+	}
+});
+
 
 function showModal() {
     $("#add-milestone").trigger("openModal");

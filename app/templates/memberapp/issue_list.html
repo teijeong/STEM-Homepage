@@ -86,6 +86,7 @@
 <script type="text/javascript">
 
 $("#add-issue").easyModal();
+$('#issue-description').attr('contenteditable',true);
 var editor = CKEDITOR.inline('issue-description');
 
 
@@ -102,7 +103,10 @@ var stats = [
     "'>Archived"];
 
 var table = $('#issues').DataTable({
-    ajax: "/stem/api/issue",
+    ajax: {
+		url: "/stem/api/issue",
+		dataSrc: ""
+	},
     processing: true,
     columns: [
         {data:"local_id"},
@@ -115,7 +119,6 @@ var table = $('#issues').DataTable({
     "columnDefs": [
         {targets:[1],
             render: function(data, type, row) {
-                console.log(row);
                 return "<a href='/stem/issue/" + row.id +
                     "'>" + data + "</a>";
             }
@@ -153,6 +156,7 @@ function closeModal() {
 function addIssue() {
     var name = $("#issue-name").val();
     var description = editor.getData();
+
     $.ajax({
         url: "/stem/api/task",
         type: "POST",
@@ -168,4 +172,3 @@ function addIssue() {
 }
 </script>
 {% endblock %}
-

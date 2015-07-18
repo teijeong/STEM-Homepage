@@ -137,16 +137,13 @@ class Task(Resource):
 
 api.add_resource(Task, '/api/task', '/api/task/<int:taskID>')
 
-datatable_task_fields = {
-    'data': fields.List(fields.Nested(simple_task_fields))
-}
 
 class Issue(Resource):
     @member_required
-    @marshal_with(datatable_task_fields)
+    @marshal_with(simple_task_fields)
     def get(self):
-        data = models.Task.query.filter_by(level=1).all()
-        return {'data':data}
+        issues = models.Task.query.filter_by(level=1).all()
+        return issues
 
 api.add_resource(Issue, '/api/issue')
 
@@ -169,7 +166,7 @@ class TaskComment(Resource):
             0, current_user.member, task)
         db.session.add(task_comment)
         db.session.commit()
-        return task_comment
+        return str(task_comment)
 
     @member_required
     def get(self, commentID):

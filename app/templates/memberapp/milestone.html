@@ -1,4 +1,4 @@
- {% extends "memberapp/base.html" %}
+{% extends "memberapp/base.html" %}
  {% block content %}
  <section class="content-header">
           <h1>
@@ -394,11 +394,80 @@
         </section><!-- /.content -->
 {% endblock %}
 
+{% block modals %}
+<div class="modal-dialog" id="add-contributor">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">Issues</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box">
+                <div class="box-body">
+                    <table id="issues" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
+            <button type="button" class="btn btn-primary" onclick="addMilestone()">Add</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div>
+
+<div class="modal-dialog" id="add-contributor">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">New Milestone</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box">
+                <div class="box-body">
+                    <table id="members" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                            <th>기수</th>
+                            <th>이름</th>
+                            <th>전공</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
+            <button type="button" class="btn btn-primary" onclick="addMilestone()">Add</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div>
+{% endblock %}
+
+{% block styles %}
+<link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
+{% endblock %}
+
 {% block scripts %}
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+
 <script type="text/javascript">
 function addComment() {
   var title = $("#comment-title").val();
   var body = $("#comment-body").val();
+  if (title === "") return;
+  $("#comment-title").val("");
+  $("#comment-body").val("");
   $.ajax({
     url: "/stem/api/task_comment",
     type:"POST",
@@ -412,5 +481,88 @@ function addComment() {
     }
   });
 }
+
+var Issue = function(id, local_id, name, stat, priority) {
+    this.id = id;
+    this.local_id = local_id;
+    this.name = name;
+    this.stat = stat;
+    this.priority = priority;
+};
+
+var Member = function(id, name, creator) {
+    this.id = id;
+    this.name = name;
+    this.creator = creator || false;
+};
+
+var issues = [
+    {% for issue in milestone.children %}
+    new Issue({{issue.id}}, {{issue.local_id}}, "{{issue.name}}",
+        {{issue.status}}, {{issue.priority}}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+];
+
+var contributors = [
+    {% for member in milestone.contributors %}
+    new Member({{member.id}}, "{{member.user.nickname}}"),
+    {% endfor %}
+    new Member({{milestone.creator.id}}, "{{milestone.creator.user.nickname}}", true)
+];
+
+function addIssue(issueID, init) {
+    if (init || !issues.find(function(e) {e.id === issueID;})) {
+    }
+}
+
+function removeIssue(issueID) {
+}
+
+function addContributor(memberID, init) {
+    if (init || !contributors.find(function(e) {e.id === memberID;})) {
+    }
+}
+
+function removeContributor(memberID) {
+}
+
+
+var issue_table = $('#issues').DataTable({
+    ajax: "/stem/api/issue",
+    dataSrc: "",
+    processing: true,
+    columns: [
+        {data:"local_id"},
+        {data:"name"},
+        {data:"id"}
+        ],
+    columnDefs: [
+        {targets:[2],
+            render: function(data, type, row) {
+                return "<button class='btn btn-primary' onclick='addIssue(" +
+                    data + ">Add</button>";
+            }
+        }
+    ]
+});
+
+var member_table = $('#issues').DataTable({
+    ajax: "/people",
+    dataSrc: "",
+    processing: true,
+    columns: [
+        {data:"cycle"},
+        {data:"user.nickname"},
+        {data:"stem_dept"}
+    ],
+    columnDefs: [
+        {targets:[2],
+            render: function(data, type, row) {
+                return "<button class='btn btn-primary' onclick='addIssue(" +
+                    data + ">Add</button>";
+            }
+        }
+    ]
+});
 </script>
 {% endblock %}
