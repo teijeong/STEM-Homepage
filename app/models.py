@@ -253,7 +253,7 @@ class Task(db.Model):
         if self.level == 0 or self.level == 1:
             recent_task = Task.query.filter_by(level=level). \
                 order_by(Task.local_id.desc()).first()
-            self.local_id = recent_task.local_id + 1
+            self.local_id = (recent_task.local_id or 0) + 1
 
         if self.level == 2:
             if parent:

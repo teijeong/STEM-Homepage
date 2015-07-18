@@ -79,12 +79,13 @@ function addIssue() {
   var description = $("#issue-description").val();
 
   $.ajax({
-    url: "/stem/api/issue",
+    url: "/stem/api/task",
     type:"POST",
     data: {
-      name: name,
-      description: description,
-      milestone: 0
+        name: name,
+        description: description,
+        level: 1,
+        parent: 0
     },
     success: function(data) {
       location.reload();

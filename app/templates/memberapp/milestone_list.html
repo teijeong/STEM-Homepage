@@ -58,7 +58,7 @@
             </div>
             <div class="form-group">
               <label for="milestone-description">Description</label>
-              <div id="milestone-description" contenteditable="true" class="editor"></div>
+              <textarea id="milestone-description"></textarea>
             </div>
         </form>
       </div>
@@ -82,13 +82,22 @@
 
 <script type="text/javascript">
 
-var editor;
-$("#add-milestone").easyModal({
-	onOpen: function() {
-		CKEDITOR.instances['milestone-description'].destroy();
-		editor = CKEDITOR.inline('milestone-description');
-	}
-});
+var editor = CKEDITOR.replace('milestone-description',
+    {toolbarGroups:[
+        { name: 'clipboard',   groups: ['undo' ] },
+        { name: 'links' },
+        { name: 'insert' },
+        { name: 'forms' },
+        { name: 'tools' },
+        { name: 'others' },
+        '/',
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+        { name: 'styles' },
+        { name: 'colors' }]
+    });
+
+$("#add-milestone").easyModal();
 
 
 function showModal() {
