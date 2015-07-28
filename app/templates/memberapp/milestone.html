@@ -1,6 +1,6 @@
 {% extends "memberapp/base.html" %}
- {% block content %}
- <section class="content-header">
+{% block content %}
+<section class="content-header">
           <h1>
             Milestone
             <small>example</small>
@@ -19,7 +19,9 @@
                 <div class="col-md-12">
 <div class="box">
   <div class="box-header with-border">
-    <h3 class="box-title"><small>#{{milestone.local_id}}</small> <strong>{{milestone.name}}</strong></h3>
+    <h3 class="box-title"><small>#{{milestone.local_id}}</small>&nbsp;
+        <strong><span id="milestone-name">{{milestone.name}}</span></strong>&nbsp;
+        <small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small></h3>
     <div class="box-tools pull-right">
       <!-- Buttons, labels, and many other things can be placed here! -->
       <!-- Here is a label for example -->
@@ -39,8 +41,11 @@
     </div>
   </div>
 
-  <div style="margin-bottom:10px;">
-    {{milestone.description | safe }}
+  <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
+    <button onclick="modifyDescription()" class="btn btn-sm btn-default" style="position:absolute;top:-10px;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
+    <div id="milestone-description" style="z-index:0;">
+      {{milestone.description | safe }}
+    </div>
   </div>
 
   <div class="box-group" id="accordion">
@@ -59,6 +64,7 @@
 
 {% for issue in milestone.filter_children(0) %}
 <div class="col-md-4 col-sm-6 col-xs-12">
+<a href="/stem/issue/{{issue.id}}">
 {% if issue.priority == 0 %}
   <div class="info-box bg-red">
 {% else %}
@@ -76,6 +82,7 @@
       </span>
     </div><!-- /.info-box-content -->
   </div>
+</a>
 </div>
 {% endfor %}
 
@@ -96,6 +103,7 @@
             <div class="row">
 {% for issue in milestone.filter_children(1) %}
 <div class="col-md-4 col-sm-6 col-xs-12">
+<a href="/stem/issue/{{issue.id}}">
   {% if issue.priority == 0 %}
   <div class="info-box bg-red">
   {% else %}
@@ -113,6 +121,7 @@
       </span>
     </div><!-- /.info-box-content -->
   </div>
+</a>
 </div>
 {% endfor %}
             </div>
@@ -132,6 +141,7 @@
             <div class="row">
 {% for issue in milestone.filter_children(2) %}
 <div class="col-md-4 col-sm-6 col-xs-12">
+<a href="/stem/issue/{{issue.id}}">
 {% if isssue.priority == 0 %}
   <div class="info-box bg-red">
 {% else %}
@@ -149,15 +159,17 @@
       </span>
     </div><!-- /.info-box-content -->
   </div>
+</a>
 </div>
 {% endfor %}
           </div>
         </div>
       </div>
   </div>
+  <button class="btn btn-primary pull-right">Manage Issues</button>
 </div><!-- /.box-body -->
 <div class="box-footer">
-  <h5>Contributors</h5>
+  <h5>Contributors <small><i class="fa fa-pencil command-elem"></i></small></h5>
   <span class="label label-primary"><i class="fa fa-star"></i> {{milestone.creator.user.nickname}}</span>
   {% for member in milestone.contributors %}
 <span class="label label-primary">{{member.user.nickname}}</span>
@@ -217,7 +229,7 @@
         <h3 class="timeline-header">{{comment.title}}</h3>
             
         <div class="timeline-body">
-			{{comment.body}}
+			{{comment.body | safe}}
         </div>
         <div class='timeline-footer'>
 			<p>
@@ -417,6 +429,9 @@
 <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
 
 <script type="text/javascript">
+
+CKEDITOR.disableAutoInline = true;
+
 function addComment() {
   var title = $("#comment-title").val();
   var body = $("#comment-body").val();
@@ -450,6 +465,9 @@ var Member = function(id, name, creator) {
     this.name = name;
     this.creator = creator || false;
 };
+
+//python None resolution
+var None = undefined;
 
 var issues = [
     {% for issue in milestone.children %}
@@ -519,5 +537,68 @@ var member_table = $('#issues').DataTable({
         }
     ]
 });
+
+function modifyName() {
+    $("#milestone-name").attr("contenteditable", true);
+    $("#milestone-name").focus();
+    var txt = $("#milestone-name").text();
+
+    $("#milestone-name").focusout(function() {
+        $(this).attr("contenteditable", false);
+        var new_txt = $("#milestone-name").text();
+
+        if (new_txt !== txt) {
+          $.ajax({
+            url:"/stem/api/task/" + {{milestone.id}},
+            type:"PUT",
+            data: {
+              name: $("#milestone-name").text()
+            },
+            error: function() {
+              alert("Request failed. Please try again.");
+              $(this).attr("contenteditable", true);
+            }
+          });
+        }
+    });
+
+    $("#milestone-name").keydown(function(event) {
+        if (event.which == 13) {
+          $(this).focusout();
+        }
+    });
+}
+
+var description;
+var editor;
+
+function modifyDescription() {
+  description = $("#milestone-description").html();
+  $("#milestone-description").attr("contenteditable", true);
+  editor = CKEDITOR.inline("milestone-description");
+  $("#milestone-description").after("<button style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
+  $("#milestone-description").after("<button class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
+  $("#milestone-description").focus();
+}
+
+function destroyEditor(confirm) {
+  if (!confirm || !editor.checkDirty()) {
+    $("#milestone-description").html(description);
+  } else {
+    $.ajax({
+      url:"/stem/api/task/" + {{milestone.id}},
+      type: "PUT",
+      data: {
+        description: editor.getData()
+      },
+      success: function(data) {
+
+      }
+    });
+  }
+  editor.destroy();
+  $("#milestone-description").attr("contenteditable",false);
+  $(".editor-control").remove();
+}
 </script>
 {% endblock %}

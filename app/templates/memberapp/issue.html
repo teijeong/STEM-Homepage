@@ -7,8 +7,8 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li><a href="#">UI</a></li>
-    <li class="active">Timeline</li>
+    <li><a href="#">Issue</a></li>
+    <li class="active">Issue page</li>
   </ol>
 </section>
 
@@ -24,23 +24,23 @@
                   <!-- Buttons, labels, and many other things can be placed here! -->
                   <!-- Here is a label for example -->
 				  {% if issue.status == 0 %}
-                  <span class="label label-primary">Opened</span>
+                  <span class="label label-primary issue-status">Opened</span>
 				  {% elif issue.status == 1 %}
-                  <span class="label label-primary">Closed</span>
+                  <span class="label label-primary issue-status">Closed</span>
 				  {% elif issue.status == 2 %}
-                  <span class="label label-primary">Archived</span>
+                  <span class="label label-primary issue-status">Archived</span>
 				  {% elif issue.status == 3 %}
-                  <span class="label label-primary">Inactive</span>
+                  <span class="label label-primary issue-status">Inactive</span>
 				  {% endif %}
 
 				  {% if issue.priority == 0 %}
-                  <span class="label label-danger">Blocker</span>
+                  <span class="label label-danger issue-priority">Blocker</span>
 				  {% elif issue.priority == 1 %}
-                  <span class="label label-danger">Important</span>
+                  <span class="label label-danger issue-priority">Important</span>
 				  {% elif issue.priority == 2 %}
-                  <span class="label label-danger">Normal</span>
+                  <span class="label label-danger issue-priority">Normal</span>
 				  {% elif issue.priority == 3 %}
-                  <span class="label label-danger">Trivial</span>
+                  <span class="label label-danger issue-priority">Trivial</span>
 				  {% endif %}
                 </div><!-- /.box-tools -->
               </div><!-- /.box-header -->

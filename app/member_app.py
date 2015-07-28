@@ -4,7 +4,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal_with
 from functools import wraps
 
-from app import db, models, app
+from app import db, models, app, helper
 
 member_app = Blueprint('member_app', __name__,
                         template_folder='templates/memberapp')
@@ -128,9 +128,97 @@ class Task(Resource):
         db.session.commit()
         return task
 
+    taskModifyParser = reqparse.RequestParser()
+    taskModifyParser.add_argument('name', type=str, default='')
+    taskModifyParser.add_argument('description', type=str, default='')
+    taskModifyParser.add_argument('level', type=int, default=-1)
+    taskModifyParser.add_argument('priority', type=int, default=-1)
+    taskModifyParser.add_argument('status', type=int, default=-1)
+    taskModifyParser.add_argument('deadline', type=int, default=0)
+    taskModifyParser.add_argument('parent', type=int, default=[-1], action='append')
+    taskModifyParser.add_argument('contributor', type=int, default=[-1], action='append')
+
+
+    @member_required
+    @marshal_with(simple_task_fields)
+    def put(self, taskID):
+        task = models.Task.query.get(taskID)
+        if not task:
+            return None, 404
+
+        if current_user.member != task.creator and not current_user.member in task.contributors:
+            return None, 403
+
+        comment_text = ''
+
+        args = self.taskModifyParser.parse_args()
+        if args['name'] != '':
+            task.name = args['name']
+            comment_text += 'Name changed: %s<br>' % task.name
+        if args['description'] != '':
+            task.description = args['description']
+            comment_text += 'Description changed:<p>%s</p>' % task.description
+
+        if args['level'] != -1:
+            pass
+        if args['priority'] != -1:
+            pass
+        if args['status'] != -1:
+            pass
+        if args['deadline'] != 0:
+            pass
+
+        if args['parent'] != [-1]:
+            original_list = [task.id for task in task.parents]
+            add, sub = helper.list_diff(original_list, args['parent'])
+            deleted_tasks = ['#%d %s'%(task.local_id, task.name)
+                for task in task.parents if task.id in sub]
+            task.parents = [task for task in task.parents if not task.id in sub]
+
+            if deleted_tasks != []:
+                comment_text += 'Deleted parents:<br>%s<br>' % (', '.join(deleted_tasks))
+
+            new_tasks = []
+            for taskID in add:
+                parent = models.Task.query.get(taskID)
+                if parent:
+                    task.parents.append(parent)
+                    new_tasks.append('#%d %s'%(parent.local_id, parent.name))
+
+            if new_tasks != []:
+                comment_text += 'New parents:<br>%s<br>' % (', '.join(new_tasks))
+
+        if args['contributor'] != [-1]:
+            original_list = [member.id for member in task.contributors]
+            add, sub = helper.list_diff(original_list, args['contributor'])
+
+            deleted_contributors = ['%s'%member.user.nickname
+                for member in task.contributors if member.id in sub]
+            task.contributors = [member for member in task.contributors if not member.id in sub]
+
+            if deleted_contributors != []:
+                comment_text += 'Dropped contributors:<br>%s<br>' % (', '.join(deleted_contributors))
+
+            new_contributors = []
+            for memberID in add:
+                member = models.Member.query.get(memberID)
+                if pmember:
+                    task.contributors.append(member)
+                    new_tasks.append('%s'%member.user.nickname)
+
+            if new_contributors != []:
+                comment_text += 'New contributors:<br>%s<br>' % (', '.join(new_contributors))
+
+
+        comment_text = '<blockquote>%s</blockquote>' % comment_text
+        modify_comment = models.TaskComment('Task modified', comment_text, 1, current_user.member, task)
+        db.session.add(modify_comment)
+        db.session.commit()
+        return task
+
     @member_required
     def get(self, taskID):
-        issue = models.Task.query.get(taskID)
+        task = models.Task.query.get(taskID)
         if task:
             return str(task)
         return {}
@@ -146,6 +234,19 @@ class Issue(Resource):
         return issues
 
 api.add_resource(Issue, '/api/issue')
+
+class Milestone(Resource):
+    @member_required
+    @marshal_with(simple_task_fields)
+    def get(self):
+        milestones = models.Task.query.filter_by(level=0).all()
+        return milestones
+
+    @member_required
+    def post(self):
+        return None, 501
+
+api.add_resource(Milestone, '/api/milestone')
 
 class TaskComment(Resource):
 
