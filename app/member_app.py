@@ -135,8 +135,12 @@ class Task(Resource):
     taskModifyParser.add_argument('priority', type=int, default=-1)
     taskModifyParser.add_argument('status', type=int, default=-1)
     taskModifyParser.add_argument('deadline', type=int, default=0)
-    taskModifyParser.add_argument('parent', type=int, default=[-1], action='append')
-    taskModifyParser.add_argument('contributor', type=int, default=[-1], action='append')
+    taskModifyParser.add_argument('parent[]', type=int, default=[-1],
+            action='append', dest='parent')
+    taskModifyParser.add_argument('children[]', type=int, default=[-1],
+            action='append', dest='children')
+    taskModifyParser.add_argument('contributor[]', type=int, default=[-1],
+            action='append', dest='contributor')
 
 
     @member_required
@@ -188,8 +192,30 @@ class Task(Resource):
             if new_tasks != []:
                 comment_text += 'New parents:<br>%s<br>' % (', '.join(new_tasks))
 
+        if args['children'] != [-1]:
+            original_list = [task.id for task in task.children]
+            add, sub = helper.list_diff(original_list, args['children'])
+            deleted_tasks = ['#%d %s'%(task.local_id, task.name)
+                for task in task.children if task.id in sub]
+            task.children = [task for task in task.children if not task.id in sub]
+
+            if deleted_tasks != []:
+                comment_text += 'Deleted children:<br>%s<br>' % (', '.join(deleted_tasks))
+
+            new_tasks = []
+            for taskID in add:
+                child = models.Task.query.get(taskID)
+                if child:
+                    task.children.append(child)
+                    new_tasks.append('#%d %s'%(child.local_id, child.name))
+
+            if new_tasks != []:
+                comment_text += 'New children:<br>%s<br>' % (', '.join(new_tasks))
+
+
         if args['contributor'] != [-1]:
             original_list = [member.id for member in task.contributors]
+            original_list.append(task.creator.id)
             add, sub = helper.list_diff(original_list, args['contributor'])
 
             deleted_contributors = ['%s'%member.user.nickname
@@ -202,17 +228,17 @@ class Task(Resource):
             new_contributors = []
             for memberID in add:
                 member = models.Member.query.get(memberID)
-                if pmember:
+                if member:
                     task.contributors.append(member)
-                    new_tasks.append('%s'%member.user.nickname)
+                    new_contributors.append('%s'%member.user.nickname)
 
             if new_contributors != []:
                 comment_text += 'New contributors:<br>%s<br>' % (', '.join(new_contributors))
 
-
-        comment_text = '<blockquote>%s</blockquote>' % comment_text
-        modify_comment = models.TaskComment('Task modified', comment_text, 1, current_user.member, task)
-        db.session.add(modify_comment)
+        if comment_text != '':
+            comment_text = '<blockquote>%s</blockquote>' % comment_text
+            modify_comment = models.TaskComment('Task modified', comment_text, 1, current_user.member, task)
+            db.session.add(modify_comment)
         db.session.commit()
         return task
 
@@ -278,3 +304,37 @@ class TaskComment(Resource):
 
 api.add_resource(TaskComment, '/api/task_comment',
     '/api/task_comment/<int:commentID>')
+
+user_fields = {
+    'nickname': fields.String,
+    'username': fields.String,
+    'email': fields.String
+}
+
+member_fields = {
+    'id': fields.Integer,
+    'cycle': fields.Integer,
+    'stem_dept': fields.String,
+    'dept': fields.String,
+    'cv': fields.String,
+    'comment': fields.String,
+    'img': fields.String,
+    'cover': fields.String,
+    'addr': fields.String,
+    'phone': fields.String,
+    'birthday': fields.String,
+    'user': fields.Nested(user_fields),
+    'social' :fields.String
+}
+
+class Member(Resource):
+    @member_required
+    @marshal_with(member_fields)
+    def get(self, memberID):
+        member = models.Member.query.get(memberID)
+        if not member:
+            return None, 404
+
+        return member
+
+api.add_resource(Member, '/api/member/<int:memberID>')

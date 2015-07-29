@@ -63,7 +63,7 @@
             <div class="row">
 
 {% for issue in milestone.filter_children(0) %}
-<div class="col-md-4 col-sm-6 col-xs-12">
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
 <a href="/stem/issue/{{issue.id}}">
 {% if issue.priority == 0 %}
   <div class="info-box bg-red">
@@ -102,7 +102,7 @@
         <div class="box-body">
             <div class="row">
 {% for issue in milestone.filter_children(1) %}
-<div class="col-md-4 col-sm-6 col-xs-12">
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
 <a href="/stem/issue/{{issue.id}}">
   {% if issue.priority == 0 %}
   <div class="info-box bg-red">
@@ -138,9 +138,9 @@
       </div>
       <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
         <div class="box-body">
-            <div class="row">
+            <div class="row" id="issue-archived">
 {% for issue in milestone.filter_children(2) %}
-<div class="col-md-4 col-sm-6 col-xs-12">
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
 <a href="/stem/issue/{{issue.id}}">
 {% if isssue.priority == 0 %}
   <div class="info-box bg-red">
@@ -166,13 +166,15 @@
         </div>
       </div>
   </div>
-  <button class="btn btn-primary pull-right">Manage Issues</button>
+  <button class="btn btn-primary pull-right" onclick="openIssueModal()">Manage Issues</button>
 </div><!-- /.box-body -->
-<div class="box-footer">
-  <h5>Contributors <small><i class="fa fa-pencil command-elem"></i></small></h5>
+<div class="box-footer" id="contributors">
+  <h5>Contributors <small>
+    <i class="fa fa-pencil command-elem" onclick="openMemberModal()"></i></small>
+  </h5>
   <span class="label label-primary"><i class="fa fa-star"></i> {{milestone.creator.user.nickname}}</span>
   {% for member in milestone.contributors %}
-<span class="label label-primary">{{member.user.nickname}}</span>
+<span class="label label-primary contributor-badge" data-member-id="{{member.id}}">{{member.user.nickname}}</span>
 {% endfor %}
 </div><!-- box-footer -->
 </div><!-- /.box -->
@@ -362,7 +364,7 @@
 {% endblock %}
 
 {% block modals %}
-<div class="modal-dialog" id="add-contributor">
+<div class="modal-dialog" id="add-issue">
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -375,7 +377,8 @@
                         <thead>
                             <tr>
                             <th>#</th>
-                            <th>Name</th>
+                            <th>Issue</th>
+                            <th>Add</th>
                             </tr>
                         </thead>
                     </table>
@@ -383,8 +386,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
-            <button type="button" class="btn btn-primary" onclick="addMilestone()">Add</button>
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeIssueModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="closeIssueModal(true)">Add</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -393,17 +396,19 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">New Milestone</h4>
+            <h4 class="modal-title">Contributors</h4>
         </div>
         <div class="modal-body">
             <div class="box">
                 <div class="box-body">
+                    <div id="modal-contributors"></div>
                     <table id="members" class="table table-bordered table-hover dataTable">
                         <thead>
                             <tr>
                             <th>기수</th>
                             <th>이름</th>
-                            <th>전공</th>
+                            <th>Dept</th>
+                            <th>Add</th>
                             </tr>
                         </thead>
                     </table>
@@ -411,8 +416,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
-            <button type="button" class="btn btn-primary" onclick="addMilestone()">Add</button>
+            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeMemberModal()">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="closeMemberModal(true)">Add</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -431,6 +436,9 @@
 <script type="text/javascript">
 
 CKEDITOR.disableAutoInline = true;
+
+$("#add-issue").easyModal({onClose: closeIssueModal});
+$("#add-contributor").easyModal({onClose: closeMemberModal});
 
 function addComment() {
   var title = $("#comment-title").val();
@@ -483,26 +491,112 @@ var contributors = [
     new Member({{milestone.creator.id}}, "{{milestone.creator.user.nickname}}", true)
 ];
 
+
 function addIssue(issueID, init) {
+
+/*
+{#
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
+<a href="/stem/issue/{{issue.id}}">
+{% if isssue.priority == 0 %}
+  <div class="info-box bg-red">
+{% else %}
+  <div class="info-box bg-red">
+{% endif %}
+    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+    <div class="info-box-content">
+      <span class="info-box-number">#{{issue.local_id}}</span>
+      <span class="info-box-text">{{issue.name}}</span>
+      <div class="progress">
+        <div class="progress-bar" style="width: {{issue.progress}}%"></div>
+      </div>
+      <span class="progress-description">
+        {{issue.progress}}% Complete
+      </span>
+    </div>
+  </div>
+</a>
+</div>
+#}
+*/
     if (init || !issues.find(function(e) {e.id === issueID;})) {
+
     }
 }
+
 
 function removeIssue(issueID) {
+  issue = $(".issue-box[data-issue-id='"+issueID+"']");
+  issue.remove();
+  issues = issue.filter(function(issue) {return issue.id !== issueID;});
 }
 
-function addContributor(memberID, init) {
-    if (init || !contributors.find(function(e) {e.id === memberID;})) {
+function addContributor(memberID) {
+    if (contributor.find(function(m) {return m.id === memberID;})) {
+      alert("already exists.");
+      return;
     }
+    $.ajax({
+      url: "/stem/api/member/" + memberID,
+      type: "GET",
+      success: function(member) {
+        var html = '<span class="label label-primary contributor-badge"' +
+          ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
+          '</span>&nbsp;';
+        $("#contributors").append(html);
+        contributors.push(new Member(member.id, member.user.nickname));
+        $("#modal-contributors").html($("#contributors").html());
+      }
+    });
+}
+
+function updateContributor() {
+  $.ajax({
+    url:"/stem/api/task/" + {{milestone.id}},
+    type:"PUT",
+    data: {
+      contributor: contributors.map(function(mem) {return mem.id;})
+    },
+    error: function() {
+      alert("Error occured while updating contributors");
+    }
+  });
 }
 
 function removeContributor(memberID) {
+  member = $(".contributor-badge[data-member-id='"+memberID+"']");
+  member.remove();
+  $("#modal-contributors").html($("contributors").html());
+  contributors = contributors.filter(function(m) { return m.id !== memberID;});
 }
 
+var member_table = $('#members').DataTable({
+    ajax: {
+      url: "/people",
+      dataSrc: ""
+    },
+    processing: true,
+    columns: [
+        {data:"cycle"},
+        {data:"user.nickname"},
+        {data:"stem_dept"},
+        {data:"id"}
+    ],
+    columnDefs: [
+        {targets:[3],
+            render: function(data, type, row) {
+                return "<button class='btn btn-primary btn-xs' " +
+                "onclick='addContributor(" + data + ")'>Add</button>";
+            }
+        }
+    ]
+});
 
 var issue_table = $('#issues').DataTable({
-    ajax: "/stem/api/issue",
-    dataSrc: "",
+    ajax: {
+      url: "/stem/api/issue",
+      dataSrc: ""
+    },
     processing: true,
     columns: [
         {data:"local_id"},
@@ -512,31 +606,14 @@ var issue_table = $('#issues').DataTable({
     columnDefs: [
         {targets:[2],
             render: function(data, type, row) {
-                return "<button class='btn btn-primary' onclick='addIssue(" +
-                    data + ">Add</button>";
+                return "<button class='btn btn-primary btn-xs' onclick='addIssue(" +
+                    data + ")'>Add</button>";
             }
         }
     ]
 });
 
-var member_table = $('#issues').DataTable({
-    ajax: "/people",
-    dataSrc: "",
-    processing: true,
-    columns: [
-        {data:"cycle"},
-        {data:"user.nickname"},
-        {data:"stem_dept"}
-    ],
-    columnDefs: [
-        {targets:[2],
-            render: function(data, type, row) {
-                return "<button class='btn btn-primary' onclick='addIssue(" +
-                    data + ">Add</button>";
-            }
-        }
-    ]
-});
+
 
 function modifyName() {
     $("#milestone-name").attr("contenteditable", true);
@@ -569,6 +646,26 @@ function modifyName() {
     });
 }
 
+function openMemberModal() {
+  $("#modal-contributors").html($("#contributors").html());
+  $("#add-contributor").trigger('openModal');
+}
+
+function closeMemberModal(update) {
+  if (update) updateContributor();
+  $("#add-contributor").trigger('closeModal');
+}
+
+function openIssueModal() {
+  $("#add-issue").trigger('openModal');
+}
+
+function closeIssueModal(update) {
+  $("#add-issue").trigger('closeModal');
+}
+
+
+
 var description;
 var editor;
 
@@ -592,6 +689,9 @@ function destroyEditor(confirm) {
         description: editor.getData()
       },
       success: function(data) {
+
+      },
+      error: function(data) {
 
       }
     });
