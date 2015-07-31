@@ -11,39 +11,63 @@
 </section>
 
 <section class="content">
- 
+<div class="row">
+  <div class="col-xs-12">
+    <div class="box box-primary">
+      <div class="box-body no-padding">
+        <div id="calendar">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </section>
 {% endblock %}
 
 {% block modals %}
 {% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/fullcalendar.min.css" />
+{% endblock %}
+
 {% block scripts %}
-<script type="text/javascript" src="/static/js/jquery.easyModal.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/fullcalendar.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/gcal.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/lang/ko.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 
-$("#suggestion-modal").easyModal();
-
-function addIssue() {
-  var name = $("#issue-title").val();
-  var description = $("#issue-description").val();
-
-  $.ajax({
-    url: "/stem/api/issue",
-    type:"POST",
-    data: {
-      name: name,
-      description: description,
-      milestone: 0
+$('#calendar').fullCalendar({
+    lang: 'ko',
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'month,agendaWeek,agendaDay'
     },
-    success: function(issue) {
-      $("#suggestion-modal .modal-body").html(
-        "<h4><small>#" + issue.id + "</small> " + issue.name + "</h4>" +
-        "<p>" + issue.description.split("\n").join("<br>") + "</p>");
-      $("#suggestion-modal").trigger("openModal");
+    buttonText: {
+      today: 'today',
+      month: 'month',
+      week: 'week',
+      day: 'day'
+    },
+    googleCalendarApiKey: 'AIzaSyA2C5FY8AH365dq2APeJZe6_BFtSa6quBc',
+    eventSources: [{
+        googleCalendarId: '8qbpapc1361o57ilrajo13j9fs@group.calendar.google.com',
+        color: '#c3d6e0',
+        textColor: '#444'
+    },
+    {
+        googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
+        color: '#e8d197'
+    }],
+    eventClick: function(event) {
+      // opens events in a popup window
+      window.open(event.url, 'gcalevent', 'width=700,height=600');
+      return false;
     }
-  });
-}
+});
+
 </script>
 {% endblock %}
