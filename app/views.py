@@ -171,6 +171,16 @@ def logout():
     logout_user()
     return redirect('/')
 
+@app.errorhandler(401)
+def unauthorized(e):
+    return redirect('/login')
+
+@app.errorhandler(404)
+def unauthorized(e):
+    return render_template('404.html', form=LoginForm()), 404
+
+
+
 class WritePost(Resource):
     def get(self):
         boardParser = reqparse.RequestParser()

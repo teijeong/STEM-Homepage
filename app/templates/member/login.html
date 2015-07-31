@@ -1,39 +1,65 @@
 {% extends "base.html" %}
 {% block container %}
-    <!-- container -->
-    <div id="container">
-        <ul class="nostyle">
-        <li class="nostyle tit_s"><div class="title-img"><span>Login</span></div></li>
-        <li class="nostyle">
+<!-- container -->
 
-            <form name="login" method="post" action="{{ url_for('login') }}" onSubmit="mainLoginInputSendit(login);event.returnValue = false;" style='margin:0;'>
-            <input type='hidden' name='guestCHK' value='<%=guestCHK%>'>
-            <input type='hidden' name='returnURL' value='<%=returnURL%>'>
-            {{ form.hidden_tag() }}
+<style>
+.login_box {border:3px solid #f47a35;height:250px;border-radius:20px;width:600px;padding:10px 30px;}
+h3 {font-size: 20px; line-height: 30px; margin: 20px 0 0 30px;}
+form {
+    padding: 10px;
+    margin: 10px 0  0 140px;
+}
+form * {
+    margin: 2px;
+}
+form button {
+    border: 1px solid #ccc;
+    border-radius: 2px;
+}
+form .btn_login {
+    height: 75px;
+    width: 70px;
+}
 
-            <table width="650" height="290" cellpadding="0" cellspacing="0" class="login">
-                <tr>
-                    <td>
-
-                        <table width="340" cellpadding="0" cellspacing="0" class="logbox">
-                            <tr>
-                                <td><input name="userid" maxlength='15' type=text class="memb" style="width:237px; height:27px;" tabindex="1" onkeydown="mainLoginInputSendit(login);"></td>
-                                <th rowspan="2"><input type="button" title="" value="로그인" class="btn_aqu" tabindex="3" onclick='mainLoginSend(login);' style='cursor:pointer;'></th>
-                            </tr>
-                            <tr>
-                                <td style="padding-top:5px;"><input name="passwd" maxlength='50' type="password" class="memb" style="width:237px; height:27px;" tabindex="2" onkeydown="mainLoginInputSendIt(login);"></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2" style="padding:10px 0;"><input type="button" title="" value="아이디 찾기" class="btn_mid" onclick="javascript:go_menu('id_seek')"> <input type="button" title="" value="비밀번호 찾기" class="btn_mid" onclick="javascript:go_menu('pw_seek')"> <input type="button" title="" value="회원가입" class="btn_mid" onclick="location.href={{ url_for('register') }}"></td>
-                            </tr>
-                        </table>
-
-                    </td>
-                </tr>
-            </table>
-            </form>
-
-        </li>
-        </ul>
+form input {
+    width: 200px;
+    height: 27px;
+}
+form button {
+    height: 25px;
+}
+</style>
+<div id="container">
+    <div class="contain">
+        <div class="s_contents">
+        </div>
+        <div class="con">
+            <ul class="nostyle">
+                <li class="nostyle stit"><div class="title-img"><span>Login</span></div></li>
+            </ul>
+            <article>
+                <div class="login_box">
+                <h3>로그인이 필요한 서비스입니다.</h3>
+                <form name="login" method="post" action="{{ url_for('login') }}" onSubmit="mainLoginInputSendit(login);event.returnValue = false;">
+                {{ form.hidden_tag() }}
+                <div style="height:85px;">
+                    <div style="float:left">
+                        <input name="userid" placeholder=" ID" maxlength='15' type=text class="memb" tabindex="1" onkeydown="mainLoginInputSendit(login);"><br>
+                        <input name="passwd" placeholder=" PW" maxlength='50' type="password" class="memb"tabindex="2" onkeydown="mainLoginInputSendIt(login);">
+                    </div>
+                    <div style="float:left">
+                        <button class="btn_login" tabindex="3" onclick='mainLoginSend(login);'>로그인</button>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn_mid" onclick="location.href={{ url_for('register') }}">회원가입</button>
+                    <button class="btn_mid" onclick="javascript:go_menu('id_seek')">아이디 찾기</button>
+                    <button class="btn_mid" onclick="javascript:go_menu('pw_seek')">비밀번호 찾기</button>
+                </div>
+                </form>
+                <div>
+            </article>
+        </div>
     </div>
+</div>
 {% endblock %}
