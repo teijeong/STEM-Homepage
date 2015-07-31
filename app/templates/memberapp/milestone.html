@@ -2,12 +2,11 @@
 {% block content %}
 <section class="content-header">
           <h1>
-            Milestone
-            <small>example</small>
+            마일스톤
+            <small>큰 프로젝트 단위의 업무입니다</small>
           </h1>
           <ol class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li><a href="#">UI</a></li>
             <li class="active">Milestone</li>
           </ol>
         </section>
@@ -19,7 +18,7 @@
                 <div class="col-md-12">
 <div class="box">
   <div class="box-header with-border">
-    <h3 class="box-title"><small>#{{milestone.local_id}}</small>&nbsp;
+    <h3 class="box-title"><small>M#{{milestone.local_id}}</small>&nbsp;
         <strong><span id="milestone-name">{{milestone.name}}</span></strong>&nbsp;
         <small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small></h3>
     <div class="box-tools pull-right">
@@ -32,12 +31,12 @@
     <div class="col-sm-10">
     <div class="progress progress-sm">
         <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{milestone.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{milestone.progress}}%">
-            <span class="sr-only">{{milestone.progress}}% Complete</span>
+            <span class="sr-only">{{milestone.progress}}% 완료</span>
         </div>
     </div>
     </div>
     <div class="col-sm-2">
-    <span class="text-green">{{milestone.progress}}% Complete</span>
+    <span class="text-green">{{milestone.progress}}% 완료</span>
     </div>
   </div>
 
@@ -54,13 +53,13 @@
       <div class="box-header with-border">
         <h4 class="box-title">
           <span class="" aria-expanded="true" data-toggle="collapse" data-parent="#accordion" href="#collapse-opened" style="cursor:pointer">
-            Opened Issues
+            진행중인 일거리
           </span>
         </h4>
       </div>
       <div style="" aria-expanded="true" id="collapse-opened" class="panel-collapse collapse in">
         <div class="box-body">
-            <div class="row">
+            <div class="row" id="issue-opened">
 
 {% for issue in milestone.filter_children(0) %}
 <div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
@@ -78,7 +77,7 @@
         <div class="progress-bar" style="width: {{issue.progress}}%"></div>
       </div>
       <span class="progress-description">
-        {{issue.progress}}% Complete
+        {{issue.progress}}% 완료
       </span>
     </div><!-- /.info-box-content -->
   </div>
@@ -91,16 +90,16 @@
       </div>
     </div>
     <div class="panel box box-danger">
-      <div class="box-header with-border">
+      <div class="box-header witborder">
         <h4 class="box-title">
           <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-closed" style="cursor:pointer">
-            Closed Issues
+            완료된 일거리
           </span>
         </h4>
       </div>
       <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
         <div class="box-body">
-            <div class="row">
+            <div class="row" id="issue-closed">
 {% for issue in milestone.filter_children(1) %}
 <div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
 <a href="/stem/issue/{{issue.id}}">
@@ -117,7 +116,7 @@
         <div class="progress-bar" style="width: {{issue.progress}}%"></div>
       </div>
       <span class="progress-description">
-        {{issue.progress}}% Complete
+        {{issue.progress}}% 완료
       </span>
     </div><!-- /.info-box-content -->
   </div>
@@ -132,7 +131,7 @@
       <div class="box-header with-border">
         <h4 class="box-title">
           <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-archived" style="cursor:pointer">
-            Archived Issues
+            보관된 일거리
           </span>
         </h4>
       </div>
@@ -155,7 +154,7 @@
         <div class="progress-bar" style="width: {{issue.progress}}%"></div>
       </div>
       <span class="progress-description">
-        {{issue.progress}}% Complete
+        {{issue.progress}}% 완료
       </span>
     </div><!-- /.info-box-content -->
   </div>
@@ -166,42 +165,39 @@
         </div>
       </div>
   </div>
-  <button class="btn btn-primary pull-right" onclick="openIssueModal()">Manage Issues</button>
+  <button class="btn btn-primary pull-right" onclick="openIssueModal()">일거리 관리</button>
 </div><!-- /.box-body -->
 <div class="box-footer" id="contributors">
-  <h5>Contributors <small>
+  <h5>참여자 <small>
     <i class="fa fa-pencil command-elem" onclick="openMemberModal()"></i></small>
   </h5>
   <span class="label label-primary"><i class="fa fa-star"></i> {{milestone.creator.user.nickname}}</span>
   {% for member in milestone.contributors %}
-<span class="label label-primary contributor-badge" data-member-id="{{member.id}}">{{member.user.nickname}}</span>
-{% endfor %}
+    <span class="label label-primary contributor-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
+      <i class="fa fa-times command-elem" style="display:none;" onclick="removeContributor({{member.id}})"></i></span>
+  {% endfor %}
 </div><!-- box-footer -->
 </div><!-- /.box -->
-                </div>
-
+</div>
 				<div class="col-md-12">
-                    <div class="box">
-                      <div class="box-header with-border">
-					  Comment
+          <div class="box">
+            <div class="box-header with-border">
+					  댓글 쓰기
 					  </div>
 					  <div class="box-body">
-                  		<div class="form-group">
-                    		<label>Title</label>
-                    		<input class="form-control" type="text" placeholder="Title" id="comment-title">
-                  		</div>
-                  		<div class="form-group">
-                    		<label>Content</label>
-                    		<textarea class="form-control" rows="3" id="comment-body"></textarea>
-                  		</div>
-                  		<div class="form-group">
-                  			<button onclick="addComment()" type="add" class="btn btn-primary pull-right">Add</button>
-                  		</div>
-                </div>
-
-                
-            </div>
-
+          		<div class="form-group">
+            		<label>제목</label>
+            		<input class="form-control" type="text" placeholder="Title" id="comment-title">
+          		</div>
+          		<div class="form-group">
+            		<label>내용</label>
+            		<textarea class="form-control" rows="3" id="comment-body"></textarea>
+          		</div>
+          		<div class="form-group">
+          			<button onclick="addComment()" type="add" class="btn btn-primary pull-right">쓰기</button>
+          		</div>
+            </div>                
+          </div>
 
           <!-- row -->
           <div class="row">
@@ -239,7 +235,7 @@
             	<span class="label label-info">{{tag.title}}</span>
 			{% endfor %}
 			</p>
-			{% if comment.comment_type == 0 %}
+			{% if comment.comment_type == 2 %}
             	<a class="btn btn-primary btn-xs">See detailed subtask</a>
             	<a class="btn btn-danger btn-xs">Modify subtask</a>
 			{% endif %}
@@ -368,17 +364,25 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">Issues</h4>
+            <h4 class="modal-title">일거리 관리</h4>
         </div>
         <div class="modal-body">
             <div class="box">
                 <div class="box-body">
+                    <div id="modal-issues">
+                    {% for issue in milestone.children %}
+                      <span class="label label-primary issue-badge" data-issue-id="{{issue.id}}">
+                        #{{issue.id}} {{issue.name}}
+                        <i class="fa fa-times command-elem" onclick="removeIssue({{issue.id}})"></i>
+                      </span>
+                    {% endfor %}
+                    </div>
                     <table id="issues" class="table table-bordered table-hover dataTable">
                         <thead>
                             <tr>
                             <th>#</th>
-                            <th>Issue</th>
-                            <th>Add</th>
+                            <th>일거리</th>
+                            <th>추가</th>
                             </tr>
                         </thead>
                     </table>
@@ -386,8 +390,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeIssueModal()">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="closeIssueModal(true)">Add</button>
+            <button type="button" class="btn btn-default pull-left" id="issue-close">취소</button>
+            <button type="button" class="btn btn-primary" onclick="closeIssueModalUpdate()">확인</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -396,7 +400,7 @@
     <div class="modal-content">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">Contributors</h4>
+            <h4 class="modal-title">참여자</h4>
         </div>
         <div class="modal-body">
             <div class="box">
@@ -407,8 +411,8 @@
                             <tr>
                             <th>기수</th>
                             <th>이름</th>
-                            <th>Dept</th>
-                            <th>Add</th>
+                            <th>부서</th>
+                            <th>추가</th>
                             </tr>
                         </thead>
                     </table>
@@ -416,8 +420,8 @@
             </div>
         </div>
         <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeMemberModal()">Cancel</button>
-            <button type="button" class="btn btn-primary" onclick="closeMemberModal(true)">Add</button>
+            <button type="button" class="btn btn-default pull-left" id="member-close">취소</button>
+            <button type="button" class="btn btn-primary" onclick="closeMemberModalUpdate()">확인</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -439,6 +443,15 @@ CKEDITOR.disableAutoInline = true;
 
 $("#add-issue").easyModal({onClose: closeIssueModal});
 $("#add-contributor").easyModal({onClose: closeMemberModal});
+
+$("#member-close").click(function() {
+  $("#add-contributor").trigger('closeModal');
+})
+$("#issue-close").click(function() {
+  $("#add-issue").trigger('closeModal');
+})
+var updated = false;
+var old_issues, old_contributors, old_html;
 
 function addComment() {
   var title = $("#comment-title").val();
@@ -494,45 +507,70 @@ var contributors = [
 
 function addIssue(issueID, init) {
 
-/*
-{#
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
-<a href="/stem/issue/{{issue.id}}">
-{% if isssue.priority == 0 %}
-  <div class="info-box bg-red">
-{% else %}
-  <div class="info-box bg-red">
-{% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}</span>
-      <span class="info-box-text">{{issue.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{issue.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{issue.progress}}% Complete
-      </span>
-    </div>
-  </div>
-</a>
-</div>
-#}
-*/
-    if (init || !issues.find(function(e) {e.id === issueID;})) {
+  var box_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
+  var box_color2 = ['bg-red','bg-green','bg-gray'];
+  var issue_pane = [$("#issue-opened"), $("#issue-closed"), $("#issue-archived")];
+  if (issues.find(function(t) {return t.id === issueID;})) {
+    alert("already exists.");
+    return;
+  }
 
+  $.ajax({
+    url: "/stem/api/task/" + issueID,
+    type: "GET",
+    success: function(issue) {
+      var issuebox_html =
+        "<div class='col-md-4 col-sm-6 col-xs-12 issue-box' data-issue-id='" + issue.id + "'>" +
+          "<a href='/stem/issue/" + issue.id + "'>" +
+          "<div class='info-box " + (issue.status===0?box_color[issue.priority]:box_color2[issue.status]) + "'>" +
+            "<span class='info-box-icon'><i class='fa fa-wrench'></i></span>" +
+            "<div class='info-box-content'>" +
+              "<span class='info-box-number'>#" + issue.local_id + "</span>" +
+              "<span class='info-box-text'>" + issue.name + "</span>" +
+            "<div class='progress'>" +
+              "<div class='progress-bar' style='width:" + issue.progress + "%'></div>" +
+            "</div>" +
+          "<span class='progress-description'>" +
+          issue.progress + "% 완료" +
+        "</span></div></div></a></div>";
+
+      var html =
+        '<span class="label label-primary issue-badge"' +
+        ' data-issue-id=\'' + issue.id + '\'>#' + issue.id + " " + issue.name +
+        '<i class="fa fa-times command-elem" onclick="removeIssue(' +
+          issue.id + ')"></i>' +
+        '</span>';
+      issues.push(new Issue(issue.id, issue.local_id, issue.name, issue.status, issue.priority));
+      issue_pane[issue.status].append(issuebox_html);
+      $("#modal-issues").append(html);
     }
+  });
 }
 
 
 function removeIssue(issueID) {
-  issue = $(".issue-box[data-issue-id='"+issueID+"']");
+  var issue = $(".issue-box[data-issue-id='"+issueID+"']");
   issue.remove();
-  issues = issue.filter(function(issue) {return issue.id !== issueID;});
+  issue = $(".issue-badge[data-issue-id='"+issueID+"']");
+  issue.remove();
+  issues = issues.filter(function(issue) {return issue.id !== issueID;});
+}
+
+function updateIssue() {
+  $.ajax({
+    url:"/stem/api/task/" + {{milestone.id}},
+    type:"PUT",
+    data: {
+      children: issues.map(function(task) {return task.id;})
+    },
+    error: function() {
+      alert("Error occured while updating children");
+    }
+  });
 }
 
 function addContributor(memberID) {
-    if (contributor.find(function(m) {return m.id === memberID;})) {
+    if (contributors.find(function(m) {return m.id === memberID;})) {
       alert("already exists.");
       return;
     }
@@ -542,7 +580,9 @@ function addContributor(memberID) {
       success: function(member) {
         var html = '<span class="label label-primary contributor-badge"' +
           ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
-          '</span>&nbsp;';
+          '<i class="fa fa-times command-elem" onclick="removeContributor(' +
+            member.id + ')"></i>' +
+          '</span>';
         $("#contributors").append(html);
         contributors.push(new Member(member.id, member.user.nickname));
         $("#modal-contributors").html($("#contributors").html());
@@ -647,21 +687,49 @@ function modifyName() {
 }
 
 function openMemberModal() {
+  updated = false;
+  old_contributors = contributors.slice();
+  old_html = $("#contributors").html();
   $("#modal-contributors").html($("#contributors").html());
+  $(".contributor-badge .command-elem").css("display","inline");
   $("#add-contributor").trigger('openModal');
 }
 
-function closeMemberModal(update) {
-  if (update) updateContributor();
+function closeMemberModalUpdate() {
+  updateContributor();
+  updated = true;
   $("#add-contributor").trigger('closeModal');
 }
 
+function closeMemberModal() {
+  if (!updated) {
+    contributors = old_contributors.slice();
+    $("#contributors").html(old_html);
+  }
+  $(".contributor-badge .command-elem").css("display","none");
+}
+
 function openIssueModal() {
+  updated = false;
+  old_issues = issues.slice();
+  old_html = [$("#issue-opened").html(), $("#issue-closed").html(),
+    $("#issue-archived").html(), $("#modal-issues").html()];
   $("#add-issue").trigger('openModal');
 }
 
-function closeIssueModal(update) {
+function closeIssueModalUpdate() {
+  updateIssue();
+  updated = true;
   $("#add-issue").trigger('closeModal');
+}
+
+function closeIssueModal() {
+  if (!updated) {
+    issues = old_issues.slice();
+    var issue_pane = [$("#issue-opened"), $("#issue-closed"),
+      $("#issue-archived"), $("#modal-issues")];
+    for (var i in issue_pane) issue_pane[i].html(old_html[i]);
+  }
 }
 
 

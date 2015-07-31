@@ -1,0 +1,49 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+<section class="content-header">
+    <h1>
+        Welcome to STEM workbench
+        <small>Have a good day!</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li class="active"><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    </ol>
+</section>
+
+<section class="content">
+ 
+</section>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="/static/js/jquery.easyModal.js"></script>
+
+<script type="text/javascript">
+
+$("#suggestion-modal").easyModal();
+
+function addIssue() {
+  var name = $("#issue-title").val();
+  var description = $("#issue-description").val();
+
+  $.ajax({
+    url: "/stem/api/issue",
+    type:"POST",
+    data: {
+      name: name,
+      description: description,
+      milestone: 0
+    },
+    success: function(issue) {
+      $("#suggestion-modal .modal-body").html(
+        "<h4><small>#" + issue.id + "</small> " + issue.name + "</h4>" +
+        "<p>" + issue.description.split("\n").join("<br>") + "</p>");
+      $("#suggestion-modal").trigger("openModal");
+    }
+  });
+}
+</script>
+{% endblock %}

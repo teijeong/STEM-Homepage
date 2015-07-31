@@ -93,6 +93,17 @@ def showSuggestion():
     except TemplateNotFound:
         abort(404)
 
+@member_app.route('/calendar')
+@member_required
+def showCalendar():
+    try:
+        return render_template('calendar.html',
+            member=current_user.member)
+    except TemplateNotFound:
+        abort(404)
+
+
+
 simple_task_fields = {
     'id': fields.Integer,
     'local_id': fields.Integer,
@@ -243,10 +254,11 @@ class Task(Resource):
         return task
 
     @member_required
+    @marshal_with(simple_task_fields)
     def get(self, taskID):
         task = models.Task.query.get(taskID)
         if task:
-            return str(task)
+            return task
         return {}
 
 api.add_resource(Task, '/api/task', '/api/task/<int:taskID>')

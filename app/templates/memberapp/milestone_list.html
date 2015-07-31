@@ -2,12 +2,11 @@
  {% block content %}
  <section class="content-header">
   <h1>
-    Milestone
-    <small>example</small>
+    마일스톤
+    <small>큰 프로젝트 단위의 업무입니다</small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li><a href="#">UI</a></li>
     <li class="active">Milestone</li>
   </ol>
 </section>
@@ -32,7 +31,7 @@
                         <div class="progress-bar" style="width: {{milestone.progress}}%"></div>
                       </div>
                       <span class="progress-description">
-                        {{milestone.progress}}% Complete
+                        {{milestone.progress}}% 완료
                       </span>
                     </div><!-- /.info-box-content -->
                 </div>
@@ -48,23 +47,23 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">New Milestone</h4>
+        <h4 class="modal-title">새 마일스톤</h4>
       </div>
       <div class="modal-body">
         <form role="form">
             <div class="form-group">
-              <label for="milestone-name">Milestone Name</label>
+              <label for="milestone-name">마일스톤 이름</label>
               <input class="form-control" id="milestone-name" type="text">
             </div>
             <div class="form-group">
-              <label for="milestone-description">Description</label>
+              <label for="milestone-description">설명</label>
               <textarea id="milestone-description"></textarea>
             </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
-        <button type="button" class="btn btn-primary" onclick="addMilestone()">Add</button>
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">취소</button>
+        <button type="button" class="btn btn-primary" onclick="addMilestone()">추가</button>
       </div>
     </div><!-- /.modal-content -->
 </div>
