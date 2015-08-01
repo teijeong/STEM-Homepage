@@ -13,35 +13,60 @@
 
         <!-- Main content -->
         <section class="content">
-        
+
             <div class="row">
                 <div class="col-md-12">
 <div class="box">
   <div class="box-header with-border">
     <h3 class="box-title"><small>M#{{milestone.local_id}}</small>&nbsp;
         <strong><span id="milestone-name">{{milestone.name}}</span></strong>&nbsp;
-        <small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small></h3>
+        {% if current_user.member.editable(milestone) %}<small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
     <div class="box-tools pull-right">
       <!-- Buttons, labels, and many other things can be placed here! -->
       <!-- Here is a label for example -->
+      <div class="label select-wrapper">
+        <select class="select-priority" {% if not current_user.member.editable(milestone) %}disabled="true"{% endif %}>
+          <option value="0">급함</option>
+          <option value="1">중요함</option>
+          <option value="2">보통</option>
+          <option value="3">시간날 때</option>
+        </select>
+      </div>&nbsp;
+      <div class="label select-wrapper" {% if not current_user.member.editable(milestone) %}disabled="true"{% endif %}>
+        <select class="select-status">
+          <option value="0">진행중</option>
+          <option value="1">완료</option>
+          <option value="2">보관됨</option>
+        </select>
+      </div>
     </div><!-- /.box-tools -->
   </div><!-- /.box-header -->
 <div class="box-body">
   <div class="row">
     <div class="col-sm-10">
-    <div class="progress progress-sm">
+      <div class="progress progress-sm">
         <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{milestone.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{milestone.progress}}%">
-            <span class="sr-only">{{milestone.progress}}% 완료</span>
+          <span class="sr-only">{{milestone.progress}}% 완료</span>
         </div>
-    </div>
+      </div>
     </div>
     <div class="col-sm-2">
-    <span class="text-green">{{milestone.progress}}% 완료</span>
+      <span class="text-green">{{milestone.progress}}% 완료</span>
+    </div>
+    <div class="col-sm-3 col-sm-offset-9" style="text-align:right;">
+      <h5>마감: <strong id="deadline">{{milestone.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
+      {% if current_user.member.editable(milestone) %}
+      <small><i class="fa fa-pencil command-elem" id="edit-deadline"></i></small>
+      <div id='dtpicker'><input type='text'></div>
+      {% endif %}
+      </h5>
     </div>
   </div>
 
   <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
-    <button onclick="modifyDescription()" class="btn btn-sm btn-default" style="position:absolute;top:-10px;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
+    {% if current_user.member.editable(milestone) %}
+    <button onclick="modifyDescription()" class="btn btn-sm btn-default" style="position:absolute;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
+    {% endif %}
     <div id="milestone-description" style="z-index:0;">
       {{milestone.description | safe }}
     </div>
@@ -165,11 +190,15 @@
         </div>
       </div>
   </div>
+  {% if current_user.member.editable(milestone) %}
   <button class="btn btn-primary pull-right" onclick="openIssueModal()">일거리 관리</button>
+  {% endif %}
 </div><!-- /.box-body -->
 <div class="box-footer" id="contributors">
-  <h5>참여자 <small>
-    <i class="fa fa-pencil command-elem" onclick="openMemberModal()"></i></small>
+  <h5>참여자
+    {% if current_user.member.editable(milestone) %}
+    <small><i class="fa fa-pencil command-elem" onclick="openMemberModal()"></i></small>
+    {% endif %}
   </h5>
   <span class="label label-primary"><i class="fa fa-star"></i> {{milestone.creator.user.nickname}}</span>
   {% for member in milestone.contributors %}
@@ -179,25 +208,26 @@
 </div><!-- box-footer -->
 </div><!-- /.box -->
 </div>
-				<div class="col-md-12">
-          <div class="box">
-            <div class="box-header with-border">
-					  댓글 쓰기
-					  </div>
-					  <div class="box-body">
-          		<div class="form-group">
-            		<label>제목</label>
-            		<input class="form-control" type="text" placeholder="Title" id="comment-title">
-          		</div>
-          		<div class="form-group">
-            		<label>내용</label>
-            		<textarea class="form-control" rows="3" id="comment-body"></textarea>
-          		</div>
-          		<div class="form-group">
-          			<button onclick="addComment()" type="add" class="btn btn-primary pull-right">쓰기</button>
-          		</div>
-            </div>                
-          </div>
+
+<div class="box">
+  <div class="box-header with-border">
+  댓글 쓰기
+  </div>
+  <div class="box-body">
+		<div class="form-group">
+  		<label>제목</label>
+  		<input class="form-control" type="text" placeholder="Title" id="comment-title">
+		</div>
+		<div class="form-group">
+  		<label>내용</label>
+  		<textarea class="form-control" rows="3" id="comment-body"></textarea>
+		</div>
+		<div class="form-group">
+			<button onclick="addComment()" type="add" class="btn btn-primary pull-right">쓰기</button>
+		</div>
+  </div>
+</div>
+
 
           <!-- row -->
           <div class="row">
@@ -205,13 +235,13 @@
               <!-- The time line -->
               <ul class="timeline">
 {% for comment in milestone.comments[::-1] %}
-	{% if loop.first or (not loop.last and 
-		comment.timestamp.strftime('%Y%m%d') != 
+	{% if loop.first or (not loop.last and
+		comment.timestamp.strftime('%Y%m%d') !=
 		milestone.comments[loop.revindex0 - 1].timestamp.strftime('%Y%m%d')) %}
 
 		<li class="time-label">
 			<span class="bg-red">
-				{{ comment.timestamp.strftime('%Y.%m.%d') }}    
+				{{ comment.timestamp.strftime('%Y.%m.%d') }}
 			</span>
 		</li>
     {% endif %}
@@ -225,9 +255,9 @@
     <div class="timeline-item">
     	<span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.member.user.nickname}}</a></span>
         <h3 class="timeline-header">{{comment.title}}</h3>
-            
+
         <div class="timeline-body">
-			{{comment.body | safe}}
+			     {{comment.body | safe}}
         </div>
         <div class='timeline-footer'>
 			<p>
@@ -242,114 +272,7 @@
         </div>
 	</div>
     </li>
-{% endfor %} 
-				<!-- timeline time label -->
-                <li class="time-label">
-                  <span class="bg-red">
-                    30 May. 2015
-                  </span>
-                </li>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-trophy bg-yellow"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> 12:05 by <a href="#">Sunghoon Kim</a></span>
-                    <h3 class="timeline-header">Subtask <small>[#34-2]</small> <em>Lets'get started</em> is done!
-                    <br><small>Issue progress is now 42%</small></h3>
-                    
-                    <div class="timeline-body">
-                        <blockquote>
-                        Let's get started, in any ways.
-                        </blockquote>
-                      <h4>Results:</h4>
-                      Started Member-only page using AdminLTE, and protype designs are filling out!
-                    </div>
-                    <div class='timeline-footer'>
-                        <p><span class="label label-info">subtask #34-2</span></p>
-                        
-                      <a class="btn btn-primary btn-xs">See detailed subtask</a>
-                      <a class="btn btn-danger btn-xs">Modify subtask</a>
-                    </div>
-                  </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-user bg-aqua"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> 1 hour ago</span>
-                    <h3 class="timeline-header no-border"><a href="#">Sejin Kim</a> joined this issue</h3>
-                  </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-gears bg-green"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> 3 hours ago by <a href="#">Dongwoo Lee</a></span>
-                    <h3 class="timeline-header">Subtask <small>[#34-3]</small> <em>Test CRUD</em> is created</h3>
-                    <div class="timeline-body">
-                        <p class="text-green">Subtask progress set to 25%</p>
-                        <blockquote>
-                        Test CRUD of subtasks
-                        </blockquote>
-                    </div>
-                    <div class='timeline-footer'>
-                        <p><span class="label label-info">subtask #34-3</span></p>
-                      <a class="btn btn-danger btn-xs">Modify subtask</a>
-                    </div>
-                  </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline time label -->
-                <li class="time-label">
-                  <span class="bg-red">
-                    28 May. 2015
-                  </span>
-                </li>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-camera bg-purple"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> 2 days ago by <a href="#">Cham Seungwoo</a></span>
-                    <h3 class="timeline-header">3 photos were uploaded for subtask <small>[#34-1]</small> <em>Issue structure</em></h3>
-                    <div class="timeline-body">
-                      <img src="http://placehold.it/200x150" alt="..." class='margin' />
-                      <img src="http://placehold.it/200x150" alt="..." class='margin'/>
-                      <img src="http://placehold.it/200x150" alt="..." class='margin'/>
-                    </div>      
-                      <div class="timeline-footer">
-                            <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">photo</span></p>
-                      </div>
-                  </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline time label -->
-                <li class="time-label">
-                  <span class="bg-red">
-                    25 May. 2015
-                  </span>
-                </li>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <li>
-                  <i class="fa fa-upload bg-purple"></i>
-                  <div class="timeline-item">
-                    <span class="time"><i class="fa fa-clock-o"></i> 5 days ago by <a href="#">Cham Seungwoo</a></span>
-                    <h3 class="timeline-header">A file was uploaded for subtask <small>[#34-1]</small> <em>Issue structure</em></h3>
-                    <div class="timeline-body">
-                        <blockquote>
-                        <a href="#"><i class="fa fa-file"></i> Requirements.txt</a>
-                        </blockquote>
-                    </div>
-                      <div class="timeline-footer">
-                            <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">file</span></p>
-                      </div>
-                  </div>
-                </li>
-                <!-- END timeline item -->
+{% endfor %}
                 <li>
                   <i class="fa fa-clock-o bg-gray"></i>
                 </li>
@@ -372,7 +295,7 @@
                     <div id="modal-issues">
                     {% for issue in milestone.children %}
                       <span class="label label-primary issue-badge" data-issue-id="{{issue.id}}">
-                        #{{issue.id}} {{issue.name}}
+                        #{{issue.local_id}} {{issue.name}}
                         <i class="fa fa-times command-elem" onclick="removeIssue({{issue.id}})"></i>
                       </span>
                     {% endfor %}
@@ -428,12 +351,14 @@
 {% endblock %}
 
 {% block styles %}
-<link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
+<link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css" /  >
+<link href="{{url_for('static', filename='css/bootstrap-datetimepicker.min.css')}}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block scripts %}
 <script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
 <script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/bootstrap-datetimepicker.min.js')}}" type="text/javascript"></script>
 <script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
 <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
 
@@ -450,6 +375,77 @@ $("#member-close").click(function() {
 $("#issue-close").click(function() {
   $("#add-issue").trigger('closeModal');
 })
+
+//python None resolution
+var None = undefined;
+
+
+$(".select-wrapper select").change(function(event) {
+  var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
+  var status_color = ['bg-aqua','bg-green','bg-gray'];
+  var label_width = [0,16,26,36,46,50];
+  var w = label_width[$("option:selected", this).text().length];
+  var i = $(this).val();
+  if ($(this).hasClass("select-priority")) {
+    $(this).parent().removeClass(priority_color.join(' '));
+    $(this).parent().addClass(priority_color[i]);
+    $.ajax({
+      url: "/stem/api/task/{{milestone.id}}",
+      type: "PUT",
+      data: {
+        priority: Number(i)
+      }, error: function(data) {
+        alert("중요도를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+      }
+    });
+  } else {
+    $(this).parent().removeClass(status_color.join(' '));
+    $(this).parent().addClass(status_color[i]);
+    $.ajax({
+      url: "/stem/api/task/{{milestone.id}}",
+      type: "PUT",
+      data: {
+        status: Number(i)
+      }, error: function(data) {
+        alert("상태를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+      }
+    });
+  }
+  $(this).css("width", w + "px");
+});
+
+$(".select-priority").val({{milestone.priority}} || 0);
+$(".select-status").val({{milestone.status}} || 0);
+$(".select-wrapper select").change();
+
+var dtpicker;
+
+$("#edit-deadline").click(function() {
+  $('#dtpicker input').datetimepicker({
+    locale:'ko',
+    defaultDate: moment.unix({{milestone.deadline.timestamp()}})
+  }).focus();
+  dtpicker = $('#dtpicker input').data('DateTimePicker');
+});
+
+$("#dtpicker input").focusout(function() {
+  if(dtpicker.destroyed) return;
+  dtpicker.destroyed = true;
+  var date = dtpicker.date();
+  $("#deadline").text(date.format("YYYY.MM.DD HH:mm"));
+  dtpicker.destroy();
+  $.ajax({
+    url: "/stem/api/task/{{milestone.id}}",
+    type: "PUT",
+    data: {
+      deadline: date.unix()
+    },
+    error :function() {
+      alert("마감일 업데이트 중 오류가 발생했습니다.");
+    }
+  });
+});
+
 var updated = false;
 var old_issues, old_contributors, old_html;
 
@@ -486,9 +482,6 @@ var Member = function(id, name, creator) {
     this.name = name;
     this.creator = creator || false;
 };
-
-//python None resolution
-var None = undefined;
 
 var issues = [
     {% for issue in milestone.children %}
@@ -558,7 +551,7 @@ function removeIssue(issueID) {
 
 function updateIssue() {
   $.ajax({
-    url:"/stem/api/task/" + {{milestone.id}},
+    url:"/stem/api/task/{{milestone.id}}",
     type:"PUT",
     data: {
       children: issues.map(function(task) {return task.id;})
@@ -592,7 +585,7 @@ function addContributor(memberID) {
 
 function updateContributor() {
   $.ajax({
-    url:"/stem/api/task/" + {{milestone.id}},
+    url:"/stem/api/task/{{milestone.id}}",
     type:"PUT",
     data: {
       contributor: contributors.map(function(mem) {return mem.id;})
@@ -606,7 +599,7 @@ function updateContributor() {
 function removeContributor(memberID) {
   member = $(".contributor-badge[data-member-id='"+memberID+"']");
   member.remove();
-  $("#modal-contributors").html($("contributors").html());
+  $("#modal-contributors").html($("#contributors").html());
   contributors = contributors.filter(function(m) { return m.id !== memberID;});
 }
 
@@ -653,37 +646,41 @@ var issue_table = $('#issues').DataTable({
     ]
 });
 
+var task_txt = '';
 
+$("#milestone-name").focusout(function() {
+  if ($(this).attr("contenteditable") === "false") return;
+  $(this).attr("contenteditable", false);
+  var new_txt = $("#milestone-name").text();
+
+  if (new_txt !== task_txt) {
+    $.ajax({
+      url:"/stem/api/task/{{milestone.id}}",
+      type:"PUT",
+      data: {
+        name: $("#milestone-name").text()
+      },
+      error: function() {
+        alert("Request failed. Please try again.");
+        $(this).attr("contenteditable", true);
+      },
+      success: function () {
+        task_txt = new_txt;
+      }
+    });
+  }
+});
+
+$("#milestone-name").keydown(function(event) {
+    if (event.which == 13) {
+      $(this).focusout();
+    }
+});
 
 function modifyName() {
-    $("#milestone-name").attr("contenteditable", true);
-    $("#milestone-name").focus();
-    var txt = $("#milestone-name").text();
-
-    $("#milestone-name").focusout(function() {
-        $(this).attr("contenteditable", false);
-        var new_txt = $("#milestone-name").text();
-
-        if (new_txt !== txt) {
-          $.ajax({
-            url:"/stem/api/task/" + {{milestone.id}},
-            type:"PUT",
-            data: {
-              name: $("#milestone-name").text()
-            },
-            error: function() {
-              alert("Request failed. Please try again.");
-              $(this).attr("contenteditable", true);
-            }
-          });
-        }
-    });
-
-    $("#milestone-name").keydown(function(event) {
-        if (event.which == 13) {
-          $(this).focusout();
-        }
-    });
+  $("#milestone-name").attr("contenteditable", true);
+  $("#milestone-name").focus();
+  task_txt = $("#milestone-name").text();
 }
 
 function openMemberModal() {
@@ -751,7 +748,7 @@ function destroyEditor(confirm) {
     $("#milestone-description").html(description);
   } else {
     $.ajax({
-      url:"/stem/api/task/" + {{milestone.id}},
+      url:"/stem/api/task/{{milestone.id}}",
       type: "PUT",
       data: {
         description: editor.getData()
@@ -768,5 +765,7 @@ function destroyEditor(confirm) {
   $("#milestone-description").attr("contenteditable",false);
   $(".editor-control").remove();
 }
+
+
 </script>
 {% endblock %}

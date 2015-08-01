@@ -32,15 +32,15 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/fullcalendar.min.js" type="text/javascript"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/gcal.js" type="text/javascript"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.3.2/lang/ko.js" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/fullcalendar/ko.js')}}" type="text/javascript"></script>
 
 <script type="text/javascript">
 
 $('#calendar').fullCalendar({
     lang: 'ko',
+    timeFormat: 'h(:mm)t',
     header: {
       left: 'prev,next today',
       center: 'title',

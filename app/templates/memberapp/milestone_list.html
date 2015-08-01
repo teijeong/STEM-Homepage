@@ -9,11 +9,11 @@
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
     <li class="active">Milestone</li>
   </ol>
+  <div class="add-task"><i class="fa fa-plus command-elem" onclick="showModal()"></i></div>
 </section>
 
 <!-- Main content -->
 <section class="content">
-    <i class="add-task fa fa-plus command-elem" onclick="showModal()"></i>
     <div class="row">
         {% for milestone in milestones %}
         <div class="col-md-3 col-sm-4 col-xs-12">
@@ -43,7 +43,7 @@
 {% endblock %}
 
 {% block modals %}
-<div class="modal-dialog" id="add-milestone">
+<div class="modal-dialog" id="add-milestone" style="display:none">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
@@ -81,6 +81,9 @@
 
 <script type="text/javascript">
 
+$("#add-milestone").easyModal();
+$(".modal-dialog").css("display","default");
+
 var editor = CKEDITOR.replace('milestone-description',
     {toolbarGroups:[
         { name: 'clipboard',   groups: ['undo' ] },
@@ -96,7 +99,6 @@ var editor = CKEDITOR.replace('milestone-description',
         { name: 'colors' }]
     });
 
-$("#add-milestone").easyModal();
 
 
 function showModal() {

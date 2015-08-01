@@ -3,6 +3,7 @@ from jinja2 import TemplateNotFound
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal_with
 from functools import wraps
+from datetime import datetime
 
 from app import db, models, app, helper
 
@@ -63,6 +64,20 @@ def showIssue(id):
     except TemplateNotFound:
             abort(404)
 
+
+@member_app.route('/subtask/<int:id>')
+@member_required
+def showSubtask(id):
+    try:
+        task = models.Task.query.get(id)
+        if task and task.level == 2:
+            return render_template('subtask.html', member=current_user.member,
+                task=task)
+        else:
+            abort(404)
+    except TemplateNotFound:
+            abort(404)
+
 @member_app.route('/issue')
 @member_required
 def showIssues():
@@ -112,7 +127,9 @@ simple_task_fields = {
     'priority': fields.Integer,
     'progress': fields.Float,
     'name': fields.String,
-    'description': fields.String
+    'description': fields.String,
+    'deadline': fields.DateTime,
+    'timestamp': fields.DateTime
 }
 
 class Task(Resource):
@@ -122,14 +139,18 @@ class Task(Resource):
         help='Name is required')
     taskParser.add_argument('description', type=str, default='')
     taskParser.add_argument('level', type=int, default=1)
+    taskParser.add_argument('priority', type=int, default=2)
+    taskParser.add_argument('deadline', type=int, default=0)
     taskParser.add_argument('parent', type=int, default=[], action='append')
 
     @member_required
     @marshal_with(simple_task_fields)
     def post(self):
         args = self.taskParser.parse_args()
+        if len(args['parent']) == 1:
+            parent = models.Task.query.get(args['parent'][0])
         task = models.Task(args['level'], args['name'], args['description'],
-            current_user.member)
+            current_user.member, args['priority'], False, args['deadline'], parent)
         if args['parent'] != []:
             for parent_id in args['parent']:
                 parent = models.Task.query.get(parent_id)
@@ -145,6 +166,7 @@ class Task(Resource):
     taskModifyParser.add_argument('level', type=int, default=-1)
     taskModifyParser.add_argument('priority', type=int, default=-1)
     taskModifyParser.add_argument('status', type=int, default=-1)
+    taskModifyParser.add_argument('progress', type=int, default=-1)
     taskModifyParser.add_argument('deadline', type=int, default=0)
     taskModifyParser.add_argument('parent[]', type=int, default=[-1],
             action='append', dest='parent')
@@ -156,32 +178,48 @@ class Task(Resource):
 
     @member_required
     @marshal_with(simple_task_fields)
-    def put(self, taskID):
+    def put(self, taskID, args = None):
         task = models.Task.query.get(taskID)
         if not task:
             return None, 404
 
-        if current_user.member != task.creator and not current_user.member in task.contributors:
-            return None, 403
-
         comment_text = ''
 
-        args = self.taskModifyParser.parse_args()
+        # For non-request updates...
+        if not args:
+            if current_user.member != task.creator and not current_user.member in task.contributors:
+                return None, 403
+            args = self.taskModifyParser.parse_args()
+
+
         if args['name'] != '':
             task.name = args['name']
-            comment_text += 'Name changed: %s<br>' % task.name
+            comment_text += '이름이 변경되었습니다: %s<br>' % task.name
         if args['description'] != '':
             task.description = args['description']
-            comment_text += 'Description changed:<p>%s</p>' % task.description
+            comment_text += '설명이 변경되었습니다:<p>%s</p>' % task.description
 
         if args['level'] != -1:
             pass
-        if args['priority'] != -1:
-            pass
-        if args['status'] != -1:
-            pass
-        if args['deadline'] != 0:
-            pass
+        if args['progress'] != -1 and task.progress != args['progress']:
+            task.progress = args['progress']
+            comment_text += '진행도가 %d%%로 변경되었습니다.'
+            task.update_progress(True)
+
+        if args['priority'] != -1 and args['priority'] != task.priority:
+            task.priority = args['priority']
+            priority_text = ['[급함]으로','[중요함]으로','[보통]으로','[시간날 때]로']
+            comment_text += '중요도가 %s 변경되었습니다.' % priority_text[task.priority]
+
+        if args['status'] != -1 and args['status'] != task.status:
+            status_text = ['[진행 중]으로', '[완료]로', '[보관됨]으로']
+            task.status = args['status']
+            comment_text += '상태가 %s 변경되었습니다.' % status_text[task.status]
+
+        if args['deadline'] !=  0:
+            if args['deadline'] != int(task.deadline.timestamp()):
+                task.deadline = datetime.fromtimestamp(args['deadline'])
+                comment_text += '마감일이 변경되었습니다: %s' % task.deadline.strftime('%Y.%m.%d %H:%M')
 
         if args['parent'] != [-1]:
             original_list = [task.id for task in task.parents]
@@ -191,7 +229,7 @@ class Task(Resource):
             task.parents = [task for task in task.parents if not task.id in sub]
 
             if deleted_tasks != []:
-                comment_text += 'Deleted parents:<br>%s<br>' % (', '.join(deleted_tasks))
+                comment_text += '제외된 상위 업무:<br>%s<br>' % (', '.join(deleted_tasks))
 
             new_tasks = []
             for taskID in add:
@@ -201,7 +239,7 @@ class Task(Resource):
                     new_tasks.append('#%d %s'%(parent.local_id, parent.name))
 
             if new_tasks != []:
-                comment_text += 'New parents:<br>%s<br>' % (', '.join(new_tasks))
+                comment_text += '추가된 상위 업무:<br>%s<br>' % (', '.join(new_tasks))
 
         if args['children'] != [-1]:
             original_list = [task.id for task in task.children]
@@ -211,7 +249,7 @@ class Task(Resource):
             task.children = [task for task in task.children if not task.id in sub]
 
             if deleted_tasks != []:
-                comment_text += 'Deleted children:<br>%s<br>' % (', '.join(deleted_tasks))
+                comment_text += '제거된 하위 업무:<br>%s<br>' % (', '.join(deleted_tasks))
 
             new_tasks = []
             for taskID in add:
@@ -221,7 +259,7 @@ class Task(Resource):
                     new_tasks.append('#%d %s'%(child.local_id, child.name))
 
             if new_tasks != []:
-                comment_text += 'New children:<br>%s<br>' % (', '.join(new_tasks))
+                comment_text += '새 하위 업무:<br>%s<br>' % (', '.join(new_tasks))
 
 
         if args['contributor'] != [-1]:
@@ -234,7 +272,7 @@ class Task(Resource):
             task.contributors = [member for member in task.contributors if not member.id in sub]
 
             if deleted_contributors != []:
-                comment_text += 'Dropped contributors:<br>%s<br>' % (', '.join(deleted_contributors))
+                comment_text += '제외된 참여자:<br>%s<br>' % (', '.join(deleted_contributors))
 
             new_contributors = []
             for memberID in add:
@@ -244,11 +282,11 @@ class Task(Resource):
                     new_contributors.append('%s'%member.user.nickname)
 
             if new_contributors != []:
-                comment_text += 'New contributors:<br>%s<br>' % (', '.join(new_contributors))
+                comment_text += '새 참여자:<br>%s<br>' % (', '.join(new_contributors))
 
         if comment_text != '':
             comment_text = '<blockquote>%s</blockquote>' % comment_text
-            modify_comment = models.TaskComment('Task modified', comment_text, 1, current_user.member, task)
+            modify_comment = models.TaskComment('내용이 변경되었습니다.', comment_text, 1, current_user.member, task)
             db.session.add(modify_comment)
         db.session.commit()
         return task

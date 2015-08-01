@@ -2,19 +2,20 @@
  {% block content %}
  <section class="content-header">
   <h1>
-    Issues
-    <small>example</small>
+    일거리
+    <small>업무의 주 단위입니다.</small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-    <li><a href="#">UI</a></li>
     <li class="active">issue</li>
   </ol>
+  <div class="add-task">
+    <i class="fa fa-plus command-elem" onclick="showModal()"></i>
+  </div>
 </section>
 
 <!-- Main content -->
 <section class="content">
-    <i class="add-task fa fa-plus command-elem" onclick="showModal()"></i>
     <div class="row">
         <div class="col-xs-12">
             <div class="box">
@@ -23,10 +24,10 @@
                 <thead>
                     <tr>
                     <th>#</th>
-                    <th>Name</th>
-                    <th>Progress</th>
-                    <th>Status</th>
-                    <th>Priority</th>
+                    <th>이름</th>
+                    <th>진행도</th>
+                    <th>상태</th>
+                    <th>중요도</th>
                     </tr>
                 </thead>
             </table>
@@ -38,27 +39,27 @@
 {% endblock %}
 
 {% block modals %}
-<div class="modal-dialog" id="add-issue">
+<div class="modal-dialog" id="add-issue" style="display:none">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">New Issue</h4>
+        <h4 class="modal-title">새 일거리</h4>
       </div>
       <div class="modal-body">
         <form role="form">
             <div class="form-group">
-              <label for="issue-name">Issue Name</label>
+              <label for="issue-name">이름</label>
               <input class="form-control" id="issue-name" type="text">
             </div>
             <div class="form-group">
-              <label for="issue-description">Description</label>
+              <label for="issue-description">설명</label>
               <textarea id="issue-description"></textarea>
             </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">Close</button>
-        <button type="button" class="btn btn-primary" onclick="addIssue()">Add</button>
+        <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">취소</button>
+        <button type="button" class="btn btn-primary" onclick="addIssue()">추가</button>
       </div>
     </div><!-- /.modal-content -->
 </div>
@@ -77,6 +78,7 @@
 <script type="text/javascript">
 
 $("#add-issue").easyModal();
+$(".modal-dialog").css("display","default");
 $('#issue-description').attr('contenteditable',true);
 
 var editor = CKEDITOR.replace('issue-description',
@@ -96,16 +98,16 @@ var editor = CKEDITOR.replace('issue-description',
 
 
 var priority = [
-    "bg-light-blue'>Trivial",
-    "bg-green'>Normal",
-    "bg-yellow'>Important",
-    "bg-red'>BLOCKER"];
+    "bg-red'>급함",
+    "bg-yellow'>중요함",
+    "bg-greed'>보통",
+    "bg-aqua'>시간날 때"];
 
 
 var stats = [
-    "bg-green'>Opened",
-    "bg-light-blue'>Closed",
-    "'>Archived"];
+    "bg-aqua'>진행 중",
+    "bg-green'>완료됨",
+    "bg-gray'>보관됨"];
 
 var table = $('#issues').DataTable({
     ajax: {

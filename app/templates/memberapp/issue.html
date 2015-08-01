@@ -2,8 +2,8 @@
 {% block content %}
 <section class="content-header">
   <h1>
-    Timeline
-    <small>example</small>
+    일거리
+    <small>업무의 주 단위입니다.</small>
   </h1>
   <ol class="breadcrumb">
     <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
@@ -15,64 +15,234 @@
 <!-- Main content -->
 <section class="content">
 
-    <div class="row">
-        <div class="col-md-12">
-            <div class="box">
-              <div class="box-header with-border">
-                <h3 class="box-title"><small>#{{issue.local_id}}</small> <strong>{{issue.name}}</strong></h3>
-                <div class="box-tools pull-right">
-                  <!-- Buttons, labels, and many other things can be placed here! -->
-                  <!-- Here is a label for example -->
-				  {% if issue.status == 0 %}
-                  <span class="label label-primary issue-status">Opened</span>
-				  {% elif issue.status == 1 %}
-                  <span class="label label-primary issue-status">Closed</span>
-				  {% elif issue.status == 2 %}
-                  <span class="label label-primary issue-status">Archived</span>
-				  {% elif issue.status == 3 %}
-                  <span class="label label-primary issue-status">Inactive</span>
-				  {% endif %}
-
-				  {% if issue.priority == 0 %}
-                  <span class="label label-danger issue-priority">Blocker</span>
-				  {% elif issue.priority == 1 %}
-                  <span class="label label-danger issue-priority">Important</span>
-				  {% elif issue.priority == 2 %}
-                  <span class="label label-danger issue-priority">Normal</span>
-				  {% elif issue.priority == 3 %}
-                  <span class="label label-danger issue-priority">Trivial</span>
-				  {% endif %}
-                </div><!-- /.box-tools -->
-              </div><!-- /.box-header -->
-              <div class="box-body">
-                  <div class="row">
-                    <div class="col-sm-10">
-                    <div class="progress progress-sm">
-                        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{issue.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{issue.progress}}%">
-                            <span class="sr-only">{{issue.progress}}% Complete</span>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="col-sm-2">
-                    <span class="text-green">{{issue.progress}}% Complete</span>
-                    </div>
-                  </div>
-				  {{issue.description | safe }}
-              </div><!-- /.box-body -->
-              <div class="box-footer">
-                <h5>Milestones</h5>
-                {% for milestone in issue.parents %}
-				<span class="label label-info"><small>[M#{{milestone.local_id}}]</small> {{milestone.name}}</span>
-				{% endfor %}
-                <h5>Issued started by <span class="label label-primary">{{issue.creator.user.nickname}}</span><br></h5>
-                <h5>Contributors</h5>
-				{% for member in issue.contributors %}
-                <span class="label label-primary">{{member.user.nickname}}</span>
-				{% endfor %}
-              </div><!-- box-footer -->
-            </div><!-- /.box -->
-        </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+<div class="box-header with-border">
+  <h3 class="box-title"><small>#{{issue.local_id}}</small> <strong id="issue-name">{{issue.name}}</strong>
+    {% if current_user.member.editable(issue) %}<small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
+  <div class="box-tools pull-right">
+    <div class="label select-wrapper">
+      <select class="select-priority" {% if not current_user.member.editable(issue) %}disabled="true"{% endif %}>
+        <option value="0">급함</option>
+        <option value="1">중요함</option>
+        <option value="2">보통</option>
+        <option value="3">시간날 때</option>
+      </select>
+    </div>&nbsp;
+    <div class="label select-wrapper" {% if not current_user.member.editable(issue) %}disabled="true"{% endif %}>
+      <select class="select-status">
+        <option value="0">진행중</option>
+        <option value="1">완료</option>
+        <option value="2">보관됨</option>
+      </select>
     </div>
+  </div><!-- /.box-tools -->
+</div><!-- /.box-header -->
+
+<div class="box-body">
+  <div class="row">
+    <div class="col-sm-10">
+      <div class="progress progress-sm">
+          <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{issue.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{issue.progress}}%">
+              <span class="sr-only">{{issue.progress}}% 완료</span>
+          </div>
+      </div>
+    </div>
+    <div class="col-sm-2">
+      <span class="text-green">{{issue.progress}}% 완료</span>
+    </div>
+    <div class="col-sm-3 col-sm-offset-9" style="text-align:right;">
+      <h5>마감: <strong id="deadline">{{issue.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
+        {% if current_user.member.editable(issue) %}
+        <small><i class="fa fa-pencil command-elem" id="edit-deadline"></i></small>
+        <div id='dtpicker'><input type='text'></div>
+        {% endif %}
+      </h5>
+    </div>
+  </div>
+
+  <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
+    {% if current_user.member.editable(issue) %}
+    <button onclick="modifyDescription()" class="btn btn-sm btn-default" style="position:absolute;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
+    {% endif %}
+    <div id="issue-description" style="z-index:0;">
+      {{issue.description | safe }}
+    </div>
+  </div>
+
+    <div class="box-group" id="accordion">
+    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+    <div class="panel box box-primary">
+      <div class="box-header with-border">
+        <h4 class="box-title">
+          <span class="" aria-expanded="true" data-toggle="collapse" data-parent="#accordion" href="#collapse-opened" style="cursor:pointer">
+            진행중인 세부 업무
+          </span>
+        </h4>
+      </div>
+      <div style="" aria-expanded="true" id="collapse-opened" class="panel-collapse collapse in">
+        <div class="box-body">
+            <div class="row" id="issue-opened">
+
+{% for subtask in issue.filter_children(0) %}
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-task-id="{{subtask.id}}">
+<a href="/stem/subtask/{{subtask.id}}">
+{% if subtask.priority == 0 %}
+  <div class="info-box bg-red">
+{% else %}
+  <div class="info-box bg-red">
+{% endif %}
+    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+    <div class="info-box-content">
+      <span class="info-box-number">#{{issue.local_id}}-{{subtask.local_id}}</span>
+      <span class="info-box-text">{{subtask.name}}</span>
+      <div class="progress">
+        <div class="progress-bar" style="width: {{subtask.progress}}%"></div>
+      </div>
+      <span class="progress-description">
+        {{subtask.progress}}% 완료
+      </span>
+    </div><!-- /.info-box-content -->
+  </div>
+</a>
+</div>
+{% endfor %}
+
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel box box-danger">
+      <div class="box-header witborder">
+        <h4 class="box-title">
+          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-closed" style="cursor:pointer">
+            완료된 세부 업무
+          </span>
+        </h4>
+      </div>
+      <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
+        <div class="box-body">
+            <div class="row" id="subtask-closed">
+{% for subtask in issue.filter_children(1) %}
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-task-id="{{subtask.id}}">
+<a href="/stem/subtask/{{subtask.id}}">
+  {% if subtask.priority == 0 %}
+  <div class="info-box bg-red">
+  {% else %}
+  <div class="info-box bg-red">
+  {% endif %}
+    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+    <div class="info-box-content">
+      <span class="info-box-number">#{{issue.local_id}}-{{subtask.local_id}}</span>
+      <span class="info-box-text">{{subtask.name}}</span>
+      <div class="progress">
+        <div class="progress-bar" style="width: {{subtask.progress}}%"></div>
+      </div>
+      <span class="progress-description">
+        {{subtask.progress}}% 완료
+      </span>
+    </div><!-- /.info-box-content -->
+  </div>
+</a>
+</div>
+{% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel box box-success">
+      <div class="box-header with-border">
+        <h4 class="box-title">
+          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-archived" style="cursor:pointer">
+            보관된 세부 업무
+          </span>
+        </h4>
+      </div>
+      <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
+        <div class="box-body">
+            <div class="row" id="subtask-archived">
+{% for subtask in issue.filter_children(2) %}
+<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-task-id="{{subtask.id}}">
+<a href="/stem/subtask/{{subtask.id}}">
+{% if isssue.priority == 0 %}
+  <div class="info-box bg-red">
+{% else %}
+  <div class="info-box bg-red">
+{% endif %}
+    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
+    <div class="info-box-content">
+      <span class="info-box-number">#{{issue.local_id}}-{{subtask.local_id}}</span>
+      <span class="info-box-text">{{subtask.name}}</span>
+      <div class="progress">
+        <div class="progress-bar" style="width: {{subtask.progress}}%"></div>
+      </div>
+      <span class="progress-description">
+        {{subtask.progress}}% 완료
+      </span>
+    </div><!-- /.info-box-content -->
+  </div>
+</a>
+</div>
+{% endfor %}
+          </div>
+        </div>
+      </div>
+  </div>
+  {% if current_user.member.editable(issue) %}
+  <button class="btn btn-primary pull-right" onclick="openIssueModal()">세부 업무 관리</button>
+  {% endif %}
+</div><!-- /.box-body -->
+
+<div class="box-footer">
+  <h5>마일스톤
+    {% if current_user.member.editable(issue) %}
+    <small><i class="fa fa-pencil command-elem" onclick="openMilestoneModal()"></i></small>
+    {% endif %}
+  </h5>
+  <div id="milestones">
+  {% for milestone in issue.parents %}
+		<span class="label label-info issue-badge" data-issue-id="{{milestone.id}}">
+      <small>[M#{{milestone.local_id}}]</small> {{milestone.name}}
+      <i class="fa fa-times command-elem" style="display:none;" onclick="removeMilestone({{milestone.id}})"></i>
+    </span>
+	{% endfor %}
+  </div>
+  <h5>시작한 사람 <span class="label label-primary">{{issue.creator.user.nickname}}</span><br></h5>
+  <h5>참여자
+    {% if current_user.member.editable(issue) %}
+    <small><i class="fa fa-pencil command-elem" onclick="openMemberModal()"></i></small>
+    {% endif %}
+  </h5>
+  <div id="contributors">
+	{% for member in issue.contributors %}
+    <span class="label label-primary contributor-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
+      <i class="fa fa-times command-elem" style="display:none;" onclick="removeContributor({{member.id}})"></i></span>
+	{% endfor %}
+  </div>
+</div><!-- box-footer -->
+
+    </div><!-- /.box -->
+</div>
+
+<div class="box">
+  <div class="box-header with-border">
+  댓글 쓰기
+  </div>
+  <div class="box-body">
+    <div class="form-group">
+      <label>제목</label>
+      <input class="form-control" type="text" placeholder="Title" id="comment-title">
+    </div>
+    <div class="form-group">
+      <label>내용</label>
+      <textarea class="form-control" rows="3" id="comment-body"></textarea>
+    </div>
+    <div class="form-group">
+      <button onclick="addComment()" type="add" class="btn btn-primary pull-right">쓰기</button>
+    </div>
+  </div>
+</div>
 
 
   <!-- row -->
@@ -80,6 +250,46 @@
     <div class="col-md-12">
       <!-- The time line -->
       <ul class="timeline">
+
+{% for comment in issue.comments[::-1] %}
+  {% if loop.first or (not loop.last and
+    comment.timestamp.strftime('%Y%m%d') !=
+    issue.comments[loop.revindex0 - 1].timestamp.strftime('%Y%m%d')) %}
+
+    <li class="time-label">
+      <span class="bg-red">
+        {{ comment.timestamp.strftime('%Y.%m.%d') }}
+      </span>
+    </li>
+    {% endif %}
+
+    <li>
+  {% if comment.comment_type == 0 %}
+      <i class="fa fa-trophy bg-yellow"></i>
+  {% else %}
+        <i class="fa fa-trophy bg-yellow"></i>
+  {% endif %}
+    <div class="timeline-item">
+      <span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.member.user.nickname}}</a></span>
+        <h3 class="timeline-header">{{comment.title}}</h3>
+
+        <div class="timeline-body">
+      {{comment.body | safe}}
+        </div>
+        <div class='timeline-footer'>
+      <p>
+      {% for tag in comment.tags %}
+              <span class="label label-info">{{tag.title}}</span>
+      {% endfor %}
+      </p>
+      {% if comment.comment_type == 2 %}
+              <a class="btn btn-primary btn-xs">See detailed subtask</a>
+              <a class="btn btn-danger btn-xs">Modify subtask</a>
+      {% endif %}
+        </div>
+  </div>
+    </li>
+{% endfor %}
         <!-- timeline time label -->
         <li class="time-label">
           <span class="bg-red">
@@ -88,10 +298,10 @@
         </li>
         <!-- /.timeline-label -->
         <!-- timeline item -->
-		{% for comment in issue.children %}
-		{% if loop.first or 
-			(not loop.last and 
-				comment.timestamp.strftime('%Y%m%d') != issue.children[loop.index0-1].timestamp.strftime('%Y%m%d')) %}
+		{% for comment in issue.comments[::-1] %}
+		{% if loop.first or
+			(not loop.last and
+				comment.timestamp.strftime('%Y%m%d') != issue.comments[loop.index0-1].timestamp.strftime('%Y%m%d')) %}
 		  <li class="time-label">
 			<span class="bg-red">
               {{ comment.timestamp.strftime('%Y.%m.%d') }}
@@ -105,11 +315,11 @@
           <i class="fa fa-trophy bg-yellow"></i>
 		  {% endif %}
           <div class="timeline-item">
-            <span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.author.user.nickname}}</a></span>
-            <h3 class="timeline-header">{{item.title}}</h3>
-            
+            <span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.member.user.nickname}}</a></span>
+            <h3 class="timeline-header">{{comment.title}}</h3>
+
             <div class="timeline-body">
-				{{comment.body}}
+				      {{comment.body | safe}}
             </div>
             <div class='timeline-footer'>
 				<p>
@@ -117,7 +327,7 @@
                 <span class="label label-info">{{tag.title}}</span>
 				{% endfor %}
 				</p>
-			  {% if comment.comment_type == 0 %}
+			  {% if comment.comment_type == 2 %}
               <a class="btn btn-primary btn-xs">See detailed subtask</a>
               <a class="btn btn-danger btn-xs">Modify subtask</a>
 			  {% endif %}
@@ -171,7 +381,7 @@
               <img src="http://placehold.it/200x150" alt="..." class='margin' />
               <img src="http://placehold.it/200x150" alt="..." class='margin'/>
               <img src="http://placehold.it/200x150" alt="..." class='margin'/>
-            </div>      
+            </div>
               <div class="timeline-footer">
                     <p><span class="label label-info">subtask #34-1</span> <span class="label label-warning">photo</span></p>
               </div>
@@ -211,5 +421,655 @@
 </section><!-- /.content -->
 {% endblock %}
 
+
+{% block modals %}
+<div class="modal-dialog" id="add-issue">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">세부 업무 관리</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box">
+                <div class="box-body">
+                    <div id="modal-issues">
+                    {% for subtask in issue.children %}
+                      <span class="label label-primary issue-badge" data-issue-id="{{subtask.id}}">
+                        #{{issue.local_id}}-{{subtask.local_id}} {{subtask.name}}
+                        <i class="fa fa-times command-elem" onclick="removeIssue({{subtask.id}})"></i>
+                      </span>
+                    {% endfor %}
+                    </div>
+                    {#<!--
+                    <table id="issues" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>일거리</th>
+                            <th>추가</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    -->#}
+                    <form role="form">
+                      <div class="form-group">
+                        <label for="issue-name">이름</label>
+                        <input class="form-control" id="subtask-name" type="text">
+                      </div>
+                      <div class="form-group">
+                        <label for="subtask-description">설명</label>
+                        <textarea id="subtask-description"></textarea>
+                      </div>
+                      <button class="pull-right btn btn-primary" onclick="addIssue()">추가</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" id="issue-close">취소</button>
+            <button type="button" class="btn btn-primary" onclick="closeIssueModalUpdate()">확인</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div>
+
+<div class="modal-dialog" id="add-milestone">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">마일스톤 관리</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box">
+                <div class="box-body">
+                    <div id="modal-milestones"></div>
+                    <table id="table-milestones" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                            <th>#</th>
+                            <th>마일스톤</th>
+                            <th>추가</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" id="milestone-close">취소</button>
+            <button type="button" class="btn btn-primary" onclick="closeMilestoneModalUpdate()">확인</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div>
+
+<div class="modal-dialog" id="add-contributor">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+            <h4 class="modal-title">참여자</h4>
+        </div>
+        <div class="modal-body">
+            <div class="box">
+                <div class="box-body">
+                    <div id="modal-contributors"></div>
+                    <table id="members" class="table table-bordered table-hover dataTable">
+                        <thead>
+                            <tr>
+                            <th>기수</th>
+                            <th>이름</th>
+                            <th>부서</th>
+                            <th>추가</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default pull-left" id="member-close">취소</button>
+            <button type="button" class="btn btn-primary" onclick="closeMemberModalUpdate()">확인</button>
+        </div>
+    </div><!-- /.modal-content -->
+</div>
+{% endblock %}
+
+{% block styles %}
+<link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css" /  >
+<link href="{{url_for('static', filename='css/bootstrap-datetimepicker.min.css')}}" rel="stylesheet" type="text/css" />
+{% endblock %}
+
 {% block scripts %}
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/bootstrap-datetimepicker.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+CKEDITOR.disableAutoInline = true;
+
+$("#add-issue").easyModal({onClose: closeIssueModal});
+$("#add-contributor").easyModal({onClose: closeMemberModal});
+$("#add-milestone").easyModal({onClose: closeMemberModal});
+
+$("#member-close").click(function() {
+  $("#add-contributor").trigger('closeModal');
+});
+$("#issue-close").click(function() {
+  $("#add-issue").trigger('closeModal');
+});
+$("#milestone-close").click(function() {
+  $("#add-milestone").trigger('closeModal');
+});
+
+$('#subtask-description').attr('contenteditable',true);
+
+var subtask_editor = CKEDITOR.replace('subtask-description',
+    {toolbarGroups:[
+        { name: 'clipboard',   groups: ['undo' ] },
+        { name: 'links' },
+        { name: 'insert' },
+        { name: 'forms' },
+        { name: 'tools' },
+        { name: 'others' },
+        '/',
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+        { name: 'styles' },
+        { name: 'colors' }]
+    });
+
+//python None resolution
+var None = undefined;
+
+
+$(".select-wrapper select").change(function(event) {
+  var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
+  var status_color = ['bg-aqua','bg-green','bg-gray'];
+  var label_width = [0,16,26,36,46,50];
+  var w = label_width[$("option:selected", this).text().length];
+  var i = $(this).val();
+  if ($(this).hasClass("select-priority")) {
+    $(this).parent().removeClass(priority_color.join(' '));
+    $(this).parent().addClass(priority_color[i]);
+    $.ajax({
+      url: "/stem/api/task/{{issue.id}}",
+      type: "PUT",
+      data: {
+        priority: Number(i)
+      }, error: function(data) {
+        alert("중요도를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+      }
+    });
+  } else {
+    $(this).parent().removeClass(status_color.join(' '));
+    $(this).parent().addClass(status_color[i]);
+    $.ajax({
+      url: "/stem/api/task/{{issue.id}}",
+      type: "PUT",
+      data: {
+        status: Number(i)
+      }, error: function(data) {
+        alert("상태를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+      }
+    });
+  }
+  $(this).css("width", w + "px");
+});
+
+$(".select-priority").val({{issue.priority}} || 0);
+$(".select-status").val({{issue.status}} || 0);
+$(".select-wrapper select").change();
+
+var dtpicker;
+
+$("#edit-deadline").click(function() {
+  $('#dtpicker input').datetimepicker({
+    locale:'ko',
+    defaultDate: moment.unix({{issue.deadline.timestamp()}})
+  }).focus();
+  dtpicker = $('#dtpicker input').data('DateTimePicker');
+});
+
+$("#dtpicker input").focusout(function() {
+  if(dtpicker.destroyed) return;
+  dtpicker.destroyed = true;
+  var date = dtpicker.date();
+  $("#deadline").text(date.format("YYYY.MM.DD HH:mm"));
+  dtpicker.destroy();
+  $.ajax({
+    url: "/stem/api/task/{{issue.id}}",
+    type: "PUT",
+    data: {
+      deadline: date.unix()
+    },
+    error :function() {
+      alert("마감일 업데이트 중 오류가 발생했습니다.");
+    }
+  });
+});
+
+var updated = false;
+var old_issues, old_contributors, old_milestone, old_html;
+
+function addComment() {
+  var title = $("#comment-title").val();
+  var body = $("#comment-body").val();
+  if (title === "") return;
+  $("#comment-title").val("");
+  $("#comment-body").val("");
+  $.ajax({
+    url: "/stem/api/task_comment",
+    type:"POST",
+    data: {
+      title: title,
+      body: body,
+      task_id: {{issue.id}}
+    },
+    success: function(data) {
+      location.reload();
+    }
+  });
+}
+
+var Issue = function(id, local_id, name, stat, priority) {
+    this.id = id;
+    this.local_id = local_id;
+    this.name = name;
+    this.stat = stat;
+    this.priority = priority;
+};
+
+var Member = function(id, name, creator) {
+    this.id = id;
+    this.name = name;
+    this.creator = creator || false;
+};
+
+var milestones = [
+    {% for task in issue.parents %}
+    new Issue({{task.id}}, {{task.local_id}}, "{{task.name}}",
+        {{task.status}}, {{task.priority}}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+];
+
+var issues = [
+    {% for issue in issue.children %}
+    new Issue({{issue.id}}, {{issue.local_id}}, "{{issue.name}}",
+        {{issue.status}}, {{issue.priority}}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+];
+
+var contributors = [
+    {% for member in issue.contributors %}
+    new Member({{member.id}}, "{{member.user.nickname}}"),
+    {% endfor %}
+    new Member({{issue.creator.id}}, "{{issue.creator.user.nickname}}", true)
+];
+
+
+function addIssue() {
+  var box_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
+  var box_color2 = ['bg-red','bg-green','bg-gray'];
+  var issue_pane = [$("#issue-opened"), $("#issue-closed"), $("#issue-archived")];
+  var name = $("#subtask-name").val();
+  var description = subtask_editor.getData();
+  $.ajax({
+    url: "/stem/api/task",
+    type: "POST",
+    data: {
+        name: name,
+        description: description,
+        level: 2,
+        parent: {{issue.id}},
+        priority: 0
+    },
+    success: function(issue) {
+      var issuebox_html =
+        "<div class='col-md-4 col-sm-6 col-xs-12 issue-box' data-issue-id='" + issue.id + "'>" +
+          "<a href='/stem/subtask/" + issue.id + "'>" +
+          "<div class='info-box " + (issue.status===0?box_color[issue.priority]:box_color2[issue.status]) + "'>" +
+            "<span class='info-box-icon'><i class='fa fa-wrench'></i></span>" +
+            "<div class='info-box-content'>" +
+              "<span class='info-box-number'>#" + issue.local_id + "</span>" +
+              "<span class='info-box-text'>" + issue.name + "</span>" +
+            "<div class='progress'>" +
+              "<div class='progress-bar' style='width:" + issue.progress + "%'></div>" +
+            "</div>" +
+          "<span class='progress-description'>" +
+          issue.progress + "% 완료" +
+        "</span></div></div></a></div>";
+
+      var html =
+        '<span class="label label-primary issue-badge"' +
+        ' data-issue-id=\'' + issue.id + '\'>#' + issue.id + " " + issue.name +
+        '<i class="fa fa-times command-elem" onclick="removeIssue(' +
+          issue.id + ')"></i>' +
+        '</span>';
+      issues.push(new Issue(issue.id, issue.local_id, issue.name, issue.status, issue.priority));
+      issue_pane[issue.status].append(issuebox_html);
+      $("#modal-issues").append(html);
+    }
+  });
+}
+
+
+function removeIssue(issueID) {
+  var issue = $(".issue-box[data-issue-id='"+issueID+"']");
+  issue.remove();
+  issue = $(".issue-badge[data-issue-id='"+issueID+"']");
+  issue.remove();
+  issues = issues.filter(function(issue) {return issue.id !== issueID;});
+}
+
+function updateIssue() {
+  $.ajax({
+    url:"/stem/api/task/" + {{issue.id}},
+    type:"PUT",
+    data: {
+      children: issues.map(function(task) {return task.id;})
+    },
+    error: function() {
+      alert("Error occured while updating children");
+    }
+  });
+}
+function addMilestone(taskID) {
+    if (milestones.find(function(t) {return t.id === taskID;})) {
+      alert("already exists.");
+      return;
+    }
+    $.ajax({
+      url: "/stem/api/task/" + taskID,
+      type: "GET",
+      success: function(task) {
+        var html = '<span class="label label-info issue-badge"' +
+          ' data-issue-id=\'' + task.id + '\'><small>[M#' +
+          task.local_id + '</small> ' + task.name +
+          '<i class="fa fa-times command-elem" onclick="removeMilestone(' +
+            task.id + ')"></i>' +
+          '</span>';
+        $("#milestones").append(html);
+        milestones.push(new Issue(task.id, task.local_id, task.name, task.status, task.priority));
+        $("#modal-milestones").html($("#milestones").html());
+      }
+    });
+}
+
+function updateMilestone() {
+  $.ajax({
+    url:"/stem/api/task/{{issue.id}}",
+    type:"PUT",
+    data: {
+      parent: milestones.map(function(task) {return task.id;})
+    },
+    error: function() {
+      alert("마일스톤을 업데이트하는 중 오류가 발생했습니다.");
+    }
+  });
+}
+
+function removeMilestone(taskID) {
+  task = $(".issue-badge[data-issue-id='"+taskID+"']");
+  task.remove();
+  $("#modal-milestones").html($("#milestones").html());
+  milestones = milestones.filter(function(t) { return t.id !== taskID;});
+}
+
+function addContributor(memberID) {
+    if (contributors.find(function(m) {return m.id === memberID;})) {
+      alert("already exists.");
+      return;
+    }
+    $.ajax({
+      url: "/stem/api/member/" + memberID,
+      type: "GET",
+      success: function(member) {
+        var html = '<span class="label label-primary contributor-badge"' +
+          ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
+          '<i class="fa fa-times command-elem" onclick="removeContributor(' +
+            member.id + ')"></i>' +
+          '</span>';
+        $("#contributors").append(html);
+        contributors.push(new Member(member.id, member.user.nickname));
+        $("#modal-contributors").html($("#contributors").html());
+      }
+    });
+}
+
+function updateContributor() {
+  $.ajax({
+    url:"/stem/api/task/{{issue.id}}",
+    type:"PUT",
+    data: {
+      contributor: contributors.map(function(mem) {return mem.id;})
+    },
+    error: function() {
+      alert("Error occured while updating contributors");
+    }
+  });
+}
+
+function removeContributor(memberID) {
+  member = $(".contributor-badge[data-member-id='"+memberID+"']");
+  member.remove();
+  $("#modal-contributors").html($("#contributors").html());
+  contributors = contributors.filter(function(m) { return m.id !== memberID;});
+}
+
+var member_table = $('#members').DataTable({
+    ajax: {
+      url: "/people",
+      dataSrc: ""
+    },
+    processing: true,
+    columns: [
+        {data:"cycle"},
+        {data:"user.nickname"},
+        {data:"stem_dept"},
+        {data:"id"}
+    ],
+    columnDefs: [
+        {targets:[3],
+            render: function(data, type, row) {
+                return "<button class='btn btn-primary btn-xs' " +
+                "onclick='addContributor(" + data + ")'>Add</button>";
+            }
+        }
+    ]
+});
+/*
+var issue_table = $('#subtasks').DataTable({
+    ajax: {
+      url: "/stem/api/subtask/{{issue.id}}",
+      dataSrc: ""
+    },
+    processing: true,
+    columns: [
+        {data:"local_id"},
+        {data:"name"},
+        {data:"id"}
+        ],
+    columnDefs: [
+        {targets:[0],
+          render: function(data, type, row) {
+            return "{{issue.local_id}}" + data;
+          }
+        },
+        {targets:[2],
+            render: function(data, type, row) {
+                return "<button class='btn btn-primary btn-xs' onclick='addIssue(" +
+                    data + ")'>Add</button>";
+            }
+        }
+    ]
+});
+*/
+
+var milestone_table = $('#table-milestones').DataTable({
+    ajax: {
+      url: "/stem/api/milestone",
+      dataSrc: ""
+    },
+    processing: true,
+    columns: [
+        {data:"local_id"},
+        {data:"name"},
+        {data:"id"}
+        ],
+    columnDefs: [
+        {targets:[2],
+            render: function(data, type, row) {
+                return "<button class='btn btn-primary btn-xs' onclick='addMilestone(" +
+                    data + ")'>Add</button>";
+            }
+        }
+    ]
+});
+
+
+var issue_txt = '';
+
+$("#issue-name").focusout(function(event) {
+    if ($(this).attr("contenteditable") === "false") return;
+    $(this).attr("contenteditable", false);
+    var new_txt = $("#issue-name").text();
+
+    if (new_txt !== issue_txt) {
+      $.ajax({
+        url:"/stem/api/task/{{issue.id}}",
+        type:"PUT",
+        data: {
+          name: $("#issue-name").text()
+        },
+        error: function() {
+          alert("Request failed. Please try again.");
+          $(this).attr("contenteditable", true);
+        },
+        success: function() {
+          issue_txt = new_txt;
+        }
+      });
+    }
+});
+
+$("#issue-name").keydown(function(event) {
+    if (event.which == 13) {
+      $(this).focusout();
+    }
+});
+
+function modifyName() {
+    $("#issue-name").attr("contenteditable", true);
+    $("#issue-name").focus();
+    txt = $("#issue-name").text();
+}
+
+function openMemberModal() {
+  updated = false;
+  old_contributors = contributors.slice();
+  old_html = $("#contributors").html();
+  $("#modal-contributors").html($("#contributors").html());
+  $(".contributor-badge .command-elem").css("display","inline");
+  $("#add-contributor").trigger('openModal');
+}
+
+function closeMemberModalUpdate() {
+  updateContributor();
+  updated = true;
+  $("#add-contributor").trigger('closeModal');
+}
+
+function closeMemberModal() {
+  if (!updated) {
+    contributors = old_contributors.slice();
+    $("#contributors").html(old_html);
+  }
+  $(".contributor-badge .command-elem").css("display","none");
+}
+
+function openMilestoneModal() {
+  updated = false;
+  old_milestones = milestones.slice();
+  old_html = $("#milestones").html();
+  $("#modal-milestones").html($("#milestones").html());
+  $(".issue-badge .command-elem").css("display","inline");
+  $("#add-milestone").trigger('openModal');
+}
+
+function closeMilestoneModalUpdate() {
+  updateMilestone();
+  updated = true;
+  $("#add-milestone").trigger('closeModal');
+}
+
+function closeMilestoneModal() {
+  if (!updated) {
+    milestones = old_milestones.slice();
+    $("#milestones").html(old_html);
+  }
+  $(".issue-badge .command-elem").css("display","none");
+}
+
+function openIssueModal() {
+  updated = false;
+  old_issues = issues.slice();
+  old_html = [$("#issue-opened").html(), $("#issue-closed").html(),
+    $("#issue-archived").html(), $("#modal-issues").html()];
+  $("#add-issue").trigger('openModal');
+}
+
+function closeIssueModalUpdate() {
+  updateIssue();
+  updated = true;
+  $("#add-issue").trigger('closeModal');
+}
+
+function closeIssueModal() {
+  if (!updated) {
+    issues = old_issues.slice();
+    var issue_pane = [$("#issue-opened"), $("#issue-closed"),
+      $("#issue-archived"), $("#modal-issues")];
+    for (var i in issue_pane) issue_pane[i].html(old_html[i]);
+  }
+}
+
+
+
+var description;
+var editor;
+
+function modifyDescription() {
+  description = $("#issue-description").html();
+  $("#issue-description").attr("contenteditable", true);
+  editor = CKEDITOR.inline("issue-description");
+  $("#issue-description").after("<button style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
+  $("#issue-description").after("<button class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
+  $("#issue-description").focus();
+}
+
+function destroyEditor(confirm) {
+  if (!confirm || !editor.checkDirty()) {
+    $("#issue-description").html(description);
+  } else {
+    $.ajax({
+      url:"/stem/api/task/{{issue.id}}",
+      type: "PUT",
+      data: {
+        description: editor.getData()
+      },
+      success: function(data) {
+
+      },
+      error: function(data) {
+
+      }
+    });
+  }
+  editor.destroy();
+  $("#issue-description").attr("contenteditable",false);
+  $(".editor-control").remove();
+}
+</script>
+
 {% endblock %}

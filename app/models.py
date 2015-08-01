@@ -3,6 +3,7 @@ from app import db
 import datetime
 from sqlalchemy_utils import PasswordType
 from sqlalchemy.ext.declarative import declarative_base
+import math
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,6 +74,12 @@ class Member(db.Model):
         self.cover = ""
         self.addr = ""
         self.social = ""
+
+    def editable(self, task):
+        if isinstance(task, Task):
+            return (self in task.contributors) or (self == task.creator)
+        else:
+            return False
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -231,8 +238,8 @@ class Task(db.Model):
     creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
 
     def __init__(self, level = 0, name='', description='',
-        creator=None, priority = 0, secret = False, deadline = None, parent =
-        None):
+        creator = None, priority = 2, secret = False,
+        deadline = None, parent = None):
 
         self.level = level
         self.name = name
@@ -244,7 +251,8 @@ class Task(db.Model):
         self.prority = priority
         self.secret = secret
         self.timestamp = datetime.datetime.now()
-        self.deadline = deadline or datetime.datetime.now()
+        self.deadline = deadline or \
+            (datetime.datetime.now() + datetime.timedelta(days=7))
         self.status = 0
 
         if parent:
@@ -271,6 +279,16 @@ class Task(db.Model):
 
     def filter_children(self, status):
         return [c for c in self.children if c.status == status]
+
+    def update_progress(self, initial=False):
+        if not initial:
+            sum = 0;
+            for child_task in self.children:
+                sum += child_task.progress
+            self.progress = math.ceil(sum / len(self.children))
+
+        for parent_task in self.parents:
+            parent_task.update_progress()
 
     def __repr__(self):
         return '<#%r %r / %r%%>' % (self.id, self.name, self.progress / 100.0)
