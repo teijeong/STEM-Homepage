@@ -24,6 +24,10 @@
    color: #777;
 }
 
+select.command-elem {
+    color: #fff;
+}
+
 .contributor-badge, .issue-badge {
     margin-right: 2px;
 }

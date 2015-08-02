@@ -1,10 +1,18 @@
 @charset "utf-8";
-/* Web Designer (pusher17@naver.com) SSONG 120418 */
+/* devel-designer Taehee Jeong */
+.command-elem {cursor:pointer;color: #777;}
+.title .comment-count {font-weight:bold;color:#ffac7d;}
 
-title .comment-count {
-    font-weight:bold;
-    color:#6FA2FF;
-}
+.m_notice_img {width:240px;}
+.boards * {box-sizing: border-box;}
+.boards {width:740px;}
+.board {width: 50%;height:140px;padding-right:10px;}
+.board dt {margin-bottom: 10px;}
+.board dt .title {font-size: 15px;font-weight:bold;color:#000;}
+.board .more {float:right;color:#777;}
+.board dd a {background:url('/static/images/ico_dot_gray.gif') left 50% no-repeat;padding-left: 10px;}
+.board .date{float:right;}
+
 
 .title-img {
     width:750px;
@@ -76,6 +84,38 @@ title .comment-count {
     font-size:12px;
     font-weight: bold;
 }
+
+.comment-write button {
+    height: 70px;
+    width: 70px;
+    margin: 3%;
+    border: 1px solid #888;
+    color: #f47a35;
+}
+
+#comments {
+    padding: 10px 0 0;
+    margin: 0;
+}
+#comments li {
+    list-style: none;
+    border-top: 1px dashed #888;
+    padding: 10px 5px;
+}
+
+#comments h3 {
+
+}
+#comments h3 > small {
+    margin-left: 5px;
+}
+#comments .comment-body {
+    padding-left: 15px;
+}
+
+
+
+/* Web Designer (pusher17@naver.com) SSONG 120418 */
 
 /* standard style 정의 */
 body {margin:0px; background:url('../images/bg.gif') top repeat-x; background-color:#ffffff;}
@@ -159,13 +199,13 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .m_con2 {position:relative; margin:30px 0;*zoom:1;}
 .m_con2:after {content:""; display:block; clear:both;}
 .m_con2 div {float:left;}
+
 .m_notice {width:390px; margin:0 30px 0 10px;}
 .m_notice dt {margin-bottom:10px;*zoom:1;}
 .m_notice dt:after {content:""; display:block; clear:both;}
 .m_notice dt em {float:left;}
 .m_notice dt span {float:right;}
 .m_notice dd a {float:left; font-size:11px; width:340px; background:url('../images/ico_dot_gray.gif') left 50% no-repeat; padding-left:8px;}
-.m_notice dd span {float:right; font-size:11px; line-height:1.8em; color:#ffac7d; font-family:"NanumGothic", "Helvetica", "Arial", "돋움";}
 
 .m_qna {width:325px;}
 .m_qna dt {margin-bottom:10px;*zoom:1;}
@@ -174,7 +214,6 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .m_qna dt span {float:right;}
 .m_qna dd a {float:left; font-size:11px; width:275px; background:url('../images/ico_dot_gray.gif') left 50% no-repeat; padding-left:8px;}
 .m_qna dd span {float:right; font-size:11px; line-height:1.8em; color:#ffac7d; font-family:"NanumGothic", "Helvetica", "Arial", "돋움";}
-
 
 #footer .foot {float:left;}
 #footer .foot_familysite {float:right;}
@@ -298,7 +337,7 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .tbl_join,.tbl_join th,.tbl_join td{border:0}
 .tbl_join{width:100%;border-top:1px solid #333; border-bottom:1px solid #999; font-size:12px; table-layout:fixed}
 .tbl_join caption{display:none;}
-.tbl_join .import {background:url('../images/ico_arrow_orange.png') left 50% no-repeat; border-bottom:solid 1px #d2d2d2;background-color:#f0f0f0; color:#222; font-weight:bold;line-height:18px;vertical-align:middle; text-align:left; padding-left:12px;}
+.tbl_join .import {background:url('../images/ico_arrow_orange.png') 5px 50% no-repeat; border-bottom:solid 1px #d2d2d2;background-color:#f0f0f0; color:#222; font-weight:bold;line-height:18px;vertical-align:middle; text-align:left; padding-left:14px;}
 .tbl_join th {padding:5px 0 4px 12px;border-bottom:solid 1px #d2d2d2;background-color:#f0f0f0;color:#222;font-weight:bold;line-height:18px;vertical-align:middle; font-size:11px; text-align:left;}
 .tbl_join td {padding:8px 0 5px 10px;border-bottom:solid 1px #d2d2d2;text-align:left}
 

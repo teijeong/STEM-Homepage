@@ -2,9 +2,10 @@
 
 {% macro PT_BoardTopList(rec, actpage) -%}
     {% for article in rec %}
-        <dd><a href="post/{{article.id}}/view">{{ article.title }}
-        {% if article.new %}<img src="{{url_for('static', filename='images/ico_new.gif')}}"  border='0' alt='NEW' align=absmiddle />{% endif %}
-        </a><span> {{ article.date }} </span></dd>
+        <dd><a class="title" href="post/{{article.id}}/view">{{ article.title }}
+        {% if article.commentCount %} <span class="comment-count">[{{article.commentCount}}]</span>{% endif %}
+        {% if article.new %}<img src="{{url_for('static', filename='images/ico_new.gif')}}"  border='0' alt='NEW'/>{% endif %}
+        </a><span class="date">{{ article.date }}</span></dd>
     {% endfor %}
 {%- endmacro %}                                
 
@@ -32,7 +33,7 @@
             <div class="m_visual">
                 <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cycle.all.min.js') }}"></script>
                 <div class="slideshow1">
-                    {{ PT_MainThumbImage(bannerRec1,730,450,1) }}
+                    {{ PT_MainThumbImage(bannerRec,730,450,1) }}
                 </div>
 
                 <style>
@@ -72,18 +73,15 @@
         </div>
         <div class="m_con2">
             <div class="m_notice_img"><img src="{{ url_for('static', filename='images/m_notice_img.gif') }}" /></div>
-            <div class="m_notice">
-                <dl>
-                    <dt><em><img src="{{ url_for('static', filename='images/m_notice.gif') }}" /></em><span><a href="javascript:go_menu('sub5_1')"><img src="{{ url_for('static', filename='images/btn_more.gif') }}" /></a></span></dt>
-                    
-                    {{ PT_BoardTopList(boardRec1, '/sub/sub5_1') }}
-                </dl>
-            </div>
-            <div class="m_qna">
-                <dl>
-                    <dt><em><img src="{{ url_for('static', filename='images/m_qna.gif') }}" /></em><span><a href="javascript:go_menu('sub5_2')"><img src="{{ url_for('static', filename='images/btn_more.gif') }}" /></a></span></dt>
-                    {{ PT_BoardTopList(boardRec2, '/sub/sub5_2') }}
-                </dl>
+            <div class="boards">
+                {% for board in boards %}
+                <div class="board">
+                    <dl>
+                        <dt><span class="title">{{board.name}}</span><a href="javascript:go_menu('sub5_{{board.id}}')"><span class="more">더보기 <i class="fa fa-chevron-right"></i></a></span></dt>
+                        {{ PT_BoardTopList(boardRec[loop.index0], '/sub/sub5_%d'%board.id ) }}
+                    </dl>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </div>

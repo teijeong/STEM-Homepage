@@ -43,19 +43,7 @@
             <div><div id="HKeditorContent" name="HKeditorContent">{{ post.body | safe}}</div></div>
         </td>
     </tr>
-    <tr>
-        <td colspan="6">
-            <ul id="comments">
-                {% for comment in post.comments %}
-                <li>
-                    <h3>{{comment.author.nickname}}<small>{{post.timestamp.strftime('%Y-%m-%d %H:%M')}}</small></h3>
-                    {{comment.body | nl2br}}
-                </li>
-                {% endfor %}
-            </ul>
-        </td>
-    </tr>
-    <tr>
+    <tr class="comment-write">
         <th>
             Comment
         </th>
@@ -66,21 +54,25 @@
             <button onclick="submitComment()">Post</button>
         </td>
     </tr>
+    <tr>
+        <td colspan="6">
+            <ul id="comments">
+                {% for comment in post.comments %}
+                <li data-comment-id="{{comment.id}}">
+                    <h3>{{comment.author.nickname}}<small>{{comment.timestamp.strftime('%Y-%m-%d %H:%M')}}</small>
+                        {% if comment.author == current_user %} <i onclick="deleteComment({{comment.id}})" class="fa fa-times command-elem"></i>{% endif %}
+                    </h3>
+                    <div class="comment-body">
+                    {{comment.body | nl2br}}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
 </tbody>
 </table>
 
-<!-- 글읽기 S -->
-<form name="boardActfrm" id="boardActfrm" method="get" action="" style="margin:0;">
-<input type="hidden" name="mode">
-<input type="hidden" name="sort">
-<input type="hidden" name="idx">
-<input type="hidden" name="Page" value="<%=Page%>">
-<input type="hidden" name="BBSCode" value="<%=BBSCode%>">
-<input type="hidden" name="serboardsort" value="<%=serboardsort%>">
-<input type="hidden" name="Search" value="<%=Search%>">
-<input type="hidden" name="SearchStr" value="<%=SearchStr%>">
-<input type="hidden" name="prepage" value="<%=prepage%>">
-<input type="hidden" name="storeidx" value="<%=storeidx%>">
 </form>
 
 <div style="float:left; padding: 10px 0;">
@@ -104,10 +96,6 @@
     <button class="button2" onClick="location.href='/sub/5-{{post.board.id }}'" style="cursor:pointer">목록</button>
 </div>
 
-{% if post.board.comment %}
-    <div id="boardCommentDiv" name="boardCommentDiv" style="padding-top:10px;"></div>
-    <script type="text/javascript">viewBoardCommentArea("<%=idx%>","<%=BBscode%>","")</script>
-{% endif %}
 <div style="height:50px;"></div>
 
 <script type="text/javascript">
@@ -124,6 +112,18 @@ function deletePost(id, bid) {
     }
 }
 
+function deleteComment(commentID) {
+    (function($) {
+        $.ajax({
+            url: "/post/comment/" + commentID,
+            type: "DELETE",
+            success: function() {
+                $("li[data-comment-id="+commentID+"]").remove();
+            }
+        });
+    })(jQuery);
+}
+
 function submitComment() {
     (function ($) {
         if($("#comment-text").val() === "") return;
@@ -137,12 +137,14 @@ function submitComment() {
             },
             success: function(data) {
                 data.body.replace("\n","<br>");
-                var text = "<li><h3>"+data.author.nickname+"<small>"+data.timestamp+"</small></h3>"
+                var time = moment(data.timestamp).utcOffset(0);
+                var text = "<li><h3>"+data.author.nickname+"<small>"+time.format('YYYY-MM-DD HH:mm')+"</small></h3>"
                     +data.body+"</li>";
                 $("#comments").append(text);
                 $("comment-text").val("");
             }
-        })
+        });
+        $("#comment-text").val("");
     })(jQuery);
 }
 </script>

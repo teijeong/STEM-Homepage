@@ -55,6 +55,9 @@
         <dd class="menu-item"><a href="javascript:go_menu('sub5_1')" class="{% if sNum == 1 %}on{% endif %}">Notice</a></dd>
         <dd class="menu-item"><a href="javascript:go_menu('sub5_2')" class="{% if sNum == 2 %}on{% endif %}">Q&amp;A</a></dd>
         <dd class="menu-item"><a href="javascript:go_menu('sub5_4')" class="{% if sNum == 4 %}on{% endif %}">자유게시판</a></dd>
+        {% if current_user.member %}
+        <dd class="menu-item"><a href="javascript:go_menu('sub5_5')" class="{% if sNum == 5 %}on{% endif %}">STEM 회원게시판</a></dd>
+        {% endif %}
         </dl>
     </div>
 </div>

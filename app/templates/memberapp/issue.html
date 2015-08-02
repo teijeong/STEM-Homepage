@@ -23,15 +23,15 @@
     {% if current_user.member.editable(issue) %}<small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
   <div class="box-tools pull-right">
     <div class="label select-wrapper">
-      <select class="select-priority" {% if not current_user.member.editable(issue) %}disabled="true"{% endif %}>
+      <select class="select-priority{% if current_user.member.editable(issue) %} command-elem{% else %}" disabled="true{% endif %}">
         <option value="0">급함</option>
         <option value="1">중요함</option>
         <option value="2">보통</option>
         <option value="3">시간날 때</option>
       </select>
     </div>&nbsp;
-    <div class="label select-wrapper" {% if not current_user.member.editable(issue) %}disabled="true"{% endif %}>
-      <select class="select-status">
+    <div class="label select-wrapper">
+      <select class="select-status{% if current_user.member.editable(issue) %} command-elem{% else %}" disabled="true{% endif %}">
         <option value="0">진행중</option>
         <option value="1">완료</option>
         <option value="2">보관됨</option>
@@ -582,16 +582,21 @@ var subtask_editor = CKEDITOR.replace('subtask-description',
 //python None resolution
 var None = undefined;
 
-
+var init_select = 2;
 $(".select-wrapper select").change(function(event) {
   var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
   var status_color = ['bg-aqua','bg-green','bg-gray'];
   var label_width = [0,16,26,36,46,50];
   var w = label_width[$("option:selected", this).text().length];
   var i = $(this).val();
+  $(this).css("width", w + "px");
   if ($(this).hasClass("select-priority")) {
     $(this).parent().removeClass(priority_color.join(' '));
     $(this).parent().addClass(priority_color[i]);
+    if (init_select > 0) {
+      init_select--;
+      return;
+    }
     $.ajax({
       url: "/stem/api/task/{{issue.id}}",
       type: "PUT",
@@ -604,6 +609,10 @@ $(".select-wrapper select").change(function(event) {
   } else {
     $(this).parent().removeClass(status_color.join(' '));
     $(this).parent().addClass(status_color[i]);
+    if (init_select > 0) {
+      init_select--;
+      return;
+    }
     $.ajax({
       url: "/stem/api/task/{{issue.id}}",
       type: "PUT",
@@ -614,7 +623,6 @@ $(".select-wrapper select").change(function(event) {
       }
     });
   }
-  $(this).css("width", w + "px");
 });
 
 $(".select-priority").val({{issue.priority}} || 0);

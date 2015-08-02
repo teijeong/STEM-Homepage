@@ -379,7 +379,7 @@ $("#issue-close").click(function() {
 //python None resolution
 var None = undefined;
 
-
+var init_select = 2;
 $(".select-wrapper select").change(function(event) {
   var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
   var status_color = ['bg-aqua','bg-green','bg-gray'];
@@ -389,6 +389,10 @@ $(".select-wrapper select").change(function(event) {
   if ($(this).hasClass("select-priority")) {
     $(this).parent().removeClass(priority_color.join(' '));
     $(this).parent().addClass(priority_color[i]);
+    if (init_select > 0) {
+      init_select--;
+      return;
+    }
     $.ajax({
       url: "/stem/api/task/{{milestone.id}}",
       type: "PUT",
@@ -401,6 +405,10 @@ $(".select-wrapper select").change(function(event) {
   } else {
     $(this).parent().removeClass(status_color.join(' '));
     $(this).parent().addClass(status_color[i]);
+    if (init_select > 0) {
+      init_select--;
+      return;
+    }
     $.ajax({
       url: "/stem/api/task/{{milestone.id}}",
       type: "PUT",

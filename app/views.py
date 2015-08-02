@@ -15,28 +15,33 @@ def load_user(id):
 
 @app.route('/')
 def main():
-    bannerRec1 = db.session.query(models.Banner).all()
+    bannerRec = db.session.query(models.Banner).all()
 
-    boardRec1 = db.session.query(models.Post).filter_by(
-        board_id=1).order_by(models.Post.timestamp.desc()).limit(5).all()
-    boardRec2 = db.session.query(models.Post).filter_by(
-        board_id=2).order_by(models.Post.timestamp.desc()).limit(5).all()
+    board_ids = [1,2,4]
+    if current_user.member:
+        board_ids.append(5)
+    boardRec = list()
+    boards = list()
 
-    for post in boardRec1:
-        now = datetime.datetime.utcnow()
-        post.date = post.timestamp.strftime('%m.%d')
-        if now - post.timestamp < datetime.timedelta(days=3):
-            post.new = True
+    for bid in board_ids:
+        board = models.Board.query.get(bid)
+        if not board:
+            continue
+        boards.append(board)
+        boardRec.append(
+            db.session.query(models.Post).filter_by(
+                board_id=bid).order_by(models.Post.timestamp.desc()).limit(5).all())
 
-    for post in boardRec2:
-        now = datetime.datetime.utcnow()
-        post.date = post.timestamp.strftime('%m.%d')
-        if now - post.timestamp < datetime.timedelta(days=3):
-            post.new = True
 
+    for rec in boardRec:
+        for post in rec:
+            now = datetime.datetime.utcnow()
+            post.date = post.timestamp.strftime('%m.%d')
+            if now - post.timestamp < datetime.timedelta(days=3):
+                post.new = True
 
     return render_template('main.html',
-        bannerRec1=bannerRec1, boardRec1=boardRec1, boardRec2=boardRec2,
+        bannerRec=bannerRec, boardRec=boardRec, boards=boards,
         form=LoginForm())
 
 @app.route('/sub/<string:sub>')
@@ -318,6 +323,18 @@ class Comment(Resource):
         db.session.commit()
 
         return comment, 201
+
+    @login_required
+    def delete(self, id):
+        comment = models.Comment.query.get(id)
+        if comment:
+            if current_user == comment.author:
+                comment.remove()
+                return True, 200
+            else:
+                return False, 401
+        else:
+            return None, 404
 
 class IdCheck(Resource):
     def post(self):

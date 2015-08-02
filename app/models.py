@@ -4,6 +4,9 @@ import datetime
 from sqlalchemy_utils import PasswordType
 from sqlalchemy.ext.declarative import declarative_base
 import math
+import pytz
+
+timezone = pytz.timezone('Asia/Seoul')
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -150,9 +153,19 @@ class Comment(db.Model):
         self.user_id = userid
         self.post_id = postid
         self.timestamp = datetime.datetime.now()
+        post = models.Post.query.get(postid)
+        if post:
+            post.commentCount += 1
+            db.session.commit()
 
     def __repr__(self):
         return '<Comment %r of Post %r>' % (self.id, self.post_id)
+
+    def remove(self):
+        if self.post:
+            self.post.commentCount -= 1
+        db.session.remove(self)
+        db.session.commit()
 
 class Board(db.Model):
     id = db.Column(db.Integer, primary_key=True)
