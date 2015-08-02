@@ -288,6 +288,7 @@ user_fields = {
 }
 
 comment_fields = {
+    'id': fields.Integer,
     'author': fields.Nested(user_fields),
     'body': fields.String,
     'timestamp': fields.DateTime

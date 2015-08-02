@@ -153,7 +153,7 @@ class Comment(db.Model):
         self.user_id = userid
         self.post_id = postid
         self.timestamp = datetime.datetime.now()
-        post = models.Post.query.get(postid)
+        post = Post.query.get(postid)
         if post:
             post.commentCount += 1
             db.session.commit()
@@ -164,7 +164,7 @@ class Comment(db.Model):
     def remove(self):
         if self.post:
             self.post.commentCount -= 1
-        db.session.remove(self)
+        db.session.delete(self)
         db.session.commit()
 
 class Board(db.Model):

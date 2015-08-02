@@ -114,6 +114,8 @@ function deletePost(id, bid) {
 
 function deleteComment(commentID) {
     (function($) {
+        var r = confirm("정말로 삭제하시겠습니까?");
+        if(!r) return;
         $.ajax({
             url: "/post/comment/" + commentID,
             type: "DELETE",
@@ -138,10 +140,12 @@ function submitComment() {
             success: function(data) {
                 data.body.replace("\n","<br>");
                 var time = moment(data.timestamp).utcOffset(0);
-                var text = "<li><h3>"+data.author.nickname+"<small>"+time.format('YYYY-MM-DD HH:mm')+"</small></h3>"
-                    +data.body+"</li>";
-                $("#comments").append(text);
-                $("comment-text").val("");
+                var text = "<li data-comment-id=" + data.id + "><h3>" +
+                    data.author.nickname + "<small>" + time.format('YYYY-MM-DD HH:mm') +
+                    "</small> <i onclick='deleteComment(" + data.id + ")'" +
+                    "class='fa fa-times command-elem'></i></h3>" + data.body+"</li>";
+                    $("#comments").append(text);
+                    $("comment-text").val("");
             }
         });
         $("#comment-text").val("");
