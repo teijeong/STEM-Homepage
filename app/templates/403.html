@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block container %}
+<!--#include virtual = "{{ url_for('static', filename='inc/top.asp') }}"-->
+    <!--container-->
+    <div id="container">
+        <div class="contain">
+            <div class="s_contents">
+                {% include "right_login.html" %}
+                {% include "left.html" %}
+            </div>
+            <div class="con">
+                <ul class="nostyle">
+                    <li class="nostyle stit"><div class="title-img"><span>403 Forbidden</span></div></li>
+                </ul>
+                <article style="text-align:center;font-weight:bold;font-size:300%;height:400px;">
+                    <span style="line-height:400px;">허가되지 않은 접근입니다..</span>
+                </article>
+            </div>
+        </div>
+    </div>
+    <!--//container-->
+{% endblock %}

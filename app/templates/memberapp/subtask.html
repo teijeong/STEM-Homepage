@@ -34,6 +34,7 @@
         <option value="0">진행중</option>
         <option value="1">완료</option>
         <option value="2">보관됨</option>
+        <option value="3">제외됨</option>
       </select>
     </div>
   </div><!-- /.box-tools -->
@@ -57,8 +58,8 @@
         {% endif %}
     </div>
     <div class="col-sm-12" style="text-align:right;display:none;" id="progress-control">
-      <button class="btn btn-sm btn-danger" id="progress-cancel">취소</button>
-      <button class="btn btn-sm btn-success" id="progress-confirm">확인</button>
+      <button type='button' class="btn btn-sm btn-danger" id="progress-cancel">취소</button>
+      <button type='button' class="btn btn-sm btn-success" id="progress-confirm">확인</button>
     </div>
     <div class="col-sm-3 col-sm-offset-9" style="text-align:right;">
       <h5>마감: <strong id="deadline">{{task.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
@@ -289,7 +290,7 @@ var None = undefined;
 var init_select = 2;
 $(".select-wrapper select").change(function(event) {
   var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
-  var status_color = ['bg-aqua','bg-green','bg-gray'];
+  var status_color = ['bg-aqua','bg-green','bg-gray', 'bg-black'];
   var label_width = [0,16,26,36,46,50];
   var w = label_width[$("option:selected", this).text().length];
   var i = $(this).val();
@@ -594,8 +595,8 @@ function modifyDescription() {
   description = $("#task-description").html();
   $("#task-description").attr("contenteditable", true);
   editor = CKEDITOR.inline("task-description");
-  $("#task-description").after("<button style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
-  $("#task-description").after("<button class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
+  $("#task-description").after("<button type='button' style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
+  $("#task-description").after("<button type='button' class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
   $("#task-description").focus();
 }
 

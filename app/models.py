@@ -232,10 +232,13 @@ class Task(db.Model):
     description = db.Column(db.Unicode(2048))
 
     progress = db.Column(db.Integer)
+    # 0:trivial, 1:normal, 2:important, 3:blocker
     priority = db.Column(db.Integer)
     secret = db.Column(db.Boolean)
+    # 0:opened, 1:closed, 2:archived, 3:inactive(not shown in main)
     status = db.Column(db.Integer)
 
+    # 0:milestone, 1:issue, 2:subtask
     level = db.Column(db.Integer)
     children = db.relationship('Task', secondary=task_task_table,
         primaryjoin=id==task_task_table.c.parent_id,
@@ -261,7 +264,7 @@ class Task(db.Model):
         self.progress = 0
         self.creator = creator
 
-        self.prority = priority
+        self.priority = priority
         self.secret = secret
         self.timestamp = datetime.datetime.now()
         self.deadline = deadline or \
@@ -292,6 +295,18 @@ class Task(db.Model):
 
     def filter_children(self, status):
         return [c for c in self.children if c.status == status]
+
+    def cascade_up(self, func, *args, **kwargs):
+        func(self, *args, **kwargs)
+        for parent in self.parents:
+            if self.level > parent.level:
+                parent.cascade_up(func, *args, **kwargs)
+
+    def cascade_down(self, func):
+        func(self, *args, **kwargs)
+        for child in self.children:
+            if self.level < child.level:
+                child.cascade_down(func, *args, **kwargs)
 
     def update_progress(self, initial=False):
         if not initial:

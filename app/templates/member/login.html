@@ -43,8 +43,8 @@ form button {
                 <div class="login_box">
                 {% if current_user.is_authenticated() %}
                 <div style="text-align:center;margin-top:80px;">
-                    <h3>이미 로그인되어 있습니다.</h3>
-                    <h4 style="margin-top:20px;">{{current_user.nickname}} 님 환영합니다!</h4>
+                    <h3>{{current_user.nickname}}님,허가되지 않은 접근입니다.</h3>
+                    <h4 style="margin-top:20px;">401 Forbidden</h4>
                 </div>
 
                 {% else %}

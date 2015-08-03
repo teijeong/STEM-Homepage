@@ -1,13 +1,18 @@
 #-*-coding: utf-8 -*-
 from app import app, api, db, models, lm
-from flask import render_template, Response, redirect, url_for, request
+from flask import render_template, Response, redirect, url_for, request, abort
 from flask.ext.restful import Resource, reqparse, fields, marshal_with
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask.ext.login import login_user, logout_user, current_user, login_required, AnonymousUserMixin
 from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
 from sqlalchemy import and_
 import datetime
 
+class AnymousUser(AnonymousUserMixin):
+    def __init__(self):
+        super().__init__()
+        self.member = None
 
+lm.anonymous_user = AnymousUser
 
 @lm.user_loader
 def load_user(id):
@@ -62,12 +67,17 @@ def showBoard(sub, page):
     sNum = sub[2]
 
     if mNum == '5':
+        # member board
+        if sNum == '5' and not current_user.member:
+            abort(404)
         pagenation = models.Post.query.filter_by(
             board_id=int(sNum)).order_by(
             models.Post.timestamp.desc()).paginate(
             page, per_page=10)
         board = models.Board.query.get(int(sNum))
 
+        if not board:
+            abort(404)
         
         return render_template('sub' + mNum + '.html',
                 page=page,totalpage=pagenation.pages,
@@ -109,7 +119,9 @@ def showHistory(sub, page):
 def viewPost(id):
     post = models.Post.query.get(id)
     if not post:
-        return redirect('/sub/5-1')
+        return abort(404)
+    if post.board_id == 5 and not current_user.member:
+        return abort(404)
     post.hitCount = post.hitCount + 1
     board = models.Board.query.get(post.board_id)
     db.session.commit()
@@ -122,9 +134,12 @@ def viewPost(id):
 @app.route('/post/<int:id>/reply')
 def replyPost(id):
     board = {}
-    user = {'id':1, 'name':'Fred'}
-    post = {'id':32, 'title': 'test', 'name':'test', 'board':board, 'author':user, 'body':'test','date':'2015-02-14'}
-    return render_template('sub5_2.html',mNum=5, sNum=2,
+    post = models.Post.query.get(id)
+    if not post:
+        return abort(404)
+    if post.board_id == 5 and not current_user.member:
+        return abort(404)
+    return render_template('sub5.html',mNum=5, sNum=post.board_id,
         board=board, mode='reply', post=post,
         form=LoginForm())
 
@@ -180,6 +195,10 @@ def logout():
 def unauthorized(e):
     return redirect('/login')
 
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('403.html', form=LoginForm()), 403
+
 @app.errorhandler(404)
 def unauthorized(e):
     return render_template('404.html', form=LoginForm()), 404
@@ -193,7 +212,11 @@ class WritePost(Resource):
 
         args = boardParser.parse_args()
         board = models.Board.query.get(args['board'])
-        user = models.User.query.get(1)
+        if not board:
+            return abort(400)
+        if board.id == 5 and not current_user.member:
+            return abort(400)
+
         return Response(
             render_template('sub5.html',
                 mNum=5, sNum=args['board'], mode='write', board=board,
@@ -210,6 +233,12 @@ class WritePost(Resource):
         postParser.add_argument('files', type=int, action='append')
 
         args = postParser.parse_args()
+        board = models.Board.query.get(args['boardID'])
+        if not board:
+            return abort(400)
+        if board.id == 5 and not current_user.member:
+            return abort(403)
+
         post = models.Post(
             args['level'], args['title'], args['body'], args['userID'], args['boardID'])
         db.session.add(post)
@@ -225,6 +254,12 @@ class ModifyPost(Resource):
     @login_required
     def get(self, id):
         post = models.Post.query.get(id)
+
+        if not post:
+            return abort(404)
+
+        if post.board_id == 5 and not current_user.member:
+            return abort(403)
 
         if current_user.id != post.user_id:
             return Response(
@@ -249,6 +284,12 @@ class ModifyPost(Resource):
 
         args = postParser.parse_args()
         post = models.Post.query.get(id)
+
+        if not post:
+            return abort(404)
+            
+        if post.board_id == 5 and not current_user.member:
+            return abort(403)
 
         if current_user.id != post.user_id:
             return Response(
@@ -276,7 +317,6 @@ class DeletePost(Resource):
         if current_user.id != post.user_id:
             return "Not Allowed", 403
 
-        board_id = post.board_id
         db.session.delete(post)
         db.session.commit()
         return "Success", 200
@@ -317,8 +357,6 @@ class Comment(Resource):
             return None, 404
         comment = models.Comment(
             args['body'], args['userID'], args['postID'])
-
-        post.commentCount += 1 ;
 
         db.session.add(comment)
         db.session.commit()

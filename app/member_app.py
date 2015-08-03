@@ -3,6 +3,8 @@ from jinja2 import TemplateNotFound
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal_with
 from functools import wraps
+
+from sqlalchemy import or_, and_
 from datetime import datetime
 
 from app import db, models, app, helper
@@ -24,8 +26,23 @@ def member_required(func):
 @member_app.route('/')
 @member_required
 def main():
+
+    member = current_user.member
+
+    task_levels = [0,1,2]
+    task_lists = []
+
+    for level in task_levels:
+        task_lists.append(
+            models.Task.query.filter(
+                or_(
+                    models.Task.contributors.contains(member),
+                    models.Task.creator == member)). \
+            filter(models.Task.status != 3).filter_by(level=level).all())
+
     try:
-        return render_template('starter.html', member=current_user.member)
+        return render_template('dashboard.html', member=current_user.member,
+            task_lists=task_lists)
     except TemplateNotFound:
         abort(404)
 
@@ -63,7 +80,6 @@ def showIssue(id):
             abort(404)
     except TemplateNotFound:
             abort(404)
-
 
 @member_app.route('/subtask/<int:id>')
 @member_required
@@ -236,6 +252,7 @@ class Task(Resource):
                 parent = models.Task.query.get(taskID)
                 if parent:
                     task.parents.append(parent)
+                    task.parent.update_progress(True)
                     new_tasks.append('#%d %s'%(parent.local_id, parent.name))
 
             if new_tasks != []:
@@ -250,6 +267,13 @@ class Task(Resource):
 
             if deleted_tasks != []:
                 comment_text += '제거된 하위 업무:<br>%s<br>' % (', '.join(deleted_tasks))
+
+            if task.level == 1:
+                for taskID in sub:
+                    child = models.Task.query.get(taskID)
+                    if child:
+                        child.status = 3
+                db.session.commit()
 
             new_tasks = []
             for taskID in add:

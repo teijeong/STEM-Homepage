@@ -35,6 +35,7 @@
         <option value="0">진행중</option>
         <option value="1">완료</option>
         <option value="2">보관됨</option>
+        <option value="3">제외됨</option>
       </select>
     </div>
   </div><!-- /.box-tools -->
@@ -460,7 +461,7 @@
                         <label for="subtask-description">설명</label>
                         <textarea id="subtask-description"></textarea>
                       </div>
-                      <button class="pull-right btn btn-primary" onclick="addIssue()">추가</button>
+                      <button type="button" class="pull-right btn btn-primary" onclick="addIssue()">추가</button>
                     </form>
                 </div>
             </div>
@@ -718,10 +719,12 @@ var contributors = [
 
 function addIssue() {
   var box_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
-  var box_color2 = ['bg-red','bg-green','bg-gray'];
+  var box_color2 = ['bg-red','bg-green','bg-gray', 'bg-black'];
   var issue_pane = [$("#issue-opened"), $("#issue-closed"), $("#issue-archived")];
   var name = $("#subtask-name").val();
   var description = subtask_editor.getData();
+  $("#subtask-name").val("");
+  subtask_editor.setData("");
   $.ajax({
     url: "/stem/api/task",
     type: "POST",
@@ -733,13 +736,15 @@ function addIssue() {
         priority: 0
     },
     success: function(issue) {
+
       var issuebox_html =
         "<div class='col-md-4 col-sm-6 col-xs-12 issue-box' data-issue-id='" + issue.id + "'>" +
           "<a href='/stem/subtask/" + issue.id + "'>" +
           "<div class='info-box " + (issue.status===0?box_color[issue.priority]:box_color2[issue.status]) + "'>" +
             "<span class='info-box-icon'><i class='fa fa-wrench'></i></span>" +
             "<div class='info-box-content'>" +
-              "<span class='info-box-number'>#" + issue.local_id + "</span>" +
+              "<span class='info-box-number'>#{{issue.local_id}}-" + issue.local_id +
+              "</span>" +
               "<span class='info-box-text'>" + issue.name + "</span>" +
             "<div class='progress'>" +
               "<div class='progress-bar' style='width:" + issue.progress + "%'></div>" +
@@ -757,13 +762,19 @@ function addIssue() {
       issues.push(new Issue(issue.id, issue.local_id, issue.name, issue.status, issue.priority));
       issue_pane[issue.status].append(issuebox_html);
       $("#modal-issues").append(html);
+      closeIssueModalUpdate();
+    },
+    error: function() {
+      alert("세부 업무를 추가하는 중 오류가 발생했습니다.");
+      $("#subtask-name").val(name);
+      subtask_editor.setData(description);
     }
   });
 }
 
 
 function removeIssue(issueID) {
-  var issue = $(".issue-box[data-issue-id='"+issueID+"']");
+  var issue = $(".issue-box[data-task-id='"+issueID+"']");
   issue.remove();
   issue = $(".issue-badge[data-issue-id='"+issueID+"']");
   issue.remove();
@@ -928,7 +939,7 @@ var milestone_table = $('#table-milestones').DataTable({
     columnDefs: [
         {targets:[2],
             render: function(data, type, row) {
-                return "<button class='btn btn-primary btn-xs' onclick='addMilestone(" +
+                return "<button type='button' class='btn btn-primary btn-xs' onclick='addMilestone(" +
                     data + ")'>Add</button>";
             }
         }
@@ -1051,8 +1062,8 @@ function modifyDescription() {
   description = $("#issue-description").html();
   $("#issue-description").attr("contenteditable", true);
   editor = CKEDITOR.inline("issue-description");
-  $("#issue-description").after("<button style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
-  $("#issue-description").after("<button class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
+  $("#issue-description").after("<button type='button' style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
+  $("#issue-description").after("<button type='button' class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
   $("#issue-description").focus();
 }
 
