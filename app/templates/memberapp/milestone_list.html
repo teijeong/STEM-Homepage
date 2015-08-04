@@ -110,8 +110,10 @@ function closeModal() {
 }
 
 function addMilestone() {
-    var name = $("#milestone-name").val();
+    var name = $("#milestone-name").val().trim();
     var description = editor.getData();
+    if (name === "") return;
+
     $.ajax({
         url: "/stem/api/task",
         type: "POST",

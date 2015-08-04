@@ -161,8 +161,9 @@ function closeModal() {
 }
 
 function addIssue() {
-    var name = $("#issue-name").val();
+    var name = $("#issue-name").val().trim();
     var description = editor.getData();
+    if (name === "") return;
 
     $.ajax({
         url: "/stem/api/task",

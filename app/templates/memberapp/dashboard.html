@@ -33,19 +33,43 @@
           </div><!-- /.box -->
       </div>
   </div>
+
   <div class="row">
     <div class="col-md-6">
       <div class="box">
         <div class="box-header with-border">
-          <h3 class="box-title">STEM Tasks</h3>
+          <h3 class="box-title">내 일거리</h3>
         </div><!-- /.box-header -->
         <div class="box-body">
-          <table class="table table-bordered display compact" id="issue-table">
+          <table class="table table-bordered display compact" id="task-1-table">
           </table>
         </div><!-- /.box-body -->
-        <div class="box-footer clearfix">
-          
-        </div>
+      </div><!-- /.box -->
+    </div><!-- /.col -->
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">내 세부 업무</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <table class="table table-bordered display compact" id="task-2-table">
+          </table>
+        </div><!-- /.box-body -->
+      </div><!-- /.box -->
+    </div><!-- /.col -->
+
+    <div class="clearfix visible-md-block visible-lg-block"></div>
+
+    <div class="col-md-6">
+      <div class="box">
+        <div class="box-header with-border">
+          <h3 class="box-title">내 마일스톤</h3>
+        </div><!-- /.box-header -->
+        <div class="box-body">
+          <table class="table table-bordered display compact" id="task-0-table">
+          </table>
+        </div><!-- /.box-body -->
       </div><!-- /.box -->
     </div><!-- /.col -->
 
@@ -115,74 +139,7 @@
         </div>
       </div><!-- /.box -->
     </div><!-- /.col -->
-
-    <div class="col-md-6">
-      <div class="box">
-        <div class="box-header">
-          <h3 class="box-title">Section Tasks</h3>
-          <div class="box-tools">
-            <ul class="pagination pagination-sm no-margin pull-right">
-              <li><a href="#">«</a></li>
-              <li><a href="#">1</a></li>
-              <li><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">»</a></li>
-            </ul>
-          </div>
-        </div><!-- /.box-header -->
-        <div class="box-body no-padding">
-          <table class="table">
-            <tbody><tr>
-              <th style="width: 10px">#</th>
-              <th>Task</th>
-              <th>Progress</th>
-              <th style="width: 40px">Label</th>
-            </tr>
-            <tr>
-              <td>1.</td>
-              <td>ALPHA</td>
-              <td>
-                <div class="progress progress-xs">
-                  <div class="progress-bar progress-bar-danger" style="width: 67%"></div>
-                </div>
-              </td>
-              <td><span class="badge bg-red">67%</span></td>
-            </tr>
-            <tr>
-              <td>2.</td>
-              <td>KPF</td>
-              <td>
-                <div class="progress progress-xs">
-                  <div class="progress-bar progress-bar-yellow" style="width: 42%"></div>
-                </div>
-              </td>
-              <td><span class="badge bg-yellow">42%</span></td>
-            </tr>
-            <tr>
-              <td>3.</td>
-              <td>TU Delft</td>
-              <td>
-                <div class="progress progress-xs progress-striped active">
-                  <div class="progress-bar progress-bar-primary" style="width: 3%"></div>
-                </div>
-              </td>
-              <td><span class="badge bg-light-blue">3%</span></td>
-            </tr>
-            <tr>
-              <td>4.</td>
-              <td>Honkong Polytechnique</td>
-              <td>
-                <div class="progress progress-xs progress-striped active">
-                  <div class="progress-bar progress-bar-success" style="width: 12%"></div>
-                </div>
-              </td>
-              <td><span class="badge bg-green">12%</span></td>
-            </tr>
-          </tbody></table>
-        </div><!-- /.box-body -->
-      </div><!-- /.box -->
-    </div><!-- /.col -->
-  </div><!-- /.row -->
+  </div>
 
   <div class="row">
     <div class="col-xs-12">
@@ -307,6 +264,11 @@ var stats = [
     "bg-green'>완료",
     "bg-gray'>보관"];
 
+var prog_stats = [
+    "bg-aqua'>",
+    "bg-green'>",
+    "bg-gray'>"];
+
 var None = undefined;
 var tasks = [
   {% for tasks in task_lists %}
@@ -316,10 +278,10 @@ var tasks = [
     {% if not loop.last %},{%endif%}
   {% endfor %}
 ];
+tasks[0].splice(0,1);
 
-var table = $('#issue-table').DataTable({
-    data: tasks[1],
-    order: [[6,"asc"]],
+$.extend( $.fn.dataTable.defaults, {
+    order: [[6,"asc"],[0,"asc"]],
     pageLength: 5,
     dom: "tp",
     language:{paginate:{next:">",previous:"<"}},
@@ -329,57 +291,64 @@ var table = $('#issue-table').DataTable({
         {title:"이름"},
         {title:"진행도"},
         {title:"status"},
-        {title:"중요도"},
+        {title:""},
         {title:"deadline"}
-    ],
-    columnDefs: [
-      {targets: 0,
-        visible:false
-      },//id
-      {targets: 1,
-        orderable: false
-      },//local_id
-      {targets: 2,
-        orderable: false,
-        render: function(data, type, row) {
-          if (type=="display")
-            return "<a href='/stem/issue/" + row[1] +
-              "'>" + data + "</a>";
-          else
-            return data;
-        }
-      },//name
-      {targets: 3,
-          render: function(data, type, row) {
-            if (type=="display") 
-              return "<div class='progress progress-xs'>"+
-                "<div class='progress-bar' style='width:"+
-                data+"%'></div></div>";
-            else
-              return data;
-          }
-      },//progress
-      {targets: 4,
-          visible: false,
-          render: function(data, type, row) {
-            if (type=="display")
-              return "<span class='badge "+stats[data]+"</span>";
-            else
-              return data;
-          }
-      },//status
-      {targets: 5,
-          width: "52px",
-          render: function(data, type, row) {
-            if (type=="display")
-              return "<span class='badge "+priority[data]+"</span>";
-            else {
-              return data;
-            }
-          }
-      },//priority
-      {targets: 6, visible:false}//timestamp
     ]
 });
+
+var table=[];
+var colDefs = [
+    {targets: 0,
+      visible:false
+    },//id
+    {targets: 1,
+      width: "0px",
+      orderable: false
+    },//local_id
+    {targets:2,
+      render: function(data, type, row) {
+        return "<a href='/stem/issue/" + row[0] +
+          "'>" + data + "</a>";
+      }
+    },
+    {targets: 3,
+      width: "30%",
+      render: function(data, type, row) {
+        if (type=="display")
+          return "<div class='progress progress-xs'>"+
+            "<div style='width:" + data +
+            "%' class='progress-bar " + prog_stats[row[4]] +
+            "</div></div>";
+        else
+          return data;
+      }
+    },//progress
+    {targets: 4,
+      visible: false,
+      render: function(data, type, row) {
+        if (type=="display")
+          return "<span class='badge "+stats[data]+"</span>";
+        else
+          return data;
+      }
+    },//status
+    {targets: 5,
+      width: "0px",
+      render: function(data, type, row) {
+        if (type=="display")
+          return "<span class='badge "+priority[data]+"</span>";
+        else {
+          return data;
+        }
+      }
+    },//priority
+    {targets: 6, visible:false}//timestamp
+  ];
+
+for (var i = 0; i < 3; i++)
+  table[i] = $('#task-'+i+'-table').DataTable({
+      data: tasks[i],
+      columnDefs: colDefs
+  });
 </script>
 {% endblock %}

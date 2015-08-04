@@ -50,3 +50,7 @@ select.command-elem {
     height:0;
     overflow:hidden;
 }
+
+.dataTable a{color:#000;}
+.dataTable a:hover{color:#888;}
+.dataTable .sorting_disabled{padding:8px;}

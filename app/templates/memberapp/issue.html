@@ -468,7 +468,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default pull-left" id="issue-close">취소</button>
-            <button type="button" class="btn btn-primary" onclick="closeIssueModalUpdate()">확인</button>
+            <button type="button" class="btn btn-primary" id="issue-confirm">확인</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -497,7 +497,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default pull-left" id="milestone-close">취소</button>
-            <button type="button" class="btn btn-primary" onclick="closeMilestoneModalUpdate()">확인</button>
+            <button type="button" class="btn btn-primary" id="milestone-confirm">확인</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -527,7 +527,7 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default pull-left" id="member-close">취소</button>
-            <button type="button" class="btn btn-primary" onclick="closeMemberModalUpdate()">확인</button>
+            <button type="button" class="btn btn-primary" id="member-confirm">확인</button>
         </div>
     </div><!-- /.modal-content -->
 </div>
@@ -556,12 +556,25 @@ $("#add-milestone").easyModal({onClose: closeMemberModal});
 $("#member-close").click(function() {
   $("#add-contributor").trigger('closeModal');
 });
+$("#member-confirm").click(function(event) {
+  event.preventDefault();
+  closeMemberModalUpdate();
+});
 $("#issue-close").click(function() {
   $("#add-issue").trigger('closeModal');
+});
+$("#issue-confirm").click(function() {
+  event.preventDefault();
+  closeIssueModalUpdate();
 });
 $("#milestone-close").click(function() {
   $("#add-milestone").trigger('closeModal');
 });
+$("#milestone-confirm").click(function(event) {
+  event.preventDefault();
+  closeMilestoneModalUpdate();
+});
+
 
 $('#subtask-description').attr('contenteditable',true);
 
