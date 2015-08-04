@@ -39,6 +39,7 @@ def main():
                     models.Task.contributors.contains(member),
                     models.Task.creator == member)). \
             filter(models.Task.status != 3).filter_by(level=level).all())
+    task_lists[2] = [t for t in task_lists[2] if t.parents]
 
     try:
         return render_template('dashboard.html', member=current_user.member,

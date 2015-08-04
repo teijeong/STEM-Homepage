@@ -26,10 +26,10 @@
       <!-- Here is a label for example -->
       <div class="label select-wrapper">
         <select class="select-priority" {% if not current_user.member.editable(milestone) %}disabled="true"{% endif %}>
-          <option value="0">급함</option>
-          <option value="1">중요함</option>
-          <option value="2">보통</option>
-          <option value="3">시간날 때</option>
+          <option value="3">급함</option>
+          <option value="2">중요함</option>
+          <option value="1">보통</option>
+          <option value="0">시간날 때</option>
         </select>
       </div>&nbsp;
       <div class="label select-wrapper" {% if not current_user.member.editable(milestone) %}disabled="true"{% endif %}>
