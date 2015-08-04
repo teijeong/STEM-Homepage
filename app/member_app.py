@@ -230,7 +230,7 @@ class Task(Resource):
             comment_text += '중요도가 %s 변경되었습니다.' % priority_text[task.priority]
 
         if args['status'] != -1 and args['status'] != task.status:
-            status_text = ['[진행 중]으로', '[완료]로', '[보관됨]으로']
+            status_text = ['[진행 중]으로', '[완료]로', '[보관됨]으로', '[제외됨]으로']
             task.status = args['status']
             comment_text += '상태가 %s 변경되었습니다.' % status_text[task.status]
 

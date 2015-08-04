@@ -236,9 +236,8 @@
               <!-- The time line -->
               <ul class="timeline">
 {% for comment in milestone.comments[::-1] %}
-	{% if loop.first or (not loop.last and
-		comment.timestamp.strftime('%Y%m%d') !=
-		milestone.comments[loop.revindex0 - 1].timestamp.strftime('%Y%m%d')) %}
+	{% if loop.first or comment.timestamp.strftime('%Y%m%d') !=
+		milestone.comments[loop.revindex0 + 1].timestamp.strftime('%Y%m%d') %}
 
 		<li class="time-label">
 			<span class="bg-red">
@@ -383,10 +382,11 @@ var None = undefined;
 var init_select = 2;
 $(".select-wrapper select").change(function(event) {
   var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
-  var status_color = ['bg-aqua','bg-green','bg-gray'];
+  var status_color = ['bg-aqua','bg-green','bg-gray','bg-black'];
   var label_width = [0,16,26,36,46,50];
   var w = label_width[$("option:selected", this).text().length];
   var i = $(this).val();
+  $(this).css("width", w + "px");
   if ($(this).hasClass("select-priority")) {
     $(this).parent().removeClass(priority_color.join(' '));
     $(this).parent().addClass(priority_color[i]);
@@ -420,7 +420,6 @@ $(".select-wrapper select").change(function(event) {
       }
     });
   }
-  $(this).css("width", w + "px");
 });
 
 $(".select-priority").val({{milestone.priority}} || 0);
