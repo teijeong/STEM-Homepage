@@ -283,7 +283,10 @@ class Task(db.Model):
             if parent:
                 subtasks = sorted(parent.children,
                     key=lambda task: task.local_id, reverse=True)
-                self.local_id = subtasks[0].local_id + 1
+                if len(subtasks) > 0:
+                    self.local_id = subtasks[0].local_id + 1
+                else:
+                    self.local_id = 1
 
     def add_parent(self, parent):
         if len(self.parents) != 0:

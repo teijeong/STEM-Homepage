@@ -163,6 +163,8 @@ class Task(Resource):
     @marshal_with(simple_task_fields)
     def post(self):
         args = self.taskParser.parse_args()
+
+        parent = None
         if len(args['parent']) == 1:
             parent = models.Task.query.get(args['parent'][0])
         task = models.Task(args['level'], args['name'], args['description'],
