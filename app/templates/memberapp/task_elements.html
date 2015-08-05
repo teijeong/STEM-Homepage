@@ -1,0 +1,298 @@
+{% macro status_select() -%}
+<div class="label select-wrapper">
+  <select class="select-status{% if current_user.member.editable(task) %} command-elem{% else %}" disabled="true{% endif %}">
+    <option value="0">진행중</option>
+    <option value="1">완료</option>
+    <option value="2">보관됨</option>
+    <option value="3">제외됨</option>
+  </select>
+</div>
+{%- endmacro %}
+
+{% macro priority_select() -%}
+<div class="label select-wrapper">
+  <select class="select-priority{% if current_user.member.editable(task) %} command-elem{% else %}" disabled="true{% endif %}">
+    <option value="3">급함</option>
+    <option value="2">중요함</option>
+    <option value="1">보통</option>
+    <option value="0">시간날 때</option>
+  </select>
+</div>
+{%- endmacro %}
+
+{% macro all_select() -%}
+{{ priority_select()}}&nbsp;
+{{ status_select() }}
+{%- endmacro %}
+
+{% macro all_select_noupdate_script() -%}
+$(".select-wrapper select").change(function(event) {
+  var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
+  var status_color = ['bg-aqua','bg-green','bg-gray', 'bg-black'];
+  var label_width = [0,16,26,36,46,50];
+  var w = label_width[$("option:selected", this).text().length];
+  var i = $(this).val();
+  $(this).css("width", w + "px");
+
+  if ($(this).hasClass("select-priority")) {
+    $(this).parent().removeClass(priority_color.join(' '));
+    $(this).parent().addClass(priority_color[i]);
+  } else {
+    $(this).parent().removeClass(status_color.join(' '));
+    $(this).parent().addClass(status_color[i]);
+  }
+});
+
+$(".select-priority").val(1);
+$(".select-status").val(0);
+$(".select-wrapper select").change();
+{%- endmacro %}
+
+{% set priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'] %}
+{% set priority_text = ['시간날 때','보통','중요','급함'] %}
+{% set status_color = ['bg-aqua','bg-green','bg-gray','bg-black'] %}
+{% set status_text = ['진행중','완료','보관됨','제외됨'] %}
+{% set task_type = ['마일스톤','일거리','세부 업무'] %}
+{% set task_type_eng = ['milestone','issue','subtask'] %}
+
+{% macro task_form(level=0) -%}
+<form role="form">
+    <div class="form-group">
+        <label for="task-name">{{task_type[level]}} 이름</label>
+        <input class="form-control" id="task-name" type="text">
+    </div>
+    <div class="form-group">
+        <label for="task-deadline">마감일</label>
+        <div class="input-group date" id="task-deadline">
+            <input class="form-control" type="text">
+            <span class="input-group-addon">
+                <span class="glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="label select-wrapper">
+            <select class="select-priority command-elem">
+                <option value="3">급함</option>
+                <option value="2">중요함</option>
+                <option value="1">보통</option>
+                <option value="0">시간날 때</option>
+            </select>
+        </div>&nbsp;
+        <div class="label select-wrapper">
+            <select class="select-status command-elem">
+                <option value="0">진행중</option>
+                <option value="1">완료</option>
+                <option value="2">보관됨</option>
+                <option value="3">제외됨</option>
+            </select>
+        </div>
+    </div>
+    {% if level == 0 %}
+    <div class="form-group">
+        <label for="task-children">하위 업무 ID (, 로 구분)</label>
+        <input class="form-control" id="task-children" type="text">
+    </div>
+    {% elif level == 1 %}
+    <div class="form-group">
+        <label for="task-parents">상위 업무 ID (, 로 구분)</label>
+        <input class="form-control" id="task-parents" type="text">
+    </div>
+    {% endif %}
+    <div class="form-group">
+        <label for="task-contributors">참여자 ID (, 로 구분)</label>
+        <input class="form-control" id="task-contributors" type="text">
+    </div>
+    <div class="checkbox">
+      <label>
+        <input id="task-contrubutor-auto" type="checkbox"> 참여자 자동으로 채우기
+      </label>
+    </div>
+    <div class="form-group">
+        <label for="task-description">설명</label>
+        <textarea id="task-description"></textarea>
+    </div>
+</form>
+{%- endmacro %}
+
+{% macro task_form_script(level=0) -%}
+var description_editor = CKEDITOR.replace('task-description',
+    {toolbarGroups:[
+        { name: 'clipboard',   groups: ['undo' ] },
+        { name: 'links' },
+        { name: 'insert' },
+        { name: 'forms' },
+        { name: 'tools' },
+        { name: 'others' },
+        '/',
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+        { name: 'styles' },
+        { name: 'colors' }]
+});
+$('#task-deadline').datetimepicker({
+    locale: 'ko',
+    defaultDate: moment().add(7, 'days').minute(0).second(0)
+});
+
+function addTask(level) {
+    function parse(text) {
+        return text.split(/ *, */).map(Number);
+    }
+    if (!level) level = {{level}};
+    var data = {}
+    data.level = level;
+    data.name = $("#task-name").val().trim();
+    data.description = description_editor.getData();
+    data.deadline = $("#task-deadline").data("DateTimePicker").date().unix();
+    data.parents = [];
+    data.children = [];
+    data.status = $(".select-status").val();
+    data.priority = $(".select-priority").val();
+
+    if (data.name === "") {
+        alert("이름을 입력해 주세요.");
+        return;
+    }
+
+    if (level === 0) {
+        data.children = parse($("#task-children").val());
+    } else if (level === 1) {
+        data.parents = parse($("#task-parents").val());
+    }
+    data.contributors = parse($("#task-contributors").val());
+    data.contributor_auto = $("#task-contrubutor-auto").prop("checked");
+
+    $.ajax({
+        url: "/stem/api/task",
+        type: "POST",
+        data: data,
+        success: function(data) {
+            location.reload();
+        },
+        error: function() {
+            alert("일정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+    });
+}
+{{ all_select_noupdate_script() }}
+
+{%- endmacro %}
+
+{% macro task_box_content(box_task) -%}
+<div class="info-box-content">
+    {% if task.level == 1 %}
+        <span class="info-box-number">#{{task.local_id}}-{{box_task.local_id}}</span>
+    {% else %}
+        <span class="info-box-number">#{{box_task.local_id}}</span>
+    {% endif %}
+    <span class="info-box-text">{{box_task.name}}</span>
+    <div class="progress">
+        <div class="progress-bar" style="width: {{box_task.progress}}%"></div>
+    </div>
+    <span class="progress-description">
+        {{box_task.progress}}% 완료
+    </span>
+</div><!-- /.info-box-content -->
+{%- endmacro %}
+
+{% macro child_task_accordion() -%}
+
+{% set type = task_type_eng[task.level] %}
+{% if task.level < 2 %}
+{% set child_type = task_type_eng[task.level+1] %}
+{% endif %}
+{% if task.level > 0 %}
+{% set parent_type = task_type_eng[task.level-1] %}
+{% endif %}
+
+  <div class="box-group" id="accordion">
+    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
+    <div class="panel box box-primary">
+      <div class="box-header with-border">
+        <h4 class="box-title">
+          <span class="" aria-expanded="true" data-toggle="collapse" data-parent="#accordion" href="#collapse-opened" style="cursor:pointer">
+            진행중인 {{task_type[task.level+1]}}
+          </span>
+        </h4>
+      </div>
+      <div style="" aria-expanded="true" id="collapse-opened" class="panel-collapse collapse in">
+        <div class="box-body">
+            <div class="row" id="task-opened">
+
+    {% for child_task in task.filter_children(0) %}
+    <div class="col-md-4 col-sm-6 col-xs-12 task-box" data-task-id="{{child_task.id}}">
+    <a href="/stem/{{child_type}}/{{child_task.id}}">
+      <div class="info-box {{priority_color[child_task.priority]}}">
+        <span class="info-box-icon"><i class="fa fa-gears"></i></span>
+        {{ task_box_content(child_task) }}
+      </div>
+    </a>
+    </div>
+    {% endfor %}
+
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel box box-danger">
+      <div class="box-header witborder">
+        <h4 class="box-title">
+          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-closed" style="cursor:pointer">
+            완료된 {{task_type[task.level+1]}}
+          </span>
+        </h4>
+      </div>
+      <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
+        <div class="box-body">
+            <div class="row" id="task-closed">
+{% for child_task in task.filter_children(1) %}
+<div class="col-md-4 col-sm-6 col-xs-12 task-box" data-task-id="{{child_task.id}}">
+<a href="/stem/{{child_type}}/{{child_task.id}}">
+  <div class="info-box bg-green">
+    <span class="info-box-icon"><i class="fa fa-check-square-o"></i></span>
+    {{ task_box_content(child_task) }}
+  </div>
+</a>
+</div>
+{% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel box box-success">
+      <div class="box-header with-border">
+        <h4 class="box-title">
+          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-archived" style="cursor:pointer">
+            보관된 {{task_type[task.level+1]}}
+          </span>
+        </h4>
+      </div>
+      <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
+        <div class="box-body">
+            <div class="row" id="task-archived">
+{% for child_task in task.filter_children(2) %}
+<div class="col-md-4 col-sm-6 col-xs-12 task-box" data-task-id="{{child_task.id}}">
+<a href="/stem/{{child_type}}/{{child_task.id}}">
+  <div class="info-box bg-gray">
+    <span class="info-box-icon"><i class="fa fa-check-square-o"></i></span>
+    {{ task_box_content(child_task) }}
+  </div>
+</a>
+</div>
+{% endfor %}
+{% for child_task in task.filter_children(3) %}
+<div class="col-md-4 col-sm-6 col-xs-12 task-box" data-task-id="{{child_task.id}}">
+<a href="/stem/{{child_type}}/{{child_task.id}}">
+  <div class="info-box bg-black">
+    <span class="info-box-icon"><i class="fa fa-trash"></i></span>
+    {{ task_box_content(child_task) }}
+  </div>
+</a>
+</div>
+{% endfor %}
+          </div>
+        </div>
+      </div>
+  </div>
+{%- endmacro %}

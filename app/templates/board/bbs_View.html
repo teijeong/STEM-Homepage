@@ -143,7 +143,9 @@ function submitComment() {
                 var text = "<li data-comment-id=" + data.id + "><h3>" +
                     data.author.nickname + "<small>" + time.format('YYYY-MM-DD HH:mm') +
                     "</small> <i onclick='deleteComment(" + data.id + ")'" +
-                    "class='fa fa-times command-elem'></i></h3>" + data.body+"</li>";
+                    "class='fa fa-times command-elem'></i></h3>" +
+                    "<div class='comment-body'>" + data.body + "</div></li>";
+
                     $("#comments").append(text);
                     $("comment-text").val("");
             }

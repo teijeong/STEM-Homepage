@@ -1,4 +1,5 @@
  {% extends "memberapp/base.html" %}
+ {% import "task_elements.html" as elements with context %}
  {% block content %}
  <section class="content-header">
   <h1>
@@ -18,12 +19,13 @@
         {% for milestone in milestones %}
         <div class="col-md-3 col-sm-4 col-xs-12">
             <a href="/stem/milestone/{{milestone.id}}">
-				{% if milestone.priority == 0 %}
-                <div class="info-box bg-red">
+				{% if milestone.status == 0 %}
+                <div class="info-box {{ elements.priority_color[milestone.priority]}}">
+                    <span class="info-box-icon"><i class="fa fa-cog fa-spin"></i></span>
 				{% else %}
-                <div class="info-box bg-green">
+                <div class="info-box {{ elements.status_color[milestone.status]}}">
+                    <span class="info-box-icon"><i class="fa fa-check-square-o"></i></span>
 				{% endif %}
-                    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
                     <div class="info-box-content">
                       <span class="info-box-number">M#{{milestone.local_id}}</span>
                       <span class="info-box-text">{{milestone.name}}</span>
@@ -31,7 +33,11 @@
                         <div class="progress-bar" style="width: {{milestone.progress}}%"></div>
                       </div>
                       <span class="progress-description">
+                      {% if milestone.status == 0 %}
                         {{milestone.progress}}% 완료
+                      {% else %}
+                        {{ elements.status_text[milestone.status] }}
+                      {% endif %}
                       </span>
                     </div><!-- /.info-box-content -->
                 </div>
@@ -43,27 +49,18 @@
 {% endblock %}
 
 {% block modals %}
-<div class="modal-dialog" id="add-milestone" style="display:none">
+<div class="modal-dialog" id="add-task" style="display:none">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
         <h4 class="modal-title">새 마일스톤</h4>
       </div>
       <div class="modal-body">
-        <form role="form">
-            <div class="form-group">
-              <label for="milestone-name">마일스톤 이름</label>
-              <input class="form-control" id="milestone-name" type="text">
-            </div>
-            <div class="form-group">
-              <label for="milestone-description">설명</label>
-              <textarea id="milestone-description"></textarea>
-            </div>
-        </form>
+        {{ elements.task_form(0)}}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default pull-left" data-dismiss="modal" onclick="closeModal()">취소</button>
-        <button type="button" class="btn btn-primary" onclick="addMilestone()">추가</button>
+        <button type="button" class="btn btn-primary" onclick="addTask(0)">추가</button>
       </div>
     </div><!-- /.modal-content -->
 </div>
@@ -80,52 +77,18 @@
     <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-
-$("#add-milestone").easyModal();
+{{ elements.task_form_script(0) }}
+$("#add-task").easyModal();
 $(".modal-dialog").css("display","default");
-
-var editor = CKEDITOR.replace('milestone-description',
-    {toolbarGroups:[
-        { name: 'clipboard',   groups: ['undo' ] },
-        { name: 'links' },
-        { name: 'insert' },
-        { name: 'forms' },
-        { name: 'tools' },
-        { name: 'others' },
-        '/',
-        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-        { name: 'styles' },
-        { name: 'colors' }]
-    });
-
 
 
 function showModal() {
-    $("#add-milestone").trigger("openModal");
+    $("#add-task").trigger("openModal");
 }
 
 function closeModal() {
-    $("#add-milestone").trigger("closeModal");
+    $("#add-task").trigger("closeModal");
 }
 
-function addMilestone() {
-    var name = $("#milestone-name").val().trim();
-    var description = editor.getData();
-    if (name === "") return;
-
-    $.ajax({
-        url: "/stem/api/task",
-        type: "POST",
-        data: {
-            name: name,
-            description: description,
-            level: 0
-        },
-        success: function(data) {
-            location.reload();
-        }
-    });
-}
 </script>
 {% endblock %}

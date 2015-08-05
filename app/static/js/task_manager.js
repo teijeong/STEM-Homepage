@@ -1,43 +1,37 @@
-CKEDITOR.disableAutoInline = true;
+/** Task Manager Specification
+  * Supported Functions
+  *   Milestone:
+  *     View: Child(Issue)
+  *     Modify: Child
+  *   Issue:
+  *     View: Parent(Milestone), Child(Subtask)
+  *     Modify: Parent, Child
+  *   Subtask:
+  *     View: Parent(Issue)
+  *     Modify: Progress
+  *   Common:
+  *     View: Comment, Deadline, Status, Priority,
+  *             Title, Description, Creator, Contributor, Progress
+  *     Modify: Deadline, Status, Priority,
+  *             Title, Description, Creator, Contributor
+  *     Add: Comment
+  *   Codes that can be stored here:
+  *     Common Functions
+  *     If generallization applies, other functions
+  */
 
-$("#add-task").easyModal({onClose: closeTaskModal});
-$("#add-contributor").easyModal({onClose: closeMemberModal});
-$("#add-parent").easyModal({onClose: closeMemberModal});
-
-$("#member-close").click(function() {
-  $("#add-contributor").trigger('closeModal');
-});
-$("#task-close").click(function() {
-  $("#add-task").trigger('closeModal');
-});
-$("#parent-close").click(function() {
-  $("#add-parent").trigger('closeModal');
-});
-
-$('#child-description').attr('contenteditable',true);
-
-var child_editor = CKEDITOR.replace('child-description',
-    {toolbarGroups:[
-        { name: 'clipboard',   groups: ['undo' ] },
-        { name: 'links' },
-        { name: 'insert' },
-        { name: 'forms' },
-        { name: 'tools' },
-        { name: 'others' },
-        '/',
-        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-        { name: 'styles' },
-        { name: 'colors' }]
-    });
 
 //python None resolution
 var None = undefined;
 
+var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
+var priority_text = ['시간날 때','보통','중요','급함'];
+var status_color = ['bg-aqua','bg-green','bg-gray','bg-black'];
+var status_text = ['진행중','완료','보관됨','제외됨'];
+
+/* Status, Priority Select Control */
 var init_select = 2;
 $(".select-wrapper select").change(function(event) {
-  var priority_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
-  var status_color = ['bg-aqua','bg-green','bg-gray'];
   var label_width = [0,16,26,36,46,50];
   var w = label_width[$("option:selected", this).text().length];
   var i = $(this).val();
@@ -81,6 +75,120 @@ $(".select-priority").val({{task.priority}} || 0);
 $(".select-status").val({{task.status}} || 0);
 $(".select-wrapper select").change();
 
+/* End Status, Priority Select Control */
+
+
+CKEDITOR.disableAutoInline = true;
+
+/* Modal Control */
+$("#add-child").easyModal({onClose: closeTaskModal});
+$("#add-contributor").easyModal({onClose: closeMemberModal});
+$("#add-parent").easyModal({onClose: closeParentModal});
+
+$("#member-close").click(function() {
+  $("#add-contributor").trigger('closeModal');
+});
+$("#child-close").click(function() {
+  $("#add-child").trigger('closeModal');
+});
+$("#parent-close").click(function() {
+  $("#add-parent").trigger('closeModal');
+});
+
+$('#child-description').attr('contenteditable',true);
+
+var child_editor = CKEDITOR.replace('child-description',
+    {toolbarGroups:[
+        { name: 'clipboard',   groups: ['undo' ] },
+        { name: 'links' },
+        { name: 'insert' },
+        { name: 'forms' },
+        { name: 'tools' },
+        { name: 'others' },
+        '/',
+        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+        { name: 'styles' },
+        { name: 'colors' }]
+    });
+
+function openMemberModal() {
+  updated = false;
+  old_contributors = contributors.slice();
+  old_html = $("#contributors").html();
+  $("#modal-contributors").html($("#contributors").html());
+  $(".contributor-badge .command-elem").css("display","inline");
+  $("#add-contributor").trigger('openModal');
+}
+
+function closeMemberModalUpdate() {
+  updateContributor();
+  updated = true;
+  $("#add-contributor").trigger('closeModal');
+}
+
+function closeMemberModal() {
+  if (!updated) {
+    contributors = old_contributors.slice();
+    $("#contributors").html(old_html);
+  }
+  $(".contributor-badge .command-elem").css("display","none");
+}
+
+function openParentModal() {
+  updated = false;
+  old_parents = parents.slice();
+  old_html = $("#parents").html();
+  $("#modal-parents").html($("#parents").html());
+  $(".task-badge .command-elem").css("display","inline");
+  $("#add-parent").trigger('openModal');
+}
+
+function closeParentModalUpdate() {
+  updateParent();
+  updated = true;
+  $("#add-parent").trigger('closeModal');
+}
+
+function closeParentModal() {
+  if (!updated) {
+    parents = old_parents.slice();
+    $("#parents").html(old_html);
+  }
+  $(".task-badge .command-elem").css("display","none");
+}
+
+function openTaskModal() {
+  updated = false;
+  old_tasks = tasks.slice();
+  old_html = [$("#task-opened").html(), $("#task-closed").html(),
+    $("#task-archived").html(), $("#modal-tasks").html()];
+  $("#add-task").trigger('openModal');
+}
+
+function closeTaskModalUpdate() {
+  updateTask();
+  updated = true;
+  $("#add-task").trigger('closeModal');
+}
+
+function closeTaskModal() {
+  if (!updated) {
+    tasks = old_tasks.slice();
+    var task_pane = [$("#task-opened"), $("#task-closed"),
+      $("#task-archived"), $("#modal-tasks")];
+    for (var i in task_pane) task_pane[i].html(old_html[i]);
+  }
+}
+
+
+
+
+/* End Modal Control */
+
+
+
+/* Deadline Control */
 var dtpicker;
 
 $("#edit-deadline").click(function() {
@@ -108,11 +216,9 @@ $("#dtpicker input").focusout(function() {
     }
   });
 });
+/* End Deadline Control */
 
-var updated = false;
-var old_tasks, old_contributors, old_parent, old_html;
-
-function addComment() {
+function addComment(taskID) {
   var title = $("#comment-title").val();
   var body = $("#comment-body").val();
   if (title === "") return;
@@ -124,13 +230,18 @@ function addComment() {
     data: {
       title: title,
       body: body,
-      task_id: {{task.id}}
+      task_id: taskID
     },
     success: function(data) {
       location.reload();
     }
   });
 }
+
+
+/* Task and Contributor (Modal) Control */
+var updated = false;
+var old_tasks, old_contributors, old_parent, old_html;
 
 var Task = function(id, local_id, name, stat, priority) {
     this.id = id;
@@ -348,10 +459,10 @@ var member_table = $('#members').DataTable({
         }
     ]
 });
-/*
-var task_table = $('#childs').DataTable({
+
+var child_table = $('#children').DataTable({
     ajax: {
-      url: "/stem/api/child/{{task.id}}",
+      url: "/stem/api/subtask/{{task.id}}",
       dataSrc: ""
     },
     processing: true,
@@ -374,11 +485,10 @@ var task_table = $('#childs').DataTable({
         }
     ]
 });
-*/
 
 var parent_table = $('#table-parents').DataTable({
     ajax: {
-      url: "/stem/api/parent",
+      url: "/stem/api/milestone",
       dataSrc: ""
     },
     processing: true,
@@ -396,9 +506,16 @@ var parent_table = $('#table-parents').DataTable({
         }
     ]
 });
+/* End Task and Contributor (Modal) Control */
 
-
+/* Task Name and Description Control */
 var task_txt = '';
+
+function modifyName() {
+    $("#task-name").attr("contenteditable", true);
+    $("#task-name").focus();
+    txt = $("#task-name").text();
+}
 
 $("#task-name").focusout(function(event) {
     if ($(this).attr("contenteditable") === "false") return;
@@ -428,83 +545,6 @@ $("#task-name").keydown(function(event) {
       $(this).focusout();
     }
 });
-
-function modifyName() {
-    $("#task-name").attr("contenteditable", true);
-    $("#task-name").focus();
-    txt = $("#task-name").text();
-}
-
-function openMemberModal() {
-  updated = false;
-  old_contributors = contributors.slice();
-  old_html = $("#contributors").html();
-  $("#modal-contributors").html($("#contributors").html());
-  $(".contributor-badge .command-elem").css("display","inline");
-  $("#add-contributor").trigger('openModal');
-}
-
-function closeMemberModalUpdate() {
-  updateContributor();
-  updated = true;
-  $("#add-contributor").trigger('closeModal');
-}
-
-function closeMemberModal() {
-  if (!updated) {
-    contributors = old_contributors.slice();
-    $("#contributors").html(old_html);
-  }
-  $(".contributor-badge .command-elem").css("display","none");
-}
-
-function openParentModal() {
-  updated = false;
-  old_parents = parents.slice();
-  old_html = $("#parents").html();
-  $("#modal-parents").html($("#parents").html());
-  $(".task-badge .command-elem").css("display","inline");
-  $("#add-parent").trigger('openModal');
-}
-
-function closeParentModalUpdate() {
-  updateParent();
-  updated = true;
-  $("#add-parent").trigger('closeModal');
-}
-
-function closeParentModal() {
-  if (!updated) {
-    parents = old_parents.slice();
-    $("#parents").html(old_html);
-  }
-  $(".task-badge .command-elem").css("display","none");
-}
-
-function openTaskModal() {
-  updated = false;
-  old_tasks = tasks.slice();
-  old_html = [$("#task-opened").html(), $("#task-closed").html(),
-    $("#task-archived").html(), $("#modal-tasks").html()];
-  $("#add-task").trigger('openModal');
-}
-
-function closeTaskModalUpdate() {
-  updateTask();
-  updated = true;
-  $("#add-task").trigger('closeModal');
-}
-
-function closeTaskModal() {
-  if (!updated) {
-    tasks = old_tasks.slice();
-    var task_pane = [$("#task-opened"), $("#task-closed"),
-      $("#task-archived"), $("#modal-tasks")];
-    for (var i in task_pane) task_pane[i].html(old_html[i]);
-  }
-}
-
-
 
 var description;
 var editor;
@@ -540,3 +580,5 @@ function destroyEditor(confirm) {
   $("#task-description").attr("contenteditable",false);
   $(".editor-control").remove();
 }
+
+/* End Task Name and Description Control */

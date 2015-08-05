@@ -315,7 +315,7 @@ $("#dtpicker input").focusout(function() {
   });
 });
 
-
+var old_val = {{task.progress}};
 var slider_val = {{task.progress}};
 $(".slider").css("display","none");
 
@@ -332,14 +332,16 @@ $("#edit-progress").click(function() {
     id: 'green'
   });
   $(".slider").on("slide", function(evt) {
-    $(".progress-text").text(slider_val);
     slider_val = evt.value;
+    $(".progress-text").text(slider_val);
   });
 });
 
 $("#progress-cancel").click(function() {
   $(".progress").css("display","block");
   $(".slider").css("display","none");
+  $("#progress-control").css("display","none");
+  $(".progress-text").text(old_val);
 });
 
 $("#progress-confirm").click(function() {
@@ -352,8 +354,10 @@ $("#progress-confirm").click(function() {
     success: function() {
       $(".progress .progress-bar").css("width", slider_val + "%");
       $(".progress-text").text(slider_val);
+      $("#progress-control").css("display","none");
       $(".progress").css("display","block");
       $(".slider").css("display","none");
+      old_val = slider_val;
     },
     error: function() {
       alert("진행도를 업데이트하는 중 오류가 발생했습니다.")

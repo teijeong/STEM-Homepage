@@ -1,4 +1,5 @@
 {% extends "memberapp/base.html" %}
+{% import "task_elements.html" as elements with context %}
 {% block content %}
 <section class="content-header">
   <h1>
@@ -72,124 +73,8 @@
     </div>
   </div>
 
-    <div class="box-group" id="accordion">
-    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
-    <div class="panel box box-primary">
-      <div class="box-header with-border">
-        <h4 class="box-title">
-          <span class="" aria-expanded="true" data-toggle="collapse" data-parent="#accordion" href="#collapse-opened" style="cursor:pointer">
-            진행중인 세부 업무
-          </span>
-        </h4>
-      </div>
-      <div style="" aria-expanded="true" id="collapse-opened" class="panel-collapse collapse in">
-        <div class="box-body">
-            <div class="row" id="issue-opened">
+  {{ elements.child_task_accordion() }}
 
-{% for subtask in issue.filter_children(0) %}
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-task-id="{{subtask.id}}">
-<a href="/stem/subtask/{{subtask.id}}">
-{% if subtask.priority == 0 %}
-  <div class="info-box bg-red">
-{% else %}
-  <div class="info-box bg-red">
-{% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}-{{subtask.local_id}}</span>
-      <span class="info-box-text">{{subtask.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{subtask.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{subtask.progress}}% 완료
-      </span>
-    </div><!-- /.info-box-content -->
-  </div>
-</a>
-</div>
-{% endfor %}
-
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="panel box box-danger">
-      <div class="box-header witborder">
-        <h4 class="box-title">
-          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-closed" style="cursor:pointer">
-            완료된 세부 업무
-          </span>
-        </h4>
-      </div>
-      <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
-        <div class="box-body">
-            <div class="row" id="subtask-closed">
-{% for subtask in issue.filter_children(1) %}
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-task-id="{{subtask.id}}">
-<a href="/stem/subtask/{{subtask.id}}">
-  {% if subtask.priority == 0 %}
-  <div class="info-box bg-red">
-  {% else %}
-  <div class="info-box bg-red">
-  {% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}-{{subtask.local_id}}</span>
-      <span class="info-box-text">{{subtask.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{subtask.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{subtask.progress}}% 완료
-      </span>
-    </div><!-- /.info-box-content -->
-  </div>
-</a>
-</div>
-{% endfor %}
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="panel box box-success">
-      <div class="box-header with-border">
-        <h4 class="box-title">
-          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-archived" style="cursor:pointer">
-            보관된 세부 업무
-          </span>
-        </h4>
-      </div>
-      <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
-        <div class="box-body">
-            <div class="row" id="subtask-archived">
-{% for subtask in issue.filter_children(2) %}
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-task-id="{{subtask.id}}">
-<a href="/stem/subtask/{{subtask.id}}">
-{% if isssue.priority == 0 %}
-  <div class="info-box bg-red">
-{% else %}
-  <div class="info-box bg-red">
-{% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}-{{subtask.local_id}}</span>
-      <span class="info-box-text">{{subtask.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{subtask.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{subtask.progress}}% 완료
-      </span>
-    </div><!-- /.info-box-content -->
-  </div>
-</a>
-</div>
-{% endfor %}
-          </div>
-        </div>
-      </div>
-  </div>
   {% if current_user.member.editable(issue) %}
   <button class="btn btn-primary pull-right" onclick="openIssueModal()">세부 업무 관리</button>
   {% endif %}
@@ -499,13 +384,11 @@
 
 {% block styles %}
 <link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css" /  >
-<link href="{{url_for('static', filename='css/bootstrap-datetimepicker.min.css')}}" rel="stylesheet" type="text/css" />
 {% endblock %}
 
 {% block scripts %}
 <script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
 <script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
-<script src="{{url_for('static', filename='js/bootstrap-datetimepicker.min.js')}}" type="text/javascript"></script>
 <script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
 <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
 
@@ -515,7 +398,7 @@ CKEDITOR.disableAutoInline = true;
 
 $("#add-issue").easyModal({onClose: closeIssueModal});
 $("#add-contributor").easyModal({onClose: closeMemberModal});
-$("#add-milestone").easyModal({onClose: closeMemberModal});
+$("#add-milestone").easyModal({onClose: closeMilestoneModal});
 
 $("#member-close").click(function() {
   $("#add-contributor").trigger('closeModal');
@@ -527,7 +410,7 @@ $("#member-confirm").click(function(event) {
 $("#issue-close").click(function() {
   $("#add-issue").trigger('closeModal');
 });
-$("#issue-confirm").click(function() {
+$("#issue-confirm").click(function(event) {
   event.preventDefault();
   closeIssueModalUpdate();
 });
@@ -874,8 +757,8 @@ var member_table = $('#members').DataTable({
         }
     ]
 });
-/*
-var issue_table = $('#subtasks').DataTable({
+
+var issue_table = $('#children').DataTable({
     ajax: {
       url: "/stem/api/subtask/{{issue.id}}",
       dataSrc: ""
@@ -900,7 +783,7 @@ var issue_table = $('#subtasks').DataTable({
         }
     ]
 });
-*/
+
 
 var milestone_table = $('#table-milestones').DataTable({
     ajax: {

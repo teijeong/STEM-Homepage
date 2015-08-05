@@ -1,4 +1,5 @@
 {% extends "memberapp/base.html" %}
+{% import "task_elements.html" as elements with context %}
 {% block content %}
 <section class="content-header">
           <h1>
@@ -73,124 +74,8 @@
     </div>
   </div>
 
-  <div class="box-group" id="accordion">
-    <!-- we are adding the .panel class so bootstrap.js collapse plugin detects it -->
-    <div class="panel box box-primary">
-      <div class="box-header with-border">
-        <h4 class="box-title">
-          <span class="" aria-expanded="true" data-toggle="collapse" data-parent="#accordion" href="#collapse-opened" style="cursor:pointer">
-            진행중인 일거리
-          </span>
-        </h4>
-      </div>
-      <div style="" aria-expanded="true" id="collapse-opened" class="panel-collapse collapse in">
-        <div class="box-body">
-            <div class="row" id="issue-opened">
+  {{ elements.child_task_accordion() }}
 
-{% for issue in milestone.filter_children(0) %}
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
-<a href="/stem/issue/{{issue.id}}">
-{% if issue.priority == 0 %}
-  <div class="info-box bg-red">
-{% else %}
-  <div class="info-box bg-red">
-{% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}</span>
-      <span class="info-box-text">{{issue.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{issue.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{issue.progress}}% 완료
-      </span>
-    </div><!-- /.info-box-content -->
-  </div>
-</a>
-</div>
-{% endfor %}
-
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="panel box box-danger">
-      <div class="box-header witborder">
-        <h4 class="box-title">
-          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-closed" style="cursor:pointer">
-            완료된 일거리
-          </span>
-        </h4>
-      </div>
-      <div style="" aria-expanded="false" id="collapse-closed" class="panel-collapse collapse">
-        <div class="box-body">
-            <div class="row" id="issue-closed">
-{% for issue in milestone.filter_children(1) %}
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
-<a href="/stem/issue/{{issue.id}}">
-  {% if issue.priority == 0 %}
-  <div class="info-box bg-red">
-  {% else %}
-  <div class="info-box bg-red">
-  {% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}</span>
-      <span class="info-box-text">{{issue.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{issue.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{issue.progress}}% 완료
-      </span>
-    </div><!-- /.info-box-content -->
-  </div>
-</a>
-</div>
-{% endfor %}
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="panel box box-success">
-      <div class="box-header with-border">
-        <h4 class="box-title">
-          <span class="" aria-expanded="false" data-toggle="collapse" data-parent="#accordion" href="#collapse-archived" style="cursor:pointer">
-            보관된 일거리
-          </span>
-        </h4>
-      </div>
-      <div style="" aria-expanded="false" id="collapse-archived" class="panel-collapse collapse">
-        <div class="box-body">
-            <div class="row" id="issue-archived">
-{% for issue in milestone.filter_children(2) %}
-<div class="col-md-4 col-sm-6 col-xs-12 issue-box" data-issue-id="{{issue.id}}">
-<a href="/stem/issue/{{issue.id}}">
-{% if isssue.priority == 0 %}
-  <div class="info-box bg-red">
-{% else %}
-  <div class="info-box bg-red">
-{% endif %}
-    <span class="info-box-icon"><i class="fa fa-wrench"></i></span>
-    <div class="info-box-content">
-      <span class="info-box-number">#{{issue.local_id}}</span>
-      <span class="info-box-text">{{issue.name}}</span>
-      <div class="progress">
-        <div class="progress-bar" style="width: {{issue.progress}}%"></div>
-      </div>
-      <span class="progress-description">
-        {{issue.progress}}% 완료
-      </span>
-    </div><!-- /.info-box-content -->
-  </div>
-</a>
-</div>
-{% endfor %}
-          </div>
-        </div>
-      </div>
-  </div>
   {% if current_user.member.editable(milestone) %}
   <button class="btn btn-primary pull-right" onclick="openIssueModal()">일거리 관리</button>
   {% endif %}

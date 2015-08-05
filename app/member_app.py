@@ -63,7 +63,7 @@ def showMilestone(id):
         if milestone and milestone.level == 0:
             return render_template('milestone.html',
                 member=current_user.member,
-                milestone=milestone)
+                milestone=milestone,task=milestone)
         else:
             abort(404)
     except TemplateNotFound:
@@ -76,7 +76,7 @@ def showIssue(id):
         issue = models.Task.query.get(id)
         if issue and issue.level == 1:
             return render_template('issue.html', member=current_user.member,
-                issue=issue)
+                issue=issue,task=issue)
         else:
             abort(404)
     except TemplateNotFound:
@@ -156,26 +156,122 @@ class Task(Resource):
         help='Name is required')
     taskParser.add_argument('description', type=str, default='')
     taskParser.add_argument('level', type=int, default=1)
-    taskParser.add_argument('priority', type=int, default=2)
+    taskParser.add_argument('priority', type=int, default=1)
+    taskParser.add_argument('status', type=int, default=0)
+    taskParser.add_argument('contributor_auto', type=bool, default=False)
     taskParser.add_argument('deadline', type=int, default=0)
-    taskParser.add_argument('parent', type=int, default=[], action='append')
+    taskParser.add_argument('parents[]', type=int, default=[],
+        action='append', dest='parents')
+    taskParser.add_argument('children[]', type=int, default=[],
+            action='append', dest='children')
+    taskParser.add_argument('contributors[]', type=int, default=[],
+            action='append', dest='contributors')
 
     @member_required
     @marshal_with(simple_task_fields)
     def post(self):
         args = self.taskParser.parse_args()
-
+        args['parents'] = list(set(args['parents']))
+        args['children'] = list(set(args['children']))
+        args['contributors'] = \
+            list(set(args['contributors']) - {current_user.member.id})
         parent = None
-        if len(args['parent']) == 1:
-            parent = models.Task.query.get(args['parent'][0])
+        if len(args['parents']) > 0 :
+            parent = models.Task.query. \
+                filter_by(level=(args['level']-1)). \
+                filter_by(local_id=args['parents'][0]).first()
+
+            print(parent)
+
+        deadline = datetime.fromtimestamp(args['deadline'])
         task = models.Task(args['level'], args['name'], args['description'],
-            current_user.member, args['priority'], False, args['deadline'], parent)
-        if args['parent'] != []:
-            for parent_id in args['parent']:
-                parent = models.Task.query.get(parent_id)
+            current_user.member, args['priority'], False, deadline,
+            parent, None, args['status'])
+
+        comment_text = '%r<br>' % task
+
+        db.session.add(task)
+        db.session.commit()
+
+        priority_text = ['[시간날 때]','[보통]','[중요함]','[급함]']
+        comment_text += '중요도: %s, ' % priority_text[task.priority]
+
+        status_text = ['[진행 중]', '[완료]', '[보관됨]', '[제외됨]']
+        comment_text += '상태: %s<br>' % status_text[task.status]
+
+        comment_text += '마감일: %s<br>' % task.deadline.strftime('%Y.%m.%d %H:%M')
+
+
+        if args['parents'] != []:
+            new_tasks = ['#%d %s'%(task.parents[0].local_id, task.parents[0].name)]
+
+            for parent_id in args['parents'][1:]:
+                parent = models.Task.query. \
+                    filter_by(level=(task.level-1)). \
+                    filter_by(local_id=parent_id).first()
+
                 if parent:
                     task.parents.append(parent)
-        db.session.add(task)
+                    parent.update_progress(True)
+                    new_tasks.append('#%d %s'%(parent.local_id, parent.name))
+
+            if new_tasks != []:
+                if task.level == 1:
+                    new_tasks = ['M%s' % s for s in new_tasks]
+                comment_text += '상위 업무:<br>%s<br>' % (', '.join(new_tasks))
+
+        if args['children'] != []:
+            new_tasks = []
+            for child_id in args['children']:
+                child = models.Task.query. \
+                    filter_by(level=(task.level+1)). \
+                    filter_by(local_id=child_id).first()
+
+                if child:
+                    task.children.append(child)
+                    new_tasks.append('#%d %s'%(child.local_id, child.name))
+
+            if new_tasks != []:
+                comment_text += '하위 업무:<br>%s<br>' % (', '.join(new_tasks))
+
+
+        if args['contributors'] != []:
+
+            new_contributors = [task.creator.user.nickname]
+            for memberID in args['contributors']:
+                member = models.Member.query.get(memberID)
+                if member:
+                    task.contributors.append(member)
+                    new_contributors.append('%s'%member.user.nickname)
+
+            if new_contributors != []:
+                comment_text += '참여자:<br>%s<br>' % (', '.join(new_contributors))
+
+        if args['contributor_auto']:
+            members = set()
+            for task in task.parents:
+                members |= set([mem.id for mem in task.contributors])
+                members |= {task.creator.id}
+            for task in task.children:
+                members |= set([mem.id for mem in task.contributors])
+                members |= {task.creator.id}
+            members -= set([mem.id for mem in task.contributors])
+
+            new_contributors = []
+            for memberID in members:
+                member = models.Member.query.get(memberID)
+                if member:
+                    task.contributors.append(member)
+                    new_contributors.append('%s'%member.user.nickname)
+
+            if new_contributors != []:
+                comment_text += '자동 추가된 참여자:<br>%s<br>' % (', '.join(new_contributors))
+
+        if comment_text != '':
+            comment_text = '<blockquote>%s</blockquote>' % comment_text
+            modify_comment = models.TaskComment('새 업무가 생성되었습니다.',
+                comment_text, 1, current_user.member, task)
+            db.session.add(modify_comment)
         db.session.commit()
         return task
 

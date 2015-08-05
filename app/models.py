@@ -255,7 +255,7 @@ class Task(db.Model):
 
     def __init__(self, level = 0, name='', description='',
         creator = None, priority = 2, secret = False,
-        deadline = None, parent = None):
+        deadline = None, parent = None, children = [], status = 0):
 
         self.level = level
         self.name = name
@@ -269,10 +269,11 @@ class Task(db.Model):
         self.timestamp = datetime.datetime.now()
         self.deadline = deadline or \
             (datetime.datetime.now() + datetime.timedelta(days=7))
-        self.status = 0
+        self.status = status
 
         if parent:
             self.level = parent.level + 1;
+            self.parents.append(parent)
 
         if self.level == 0 or self.level == 1:
             recent_task = Task.query.filter_by(level=level). \
@@ -311,8 +312,12 @@ class Task(db.Model):
             if self.level < child.level:
                 child.cascade_down(func, *args, **kwargs)
 
-    def update_progress(self, initial=False):
+    def update_progress(self, initial=False):    
         if not initial:
+            if not self.children:
+                self.progress = 0
+                return
+
             sum = 0;
             for child_task in self.children:
                 sum += child_task.progress
@@ -322,7 +327,18 @@ class Task(db.Model):
             parent_task.update_progress()
 
     def __repr__(self):
-        return '<#%r %r / %r%%>' % (self.id, self.name, self.progress / 100.0)
+        if self.level == 0:
+            return '<M#%r %r>' % (self.local_id, self.name)
+        elif self.level == 1:
+            return '<#%r %r>' % (self.local_id, self.name)
+        elif self.level == 2:
+            if self.parent:
+                return '<#%r-%r %r>' % (self.parents[0].local_id, self.local_id, self.name)
+            else:
+                return '<#?-%r %r>' % (self.parents[0].local_id, self.local_id, self.name)
+        else:
+            return '<?#%r %r>' % (self.id, self.name)
+
 
 
 comment_tag_table = db.Table('comment_tags',
