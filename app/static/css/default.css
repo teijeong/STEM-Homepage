@@ -13,6 +13,7 @@
 .board dd a {background:url('/static/images/ico_dot_gray.gif') left 50% no-repeat;padding-left: 10px;}
 .board .date{float:right;}
 
+.title .fa {color:#444;font-size:110%;}
 
 .title-img {
     width:750px;

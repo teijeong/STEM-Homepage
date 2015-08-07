@@ -6,6 +6,8 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
 from sqlalchemy import and_
 import datetime
+from werkzeug import secure_filename
+import uuid, os
 
 class AnymousUser(AnonymousUserMixin):
     def __init__(self):
@@ -204,8 +206,12 @@ def unauthorized(e):
     return render_template('404.html', form=LoginForm()), 404
 
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 class WritePost(Resource):
+    @login_required
     def get(self):
         boardParser = reqparse.RequestParser()
         boardParser.add_argument('board', type=int, required=True)
@@ -223,14 +229,13 @@ class WritePost(Resource):
                 form=LoginForm()),
             mimetype='text/html')
  
+    @login_required
     def post(self):
         postParser = reqparse.RequestParser()
         postParser.add_argument('title', type=str)
         postParser.add_argument('body', type=str)
-        postParser.add_argument('userID', type=int)
         postParser.add_argument('boardID', type=int)
         postParser.add_argument('level', type=int)
-        postParser.add_argument('files', type=int, action='append')
 
         args = postParser.parse_args()
         board = models.Board.query.get(args['boardID'])
@@ -239,16 +244,33 @@ class WritePost(Resource):
         if board.id == 5 and not current_user.member:
             return abort(403)
 
+        print (args)
+
+
         post = models.Post(
-            args['level'], args['title'], args['body'], args['userID'], args['boardID'])
+            args['level'], args['title'], args['body'], current_user.id, args['boardID'])
         db.session.add(post)
+
+        files = request.files.getlist("files")
+
+        for file in files:
+            if not file:
+                continue
+            filename = secure_filename(file.filename)
+            if not allowed_file(filename):
+                continue
+            extension = ''
+            if '.' in filename:
+                extension = filename.rsplit('.',1)[1]
+
+            save_name = str(uuid.uuid4()).replace('-','') + '.%s' % extension
+            file_data = models.File(filename, save_name, post)
+            db.session.add(file_data)
+
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], save_name))
+
         db.session.commit()
-        return Response(
-            render_template('sub5.html',
-                mNum=5, sNum=args['boardID'],
-                board=models.Board.query.get(args['boardID']),
-                form=LoginForm()),
-            mimetype='text/html')
+        return redirect('/sub/5-%d'%args['boardID'])
 
 class ModifyPost(Resource):
     @login_required

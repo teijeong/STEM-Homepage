@@ -71,6 +71,9 @@
                         {% if post.level > 1 %}<img src="{{ url_for('static', filename='images/ico_reply.gif') }}" />&nbsp;{% endif %}
                         #}
                     <a href="/post/{{ post.id }}/view">{{ post.title}}
+                    {% if post.files %}
+                    <i class="fa fa-paperclip"></i>
+                    {% endif %}
                     {% if post.commentCount > 0 %}
                     <span class="comment-count">[{{post.commentCount}}]</span>
                     {% endif %}

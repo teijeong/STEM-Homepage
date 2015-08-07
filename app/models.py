@@ -185,6 +185,7 @@ class File(db.Model):
     name = db.Column(db.Unicode(256))
     link = db.Column(db.Unicode(1024))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
+    comment_id = db.Column(db.Integer, db.ForeignKey('task_comment.id'))
 
     def __repr__(self):
         return '<File %r>' % self.name
@@ -192,7 +193,10 @@ class File(db.Model):
     def __init__(self, name='', link='', post=None):
         self.name = name
         self.link = link
-        self.post = post
+        if post.__class__ == Post:
+            self.post = post
+        elif post.__class__ == TaskComment:
+            self.comment = post
 
 class Banner(db.Model):
     id = db.Column(db.Integer, primary_key=True)

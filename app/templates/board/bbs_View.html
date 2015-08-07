@@ -23,17 +23,16 @@
     </tr>
 </thead>
 <tbody>
-
     <tr>
         <td colspan="6" style="padding:10px;">
             {% if post.files %}
             <div class=attachedFile><dl><dt>
                 <img src="/common/memberimg/iconFiles.gif" alt="첨부" /> 
-                <button type="button" class="fileToggle" onclick="changeFileArea()" style="color: #3383AE;">첨부파일보기({{ post.files | length }}</button></dt>
+                <button type="button" class="fileToggle" onclick="changeFileArea()" style="color: #3383AE;">첨부파일보기 ({{ post.files | length }})</button></dt>
                 <dd>
                     <ul class="nostyle files" style="display:none;" id="fileArea" name="fileArea">
                         {% for file in post.files %}
-                            <li class="nostyle"><a href={{ file.path }}>{{ file.name }}</a></li>
+                            <li class="nostyle"><a href="/static/upload/{{ file.link }}" download="{{file.name}}"><i class="fa fa-file"></i> {{ file.name }}</a></li>
                         {% endfor %}
                     </ul>
                 </dd></dl>
