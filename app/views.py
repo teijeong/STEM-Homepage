@@ -6,8 +6,7 @@ from flask.ext.login import login_user, logout_user, current_user, login_require
 from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
 from sqlalchemy import and_
 import datetime
-from werkzeug import secure_filename
-import uuid, os
+from app.helper import process_file
 
 class AnymousUser(AnonymousUserMixin):
     def __init__(self):
@@ -205,11 +204,6 @@ def forbidden(e):
 def unauthorized(e):
     return render_template('404.html', form=LoginForm()), 404
 
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
-
 class WritePost(Resource):
     @login_required
     def get(self):
@@ -254,20 +248,7 @@ class WritePost(Resource):
         files = request.files.getlist("files")
 
         for file in files:
-            if not file:
-                continue
-            filename = secure_filename(file.filename)
-            if not allowed_file(filename):
-                continue
-            extension = ''
-            if '.' in filename:
-                extension = filename.rsplit('.',1)[1]
-
-            save_name = str(uuid.uuid4()).replace('-','') + '.%s' % extension
-            file_data = models.File(filename, save_name, post)
-            db.session.add(file_data)
-
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], save_name))
+            process_file(file, post)
 
         db.session.commit()
         return redirect('/sub/5-%d'%args['boardID'])

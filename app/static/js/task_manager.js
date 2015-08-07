@@ -21,167 +21,169 @@
   */
 
 
-//python None resolution
-var None = undefined;
+var TaskManager = function(level) {
+  if (level === undefined) level = 0;
 
-var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
-var priority_text = ['시간날 때','보통','중요','급함'];
-var status_color = ['bg-aqua','bg-green','bg-gray','bg-black'];
-var status_text = ['진행중','완료','보관됨','제외됨'];
+  //python None resolution
+  var None = undefined;
 
-/* Status, Priority Select Control */
-var init_select = 2;
-$(".select-wrapper select").change(function(event) {
-  var label_width = [0,16,26,36,46,50];
-  var w = label_width[$("option:selected", this).text().length];
-  var i = $(this).val();
-  $(this).css("width", w + "px");
-  if ($(this).hasClass("select-priority")) {
-    $(this).parent().removeClass(priority_color.join(' '));
-    $(this).parent().addClass(priority_color[i]);
-    if (init_select > 0) {
-      init_select--;
-      return;
-    }
-    $.ajax({
-      url: "/stem/api/task/{{task.id}}",
-      type: "PUT",
-      data: {
-        priority: Number(i)
-      }, error: function(data) {
-        alert("중요도를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+  var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
+  var priority_text = ['시간날 때','보통','중요','급함'];
+  var status_color = ['bg-aqua','bg-green','bg-gray','bg-black'];
+  var status_text = ['진행중','완료','보관됨','제외됨'];
+
+  /* Status, Priority Select Control */
+  var init_select = 2;
+  $(".select-wrapper select").change(function(event) {
+    var label_width = [0,16,26,36,46,50];
+    var w = label_width[$("option:selected", this).text().length];
+    var i = $(this).val();
+    $(this).css("width", w + "px");
+    if ($(this).hasClass("select-priority")) {
+      $(this).parent().removeClass(priority_color.join(' '));
+      $(this).parent().addClass(priority_color[i]);
+      if (init_select > 0) {
+        init_select--;
+        return;
       }
-    });
-  } else {
-    $(this).parent().removeClass(status_color.join(' '));
-    $(this).parent().addClass(status_color[i]);
-    if (init_select > 0) {
-      init_select--;
-      return;
-    }
-    $.ajax({
-      url: "/stem/api/task/{{task.id}}",
-      type: "PUT",
-      data: {
-        status: Number(i)
-      }, error: function(data) {
-        alert("상태를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+      $.ajax({
+        url: "/stem/api/task/{{task.id}}",
+        type: "PUT",
+        data: {
+          priority: Number(i)
+        }, error: function(data) {
+          alert("중요도를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+        }
+      });
+    } else {
+      $(this).parent().removeClass(status_color.join(' '));
+      $(this).parent().addClass(status_color[i]);
+      if (init_select > 0) {
+        init_select--;
+        return;
       }
-    });
+      $.ajax({
+        url: "/stem/api/task/{{task.id}}",
+        type: "PUT",
+        data: {
+          status: Number(i)
+        }, error: function(data) {
+          alert("상태를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
+        }
+      });
+    }
+  });
+
+  $(".select-priority").val({{task.priority}} || 0);
+  $(".select-status").val({{task.status}} || 0);
+  $(".select-wrapper select").change();
+
+  /* End Status, Priority Select Control */
+
+  CKEDITOR.disableAutoInline = true;
+
+  /* Modal Control */
+  $("#add-child").easyModal({onClose: closeTaskModal});
+  $("#add-contributor").easyModal({onClose: closeMemberModal});
+  $("#add-parent").easyModal({onClose: closeParentModal});
+
+  $("#member-close").click(function() {
+    $("#add-contributor").trigger('closeModal');
+  });
+  $("#child-close").click(function() {
+    $("#add-child").trigger('closeModal');
+  });
+  $("#parent-close").click(function() {
+    $("#add-parent").trigger('closeModal');
+  });
+
+  $('#child-description').attr('contenteditable',true);
+
+  var child_editor = CKEDITOR.replace('child-description',
+      {toolbarGroups:[
+          { name: 'clipboard',   groups: ['undo' ] },
+          { name: 'links' },
+          { name: 'insert' },
+          { name: 'forms' },
+          { name: 'tools' },
+          { name: 'others' },
+          '/',
+          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+          { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+          { name: 'styles' },
+          { name: 'colors' }]
+      });
+
+  function openMemberModal() {
+    updated = false;
+    old_contributors = contributors.slice();
+    old_html = $("#contributors").html();
+    $("#modal-contributors").html($("#contributors").html());
+    $(".contributor-badge .command-elem").css("display","inline");
+    $("#add-contributor").trigger('openModal');
   }
-});
 
-$(".select-priority").val({{task.priority}} || 0);
-$(".select-status").val({{task.status}} || 0);
-$(".select-wrapper select").change();
-
-/* End Status, Priority Select Control */
-
-
-CKEDITOR.disableAutoInline = true;
-
-/* Modal Control */
-$("#add-child").easyModal({onClose: closeTaskModal});
-$("#add-contributor").easyModal({onClose: closeMemberModal});
-$("#add-parent").easyModal({onClose: closeParentModal});
-
-$("#member-close").click(function() {
-  $("#add-contributor").trigger('closeModal');
-});
-$("#child-close").click(function() {
-  $("#add-child").trigger('closeModal');
-});
-$("#parent-close").click(function() {
-  $("#add-parent").trigger('closeModal');
-});
-
-$('#child-description').attr('contenteditable',true);
-
-var child_editor = CKEDITOR.replace('child-description',
-    {toolbarGroups:[
-        { name: 'clipboard',   groups: ['undo' ] },
-        { name: 'links' },
-        { name: 'insert' },
-        { name: 'forms' },
-        { name: 'tools' },
-        { name: 'others' },
-        '/',
-        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-        { name: 'styles' },
-        { name: 'colors' }]
-    });
-
-function openMemberModal() {
-  updated = false;
-  old_contributors = contributors.slice();
-  old_html = $("#contributors").html();
-  $("#modal-contributors").html($("#contributors").html());
-  $(".contributor-badge .command-elem").css("display","inline");
-  $("#add-contributor").trigger('openModal');
-}
-
-function closeMemberModalUpdate() {
-  updateContributor();
-  updated = true;
-  $("#add-contributor").trigger('closeModal');
-}
-
-function closeMemberModal() {
-  if (!updated) {
-    contributors = old_contributors.slice();
-    $("#contributors").html(old_html);
+  function closeMemberModalUpdate() {
+    updateContributor();
+    updated = true;
+    $("#add-contributor").trigger('closeModal');
   }
-  $(".contributor-badge .command-elem").css("display","none");
-}
 
-function openParentModal() {
-  updated = false;
-  old_parents = parents.slice();
-  old_html = $("#parents").html();
-  $("#modal-parents").html($("#parents").html());
-  $(".task-badge .command-elem").css("display","inline");
-  $("#add-parent").trigger('openModal');
-}
-
-function closeParentModalUpdate() {
-  updateParent();
-  updated = true;
-  $("#add-parent").trigger('closeModal');
-}
-
-function closeParentModal() {
-  if (!updated) {
-    parents = old_parents.slice();
-    $("#parents").html(old_html);
+  function closeMemberModal() {
+    if (!updated) {
+      contributors = old_contributors.slice();
+      $("#contributors").html(old_html);
+    }
+    $(".contributor-badge .command-elem").css("display","none");
   }
-  $(".task-badge .command-elem").css("display","none");
-}
 
-function openTaskModal() {
-  updated = false;
-  old_tasks = tasks.slice();
-  old_html = [$("#task-opened").html(), $("#task-closed").html(),
-    $("#task-archived").html(), $("#modal-tasks").html()];
-  $("#add-task").trigger('openModal');
-}
-
-function closeTaskModalUpdate() {
-  updateTask();
-  updated = true;
-  $("#add-task").trigger('closeModal');
-}
-
-function closeTaskModal() {
-  if (!updated) {
-    tasks = old_tasks.slice();
-    var task_pane = [$("#task-opened"), $("#task-closed"),
-      $("#task-archived"), $("#modal-tasks")];
-    for (var i in task_pane) task_pane[i].html(old_html[i]);
+  function openParentModal() {
+    updated = false;
+    old_parents = parents.slice();
+    old_html = $("#parents").html();
+    $("#modal-parents").html($("#parents").html());
+    $(".task-badge .command-elem").css("display","inline");
+    $("#add-parent").trigger('openModal');
   }
+
+  function closeParentModalUpdate() {
+    updateParent();
+    updated = true;
+    $("#add-parent").trigger('closeModal');
+  }
+
+  function closeParentModal() {
+    if (!updated) {
+      parents = old_parents.slice();
+      $("#parents").html(old_html);
+    }
+    $(".task-badge .command-elem").css("display","none");
+  }
+
+  function openTaskModal() {
+    updated = false;
+    old_tasks = tasks.slice();
+    old_html = [$("#task-opened").html(), $("#task-closed").html(),
+      $("#task-archived").html(), $("#modal-tasks").html()];
+    $("#add-task").trigger('openModal');
+  }
+
+  function closeTaskModalUpdate() {
+    updateTask();
+    updated = true;
+    $("#add-task").trigger('closeModal');
+  }
+
+  function closeTaskModal() {
+    if (!updated) {
+      tasks = old_tasks.slice();
+      var task_pane = [$("#task-opened"), $("#task-closed"),
+        $("#task-archived"), $("#modal-tasks")];
+      for (var i in task_pane) task_pane[i].html(old_html[i]);
+    }
+  }
+
 }
-
-
 
 
 /* End Modal Control */
@@ -218,6 +220,22 @@ $("#dtpicker input").focusout(function() {
 });
 /* End Deadline Control */
 
+/* Comment Control */
+var comment_editor = CKEDITOR.replace('comment-body',
+      {toolbarGroups:[
+          { name: 'clipboard',   groups: ['undo' ] },
+          { name: 'links' },
+          { name: 'insert' },
+          { name: 'forms' },
+          { name: 'tools' },
+          { name: 'others' },
+          '/',
+          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+          { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+          { name: 'styles' },
+          { name: 'colors' }]
+      });
+
 function addComment(taskID) {
   var title = $("#comment-title").val();
   var body = $("#comment-body").val();
@@ -237,7 +255,7 @@ function addComment(taskID) {
     }
   });
 }
-
+/* End Comment Control */
 
 /* Task and Contributor (Modal) Control */
 var updated = false;

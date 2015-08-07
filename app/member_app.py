@@ -1,8 +1,12 @@
-from flask import Blueprint, render_template, abort, current_app, redirect
+from flask import Blueprint, render_template, abort, current_app, redirect, request
 from jinja2 import TemplateNotFound
 from flask.ext.login import login_user, logout_user, current_user, login_required
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal_with
 from functools import wraps
+
+
+from werkzeug import secure_filename
+import uuid, os
 
 from sqlalchemy import or_, and_
 from datetime import datetime
@@ -449,15 +453,16 @@ api.add_resource(Milestone, '/api/milestone')
 
 class TaskComment(Resource):
 
-    issueParser = reqparse.RequestParser()
-    issueParser.add_argument('title', type=str, required=True,
+    commentParser = reqparse.RequestParser()
+    commentParser.add_argument('title', type=str, required=True,
         help='Title is required')
-    issueParser.add_argument('body', type=str, default='')
-    issueParser.add_argument('task_id', type=int, default=-1)
+    commentParser.add_argument('body', type=str, default='')
+    commentParser.add_argument('task_id', type=int, default=-1)
+    commentParser.add_argument('redirect', type=str, default='')
 
     @member_required
     def post(self):
-        args = self.issueParser.parse_args()
+        args = self.commentParser.parse_args()
         print(args)
         task = models.Task.query.get(args['task_id'])
         if not task:
@@ -465,7 +470,32 @@ class TaskComment(Resource):
         task_comment = models.TaskComment(args['title'], args['body'],
             0, current_user.member, task)
         db.session.add(task_comment)
+
+        tags = helper.get_tags(task_comment.body)
+
+        for tag in tags:
+            tag_data = models.Tag.query.filter_by(title=tag).first()
+            if tag_data:
+                task_comment.tags.append(tag_data)
+            else:
+                tag_data = models.Tag(tag)
+                db.session.add(tag_data)
+
+
+        files = request.files.getlist("files")
+
+        file_uploaded = False
+
+        for file in files:
+            if helper.process_file(file, task_comment):
+                file_uploaded = True
+
+        if file_uploaded:
+            task_comment.comment_type = 3
+
         db.session.commit()
+        if (args['redirect']):
+            return redirect(args['redirect'])
         return str(task_comment)
 
     @member_required

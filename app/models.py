@@ -357,6 +357,9 @@ class TaskComment(db.Model):
     body = db.Column(db.Unicode(2048))
     timestamp = db.Column(db.DateTime)
     comment_type = db.Column(db.Integer)
+    files = db.relationship('File', backref='comment', lazy='joined')
+    tags = db.relationship('Tag', secondary=comment_tag_table,
+        backref='task_comments', lazy='dynamic')
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))

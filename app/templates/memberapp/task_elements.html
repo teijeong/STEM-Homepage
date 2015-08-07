@@ -296,3 +296,86 @@ function addTask(level) {
       </div>
   </div>
 {%- endmacro %}
+
+{% macro comment_form() -%}
+<div class="box">
+  <div class="box-header with-border">
+  댓글 쓰기
+  </div>
+  <div class="box-body">
+    <form enctype="multipart/form-data" role="form" action="/stem/api/task_comment" method="POST">
+      <input name="task_id" type="hidden" value="{{task.id}}" />
+      <input name="redirect" type="hidden" value="/stem/{{task_type_eng[task.level]}}/{{task.id}}" />
+      <div class="form-group">
+        <label>제목</label>
+        <input name="title" class="form-control" type="text" placeholder="Title" id="comment-title" />
+      </div>
+      <div class="form-group">
+        <label>내용</label>
+        <textarea name="body" class="form-control" rows="3" id="comment-body"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="comment-files">첨부 파일</label>
+        <input name="files" id="comment-files" type="file" multiple="true">
+      </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary pull-right">쓰기</button>
+      </div>
+    </form>
+  </div>
+</div>
+{%- endmacro %}
+
+{% macro comments() -%}
+{% for comment in milestone.comments[::-1] %}
+  {% if loop.first or comment.timestamp.strftime('%Y%m%d') !=
+    milestone.comments[loop.revindex0 + 1].timestamp.strftime('%Y%m%d') %}
+
+    <li class="time-label">
+      <span class="bg-red">
+        {{ comment.timestamp.strftime('%Y.%m.%d') }}
+      </span>
+    </li>
+  {% endif %}
+
+  <li>
+  {% if comment.comment_type == 0 %}
+    <i class="fa fa-commenting bg-yellow"></i>
+  {% elif comment.comment_type == 1 %}
+    <i class="fa fa-wrench bg-aqua"></i>
+  {% elif comment.comment_type == 3 %}
+    <i class="fa fa-file bg-blue"></i>
+  {% else %}
+    <i class="fa fa-trophy bg-yellow"></i>
+  {% endif %}
+  <div class="timeline-item">
+    <span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.member.user.nickname}}</a></span>
+    <h3 class="timeline-header">{{comment.title}}</h3>
+
+    <div class="timeline-body">
+      {{comment.body | safe}}
+    </div>
+    <div class='timeline-footer'>
+      <p>
+      {% for tag in comment.tags %}
+              <span class="label label-info">#{{tag.title}}</span>
+      {% endfor %}
+      </p>
+      {% if comment.comment_type == 3 %}
+        {% for file in comment.files %}
+          <i class="fa fa-file"></i> <a href="/static/upload/{{file.link}}" download="{{file.name}}">{{file.name}}</a>&nbsp;
+        {% endfor %}
+      {% endif %}
+      {% if comment.comment_type == 2 %}
+          <a class="btn btn-primary btn-xs">See detailed subtask</a>
+          <a class="btn btn-danger btn-xs">Modify subtask</a>
+      {% endif %}
+    </div>
+  </div>
+</li>
+{% endfor %}
+<li>
+  <i class="fa fa-clock-o bg-gray"></i>
+</li>
+
+{%- endmacro %}
