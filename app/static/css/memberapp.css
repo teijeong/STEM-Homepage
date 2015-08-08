@@ -28,7 +28,7 @@ select.command-elem {
     color: #fff;
 }
 
-.member-badge, .issue-badge {
+.member-badge, .task-badge {
     margin-right: 2px;
 }
 

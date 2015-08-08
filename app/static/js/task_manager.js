@@ -133,7 +133,7 @@ var TaskManager = function(level, task, parents, children, contributors) {
   $("#edit-deadline").click(function() {
     $('#dtpicker input').datetimepicker({
       locale:'ko',
-      defaultDate: moment.unix(task.deadline.timestamp())
+      defaultDate: moment.unix(task.deadline)
     }).focus();
     dtpicker = $('#dtpicker input').data('DateTimePicker');
   });
@@ -259,6 +259,7 @@ function member_label(member) {
     ' data-member-id=\'' + member.id + '\'>' + member.nickname +
     '<i class="fa fa-times command-elem"></i>' +
     '</span>';
+  return html;
 }
 
 this.createTask = function(name, description, success, error, notChild) {
@@ -316,6 +317,7 @@ this.updateChild = function() {
 }
 
 this.removeTask = function(taskID, type) {
+  taskID = Number(taskID);
   if (type === "child") {
     manager.children = manager.children.filter(function(task) {return task.id !== taskID;});
   } else if (type === "parent"){
@@ -341,29 +343,22 @@ this.updateParent = function() {
 }
 
 this.addParent = function(taskID) {
-    if (manager.parents.find(function(t) {return t.id === taskID;})) {
-      alert("already exists.");
-      return;
+  taskID = Number(taskID);
+  if (manager.parents.find(function(t) {return t.id === taskID;})) {
+    alert("already exists.");
+    return;
+  }
+  $.ajax({
+    url: "/stem/api/task/" + taskID,
+    type: "GET",
+    success: function(parent) {
+      var label = $(task_label(parent)).click(function(){manager.removeTask(parent.id,"parent");});
+      var controller = manager.selectors.parents;
+      parents.push(new Task(parent.id, parent.local_id, parent.name, parent.status, parent.priority, parent.level));
+      $(controller.source).append(label);
+      $(controller.clone).html($(controller.source).html());
     }
-    $.ajax({
-      url: "/stem/api/task/" + taskID,
-      type: "GET",
-      success: function(parent) {
-        var label = $(task_label(parent)).click(function(){manager.removeTask(parent.id,"parent");});
-        var controller = manager.selectors.parents;
-        parents.push(new Task(parent.id, parent.local_id, parent.name, parent.status, parent.priority, parent.level));
-        $(controller.source).append(label);
-        $(controller.clone).html($(controller.source).html());
-      }
-    });
-}
-
-this.removeParent = function(taskID) {
-  task = $(".task-badge[data-task-id='"+taskID+"']");
-  task.remove();
-  var controller = manager.selectors.parents;
-  $(controller.clone).html($(controller.source).html());
-  manager.parents = manager.parents.filter(function(t) { return t.id !== taskID;});
+  });
 }
 
 //Child task management
@@ -441,21 +436,22 @@ if (level == 1) {
 
 {
   this.addContributor = function(memberID) {
-      if (manager.contributors.find(function(m) {return m.id === memberID;})) {
-        alert("already exists.");
-        return;
+    memberID = Number(memberID);
+    if (manager.contributors.find(function(m) {return m.id === memberID;})) {
+      alert("already exists.");
+      return;
+    }
+    $.ajax({
+      url: "/stem/api/member/" + memberID,
+      type: "GET",
+      success: function(member) {
+       var controller = manager.selectors.contributors;
+       var label = member_label(member);
+        contributors.push(new Member(member.id, member.user.nickname));
+        $(controller.source).append(label);
+        $(controller.clone).html($(controller.source).html());
       }
-      $.ajax({
-        url: "/stem/api/member/" + memberID,
-        type: "GET",
-        success: function(member) {
-         var controller = manager.selectors.contributors;
-         var label = member_label(member);
-          contributors.push(new Member(member.id, member.user.nickname));
-          $(controller.source).append(html);
-          $(controller.clone).html($(controller.source).html());
-        }
-      });
+    });
   }
 
   this.updateContributor = function() {
@@ -472,10 +468,12 @@ if (level == 1) {
   }
 
   this.removeContributor = function(memberID) {
+    memberID = Number(memberID);
     var controller = manager.selectors.contributors;
     member = $(".member-badge[data-member-id='"+memberID+"']");
     member.remove();
     $(controller.clone).html($(controller.source).html());
+    memberID = Number(memberID);
     manager.contributors = manager.contributors.filter(function(m) { return m.id !== memberID;});
   }
 
@@ -546,7 +544,7 @@ var member_table = $(manager.selectors.contributors.table).DataTable({
 if (level == 0) {
   var child_table = $(manager.selectors.children.table).DataTable({
     ajax: {
-      url: "/stem/api/subtask/" + task.id,
+      url: "/stem/api/issue",
       dataSrc: ""
     },
     processing: true,
@@ -556,11 +554,6 @@ if (level == 0) {
       {data:"id"}
     ],
     columnDefs: [
-      {targets:[0],
-        render: function(data, type, row) {
-         return task.local_id + "-" + data;
-        }
-      },
       {targets:[2],
         render: function(data, type, row) {
           return "<button class='btn btn-primary btn-xs' " +
@@ -588,7 +581,7 @@ if (level == 1) {
       {data:"local_id"},
       {data:"name"},
       {data:"id"}
-      ],
+    ],
     columnDefs: [
       {targets:[2],
         render: function(data, type, row) {
@@ -651,14 +644,6 @@ $("#task-name").keydown(function(event) {
 var description;
 var editor;
 
-function modifyDescription() {
-  description = $("#task-description").html();
-  $("#task-description").attr("contenteditable", true);
-  editor = CKEDITOR.inline("task-description");
-  $("#task-description").after("<button type='button' style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
-  $("#task-description").after("<button type='button' class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
-  $("#task-description").focus();
-}
 
 $("#task-description-modify").click(modifyDescription);
 
@@ -685,11 +670,26 @@ function destroyEditor(confirm) {
   $(".editor-control").remove();
 }
 
+function modifyDescription() {
+  description = $("#task-description").html();
+  $("#task-description").attr("contenteditable", true);
+  editor = CKEDITOR.inline("task-description");
+  var cancel_btn = $("<button type='button' style='margin-right:5px;' class='editor-control btn btn-danger pull-right'>Cancel</button>")
+    .click(function() {destroyEditor(false);});
+  var confirm_btn = $("<button type='button'class='editor-control btn btn-primary pull-right'>Done</button>")
+    .click(function() {destroyEditor(true);});
+
+  $("#task-description").after(cancel_btn);
+  $("#task-description").after(confirm_btn);
+  $("#task-description").focus();
+}
+
 $(".member-badge .command-elem").each(function(i, elem) {
   $(elem).click(function() {
     manager.removeContributor($(this).parent().attr('data-member-id'));
   })
 });
+
 if (level === 0 || level === 1)
   $(manager.selectors.children.list + " .command-elem").each(function(i, elem) {
     $(elem).click(function() {

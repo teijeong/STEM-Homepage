@@ -323,7 +323,7 @@ class Task(Resource):
 
         if args['priority'] != -1 and args['priority'] != task.priority:
             task.priority = args['priority']
-            priority_text = ['[급함]으로','[중요함]으로','[보통]으로','[시간날 때]로']
+            priority_text = ['[시간날 때]로','[보통]으로','[중요함]으로','[급함]으로']
             comment_text += '중요도가 %s 변경되었습니다.' % priority_text[task.priority]
 
         if args['status'] != -1 and args['status'] != task.status:
