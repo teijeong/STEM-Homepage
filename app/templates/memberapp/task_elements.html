@@ -395,7 +395,7 @@ var children = [
 var parents = [
     {% for task in task.parents %}
     new Task({{task.id}},{{task.local_id}},"{{task.name}}",
-        {{task.status}},{{task.priority}},{{task.level}}){% if not loop.last %}, {% endif %}
+        {{task.status}},{{task.priority}},{{task.level}},{{task.progress}}){% if not loop.last %}, {% endif %}
     {% endfor %}
 ];
 

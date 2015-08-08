@@ -22,15 +22,16 @@
   *     Subtask add on Issue: implemented by jinja macro
   */
 
-var Task = function(id, local_id, name, stat, priority, level) {
+var Task = function(id, local_id, name, stat, priority, level, progress) {
   this.id = id;
   this.local_id = local_id;
   this.name = name;
   this.status = stat;
   this.priority = priority;
   this.level = level;
-  this.repr = function(level, parent) {
-    switch (level) {
+  this.progress = progress;
+  this.repr = function(parent) {
+    switch (this.level) {
       case 0:
         return "M#" + this.local_id;
       break;
@@ -225,30 +226,30 @@ manager.selectors = {
   }
 }
 
-function task_box(task, parent) {
+function task_box(task_, parent) {
   var html = 
-    "<div class='col-md-4 col-sm-6 col-xs-12 task-box' data-task-id='" + child.id + "'>" +
-    "<a href='/stem/child/" + child.id + "'>" +
+    "<div class='col-md-4 col-sm-6 col-xs-12 task-box' data-task-id='" + task_.id + "'>" +
+    "<a href='/stem/task_/" + task_.id + "'>" +
     "<div class='info-box " +
-      (child.status===0?priority_color[child.priority]:status_color[child.status]) +
+      (task_.status===0?priority_color[task_.priority]:status_color[task_.status]) +
       "'>" +
       "<span class='info-box-icon'><i class='fa fa-exclamation'></i></span>" +
       "<div class='info-box-content'>" +
-        "<span class='info-box-number'>" + child.repr(level, task) + "</span>" +
-        "<span class='info-box-text'>" + child.name + "</span>" +
+        "<span class='info-box-number'>" + task_.repr(task) + "</span>" +
+        "<span class='info-box-text'>" + task_.name + "</span>" +
       "<div class='progress'>" +
-        "<div class='progress-bar' style='width:" + child.progress + "%'></div>" +
+        "<div class='progress-bar' style='width:" + task_.progress + "%'></div>" +
       "</div>" +
     "<span class='progress-description'>" +
-    child.progress + "% 완료" +
+    task_.progress + "% 완료" +
   "</span></div></div></a></div>";
   return html;
 }
 
-function task_label(task) {
+function task_label(task_) {
   var html =
     '<span class="label label-primary task-badge"' +
-    ' data-task-id=\'' + child.id + '\'>' + child.repr(level, task) + ' ' + child.name +
+    ' data-task-id=\'' + task_.id + '\'>' + task_.repr(task) + ' ' + task_.name +
     '<i class="fa fa-times command-elem"></i>' +
     '</span>';
   return html;
@@ -256,7 +257,7 @@ function task_label(task) {
 
 function member_label(member) {
   var html = '<span class="label label-primary member-badge"' +
-    ' data-member-id=\'' + member.id + '\'>' + member.nickname +
+    ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
     '<i class="fa fa-times command-elem"></i>' +
     '</span>';
   return html;
@@ -289,18 +290,19 @@ this.getTask = function(task_id, success, error) {
   });
 };
 
-this.addChild = function(child) {
-  if (! child instanceof Task)
+this.addChild = function(taskID) {
+  manager.getTask(taskID, function(child) {
     child = new Task(child.id, child.local_id, child.name,
-      child.status, child.priority, child.level);
+      child.status, child.priority, child.level, child.progress);
 
-  manager.children.push(child);
+    manager.children.push(child);
 
-  var controller = manager.selectors.children;
+    var controller = manager.selectors.children;
 
-  var label = $(task_label(child)).click(function() { manager.removeTask(child.id, "child"); });
-  $(controller.data[task.status]).append(task_box(child, task));
-  $(controller.list).append(label);
+    var label = $(task_label(child)).click(function() { manager.removeTask(child.id, "child"); });
+    $(controller.data[child.status]).append(task_box(child, task));
+    $(controller.list).append(label);
+  });
 };
 
 this.updateChild = function() {
@@ -445,8 +447,8 @@ if (level == 1) {
       url: "/stem/api/member/" + memberID,
       type: "GET",
       success: function(member) {
-       var controller = manager.selectors.contributors;
-       var label = member_label(member);
+        var controller = manager.selectors.contributors;
+        var label = member_label(member);
         contributors.push(new Member(member.id, member.user.nickname));
         $(controller.source).append(label);
         $(controller.clone).html($(controller.source).html());
@@ -475,21 +477,35 @@ if (level == 1) {
     $(controller.clone).html($(controller.source).html());
     memberID = Number(memberID);
     manager.contributors = manager.contributors.filter(function(m) { return m.id !== memberID;});
+
+    $(".member-badge .command-elem").off('click');
+    $(".member-badge .command-elem").each(function(i, elem) {
+      $(elem).click(function() {
+        manager.removeContributor($(this).parent().attr('data-member-id'));
+      })
+    });
   }
 
   function openContributorModal() {
     var controller = manager.selectors.contributors;
     manager.updated = false;
-    parent.old_contributors = parent.contributors.slice();
-    parent.old_html = $(controller.source).html();
+    manager.old_contributors = manager.contributors.slice();
+    manager.old_html = $(controller.source).html();
     $(controller.clone).html($(controller.source).html());
     $(controller.remove_control).css("display","inline");
     $(controller.modal).trigger('openModal');
+
+    $(".member-badge .command-elem").off('click');
+    $(".member-badge .command-elem").each(function(i, elem) {
+      $(elem).click(function() {
+        manager.removeContributor($(this).parent().attr('data-member-id'));
+      })
+    });
   }
 
   function closeContributorModalUpdate() {
     var controller = manager.selectors.contributors;
-    parent.updateContributor();
+    manager.updateContributor();
     manager.updated = true;
     $(controller.modal).trigger('closeModal');
   }
@@ -556,7 +572,7 @@ if (level == 0) {
     columnDefs: [
       {targets:[2],
         render: function(data, type, row) {
-          return "<button class='btn btn-primary btn-xs' " +
+          return "<button class='add btn btn-primary btn-xs' " +
             "data-task-id='" + data + "'>추가</button>";
         }
       }
@@ -564,7 +580,7 @@ if (level == 0) {
     drawCallback: function() {
       $(".add", this).each(function() {
         $(this).click(function() {
-          manager.addChild(this.attr('data-task-id'));
+          manager.addChild($(this).attr('data-task-id'));
         });
       });
     }
@@ -593,7 +609,7 @@ if (level == 1) {
     drawCallback: function() {
       $(".add", this).each(function() {
         $(this).click(function() {
-          manager.addParent(this.attr('data-task-id'));
+          manager.addParent($(this).attr('data-task-id'));
         });
       });
     }
@@ -683,12 +699,6 @@ function modifyDescription() {
   $("#task-description").after(confirm_btn);
   $("#task-description").focus();
 }
-
-$(".member-badge .command-elem").each(function(i, elem) {
-  $(elem).click(function() {
-    manager.removeContributor($(this).parent().attr('data-member-id'));
-  })
-});
 
 if (level === 0 || level === 1)
   $(manager.selectors.children.list + " .command-elem").each(function(i, elem) {
