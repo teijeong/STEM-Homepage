@@ -275,10 +275,6 @@ class Task(db.Model):
             (datetime.datetime.now() + datetime.timedelta(days=7))
         self.status = status
 
-        if parent:
-            self.level = parent.level + 1;
-            self.parents.append(parent)
-
         if self.level == 0 or self.level == 1:
             recent_task = Task.query.filter_by(level=level). \
                 order_by(Task.local_id.desc()).first()
@@ -288,10 +284,15 @@ class Task(db.Model):
             if parent:
                 subtasks = sorted(parent.children,
                     key=lambda task: task.local_id, reverse=True)
+                print(subtasks)
                 if len(subtasks) > 0:
                     self.local_id = subtasks[0].local_id + 1
                 else:
                     self.local_id = 1
+
+        if parent:
+            self.level = parent.level + 1;
+            self.parents.append(parent)
 
     def add_parent(self, parent):
         if len(self.parents) != 0:
@@ -336,10 +337,10 @@ class Task(db.Model):
         elif self.level == 1:
             return '<#%r %r>' % (self.local_id, self.name)
         elif self.level == 2:
-            if self.parent:
+            if self.parents != []:
                 return '<#%r-%r %r>' % (self.parents[0].local_id, self.local_id, self.name)
             else:
-                return '<#?-%r %r>' % (self.parents[0].local_id, self.local_id, self.name)
+                return '<#?-%r %r>' % ( self.local_id, self.name)
         else:
             return '<?#%r %r>' % (self.id, self.name)
 

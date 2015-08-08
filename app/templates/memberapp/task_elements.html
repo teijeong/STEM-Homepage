@@ -116,6 +116,7 @@ $(".select-wrapper select").change();
 {%- endmacro %}
 
 {% macro task_form_script(level=0) -%}
+$("#task-description").attr("contenteditable", true);
 var description_editor = CKEDITOR.replace('task-description',
     {toolbarGroups:[
         { name: 'clipboard',   groups: ['undo' ] },
@@ -356,11 +357,14 @@ function addTask(level) {
       {{comment.body | safe}}
     </div>
     <div class='timeline-footer'>
+      {% if comment.tags.count() > 0 %}
       <p>
-      {% for tag in comment.tags %}
-              <span class="label label-info">#{{tag.title}}</span>
-      {% endfor %}
+        <i class="fa fa-tag"></i>
+        {% for tag in comment.tags %}
+          <span class="label label-info">#{{tag.title}}</span>
+        {% endfor %}
       </p>
+      {% endif %}
       {% if comment.comment_type == 3 %}
         {% for file in comment.files %}
           <i class="fa fa-file"></i> <a href="/static/upload/{{file.link}}" download="{{file.name}}">{{file.name}}</a>&nbsp;
@@ -378,4 +382,31 @@ function addTask(level) {
   <i class="fa fa-clock-o bg-gray"></i>
 </li>
 
+{%- endmacro %}
+
+{% macro generate_data() -%}
+var children = [
+    {% for task in task.children %}
+    new Task({{task.id}},{{task.local_id}},"{{task.name}}",
+        {{task.status}},{{task.priority}},{{task.level}}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+];
+
+var parents = [
+    {% for task in task.parents %}
+    new Task({{task.id}},{{task.local_id}},"{{task.name}}",
+        {{task.status}},{{task.priority}},{{task.level}}){% if not loop.last %}, {% endif %}
+    {% endfor %}
+];
+
+var contributors = [
+    {% for member in milestone.contributors %}
+    new Member({{member.id}}, "{{member.user.nickname}}"),
+    {% endfor %}
+    new Member({{milestone.creator.id}}, "{{milestone.creator.user.nickname}}", true)
+];
+
+var task = new Task({{task.id}},{{task.local_id}},"{{task.name}}",
+        {{task.status}},{{task.priority}},{{task.level}});
+task.deadline = {{task.deadline.timestamp()}}
 {%- endmacro %}

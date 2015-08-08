@@ -18,22 +18,65 @@
   *   Codes that can be stored here:
   *     Common Functions
   *     If generallization applies, other functions
+  *   Implemented by other parts:
+  *     Subtask add on Issue: implemented by jinja macro
   */
 
+var Task = function(id, local_id, name, stat, priority, level) {
+  this.id = id;
+  this.local_id = local_id;
+  this.name = name;
+  this.status = stat;
+  this.priority = priority;
+  this.level = level;
+  this.repr = function(level, parent) {
+    switch (level) {
+      case 0:
+        return "M#" + this.local_id;
+      break;
+      case 1:
+        return "#" + this.local_id
+      break;
+      case 2:
+        if (!parent) parent = {local_id:"?"};
+        return "#" + parent.local_id + "-" + this.local_id;
+      break;
+      default:
+        return "?#" + this.local_id;
+    }
+  }
+};
 
-var TaskManager = function(level) {
+var Member = function(id, name, creator) {
+    this.id = id;
+    this.name = name;
+    this.creator = creator || false;
+};
+
+
+var TaskManager = function(level, task, parents, children, contributors) {
   if (level === undefined) level = 0;
 
   //python None resolution
   var None = undefined;
+
+  var manager = this;
+  this.parents = parents;
+  this.children = children;
+  this.contributors = contributors;
 
   var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
   var priority_text = ['시간날 때','보통','중요','급함'];
   var status_color = ['bg-aqua','bg-green','bg-gray','bg-black'];
   var status_text = ['진행중','완료','보관됨','제외됨'];
 
+  var task_category = ['milestone', 'issue', 'subtask'];
+  var task_category_kr = ['마일스톤', '일거리', '세부 업무'];
+  var kr_postfix_sbj = ['이', '가', '가'];
+  var kr_postfix_obj = ['을', '를', '를'];
+
   /* Status, Priority Select Control */
-  var init_select = 2;
+  this.init_select = 2;
   $(".select-wrapper select").change(function(event) {
     var label_width = [0,16,26,36,46,50];
     var w = label_width[$("option:selected", this).text().length];
@@ -42,12 +85,12 @@ var TaskManager = function(level) {
     if ($(this).hasClass("select-priority")) {
       $(this).parent().removeClass(priority_color.join(' '));
       $(this).parent().addClass(priority_color[i]);
-      if (init_select > 0) {
-        init_select--;
+      if (manager.init_select > 0) {
+        manager.init_select--;
         return;
       }
       $.ajax({
-        url: "/stem/api/task/{{task.id}}",
+        url: "/stem/api/task/" + task.id,
         type: "PUT",
         data: {
           priority: Number(i)
@@ -58,12 +101,12 @@ var TaskManager = function(level) {
     } else {
       $(this).parent().removeClass(status_color.join(' '));
       $(this).parent().addClass(status_color[i]);
-      if (init_select > 0) {
-        init_select--;
+      if (manager.init_select > 0) {
+        manager.init_select--;
         return;
       }
       $.ajax({
-        url: "/stem/api/task/{{task.id}}",
+        url: "/stem/api/task/" + task.id,
         type: "PUT",
         data: {
           status: Number(i)
@@ -74,235 +117,151 @@ var TaskManager = function(level) {
     }
   });
 
-  $(".select-priority").val({{task.priority}} || 0);
-  $(".select-status").val({{task.status}} || 0);
+  $(".select-priority").val(task.priority || 0);
+  $(".select-status").val(task.status || 0);
   $(".select-wrapper select").change();
 
   /* End Status, Priority Select Control */
 
   CKEDITOR.disableAutoInline = true;
 
-  /* Modal Control */
-  $("#add-child").easyModal({onClose: closeTaskModal});
-  $("#add-contributor").easyModal({onClose: closeMemberModal});
-  $("#add-parent").easyModal({onClose: closeParentModal});
-
-  $("#member-close").click(function() {
-    $("#add-contributor").trigger('closeModal');
-  });
-  $("#child-close").click(function() {
-    $("#add-child").trigger('closeModal');
-  });
-  $("#parent-close").click(function() {
-    $("#add-parent").trigger('closeModal');
-  });
-
-  $('#child-description').attr('contenteditable',true);
-
-  var child_editor = CKEDITOR.replace('child-description',
-      {toolbarGroups:[
-          { name: 'clipboard',   groups: ['undo' ] },
-          { name: 'links' },
-          { name: 'insert' },
-          { name: 'forms' },
-          { name: 'tools' },
-          { name: 'others' },
-          '/',
-          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-          { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-          { name: 'styles' },
-          { name: 'colors' }]
-      });
-
-  function openMemberModal() {
-    updated = false;
-    old_contributors = contributors.slice();
-    old_html = $("#contributors").html();
-    $("#modal-contributors").html($("#contributors").html());
-    $(".contributor-badge .command-elem").css("display","inline");
-    $("#add-contributor").trigger('openModal');
-  }
-
-  function closeMemberModalUpdate() {
-    updateContributor();
-    updated = true;
-    $("#add-contributor").trigger('closeModal');
-  }
-
-  function closeMemberModal() {
-    if (!updated) {
-      contributors = old_contributors.slice();
-      $("#contributors").html(old_html);
-    }
-    $(".contributor-badge .command-elem").css("display","none");
-  }
-
-  function openParentModal() {
-    updated = false;
-    old_parents = parents.slice();
-    old_html = $("#parents").html();
-    $("#modal-parents").html($("#parents").html());
-    $(".task-badge .command-elem").css("display","inline");
-    $("#add-parent").trigger('openModal');
-  }
-
-  function closeParentModalUpdate() {
-    updateParent();
-    updated = true;
-    $("#add-parent").trigger('closeModal');
-  }
-
-  function closeParentModal() {
-    if (!updated) {
-      parents = old_parents.slice();
-      $("#parents").html(old_html);
-    }
-    $(".task-badge .command-elem").css("display","none");
-  }
-
-  function openTaskModal() {
-    updated = false;
-    old_tasks = tasks.slice();
-    old_html = [$("#task-opened").html(), $("#task-closed").html(),
-      $("#task-archived").html(), $("#modal-tasks").html()];
-    $("#add-task").trigger('openModal');
-  }
-
-  function closeTaskModalUpdate() {
-    updateTask();
-    updated = true;
-    $("#add-task").trigger('closeModal');
-  }
-
-  function closeTaskModal() {
-    if (!updated) {
-      tasks = old_tasks.slice();
-      var task_pane = [$("#task-opened"), $("#task-closed"),
-        $("#task-archived"), $("#modal-tasks")];
-      for (var i in task_pane) task_pane[i].html(old_html[i]);
-    }
-  }
-
-}
-
-
-/* End Modal Control */
-
 
 
 /* Deadline Control */
-var dtpicker;
+  this.dtpicker = undefined;
 
-$("#edit-deadline").click(function() {
-  $('#dtpicker input').datetimepicker({
-    locale:'ko',
-    defaultDate: moment.unix({{task.deadline.timestamp()}})
-  }).focus();
-  dtpicker = $('#dtpicker input').data('DateTimePicker');
-});
-
-$("#dtpicker input").focusout(function() {
-  if(dtpicker.destroyed) return;
-  dtpicker.destroyed = true;
-  var date = dtpicker.date();
-  $("#deadline").text(date.format("YYYY.MM.DD HH:mm"));
-  dtpicker.destroy();
-  $.ajax({
-    url: "/stem/api/task/{{task.id}}",
-    type: "PUT",
-    data: {
-      deadline: date.unix()
-    },
-    error :function() {
-      alert("마감일 업데이트 중 오류가 발생했습니다.");
-    }
+  $("#edit-deadline").click(function() {
+    $('#dtpicker input').datetimepicker({
+      locale:'ko',
+      defaultDate: moment.unix(task.deadline.timestamp())
+    }).focus();
+    dtpicker = $('#dtpicker input').data('DateTimePicker');
   });
-});
-/* End Deadline Control */
 
-/* Comment Control */
-var comment_editor = CKEDITOR.replace('comment-body',
-      {toolbarGroups:[
-          { name: 'clipboard',   groups: ['undo' ] },
-          { name: 'links' },
-          { name: 'insert' },
-          { name: 'forms' },
-          { name: 'tools' },
-          { name: 'others' },
-          '/',
-          { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-          { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-          { name: 'styles' },
-          { name: 'colors' }]
-      });
-
-function addComment(taskID) {
-  var title = $("#comment-title").val();
-  var body = $("#comment-body").val();
-  if (title === "") return;
-  $("#comment-title").val("");
-  $("#comment-body").val("");
-  $.ajax({
-    url: "/stem/api/task_comment",
-    type:"POST",
-    data: {
-      title: title,
-      body: body,
-      task_id: taskID
-    },
-    success: function(data) {
-      location.reload();
-    }
+  $("#dtpicker input").focusout(function() {
+    if(dtpicker.destroyed) return;
+    dtpicker.destroyed = true;
+    var date = dtpicker.date();
+    $("#deadline").text(date.format("YYYY.MM.DD HH:mm"));
+    dtpicker.destroy();
+    $.ajax({
+      url: "/stem/api/task/" + task.id,
+      type: "PUT",
+      data: {
+        deadline: date.unix()
+      },
+      error :function() {
+        alert("마감일 업데이트 중 오류가 발생했습니다.");
+      }
+    });
   });
-}
-/* End Comment Control */
+  /* End Deadline Control */
+
+  /* Comment Control */
+  var comment_editor = CKEDITOR.replace('comment-body',
+    {toolbarGroups:[
+      { name: 'clipboard',   groups: ['undo' ] },
+      { name: 'links' },
+      { name: 'insert' },
+      { name: 'forms' },
+      { name: 'tools' },
+      { name: 'others' },
+      '/',
+      { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+      { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+      { name: 'styles' },
+      { name: 'colors' }]
+    });
+
+  /* End Comment Control */
 
 /* Task and Contributor (Modal) Control */
+
+/**** Maintained by each files 
+
 var updated = false;
 var old_tasks, old_contributors, old_parent, old_html;
+*/
+this.old_children = [];
+this.old_parents = [];
+this.old_html = [];
+this.old_contributors = [];
+this.updated = false;
 
-var Task = function(id, local_id, name, stat, priority) {
-    this.id = id;
-    this.local_id = local_id;
-    this.name = name;
-    this.stat = stat;
-    this.priority = priority;
-};
+manager.selectors = {
+  children: {
+    modal: "#modal-manage-children",
+    show: "#manage-children-open",
+    confirm: "#modal-manage-children-confirm",
+    cancel: "#modal-manage-children-cancel",
+    table: "#table-children",
+    list: "#modal-child-list",
+    data: ["#task-opened","#task-closed","#task-archived"],
+    name: "#task-name",
+    description: "#task-description",
+    add: "#create-child"
+  },
+  parents: {
+    modal: "#modal-manage-parents",
+    show: "#manage-parents-open",
+    confirm: "#modal-manage-parents-confirm",
+    cancel: "#modal-manage-parents-cancel",
+    table: "#table-parents",
+    data: ["#parents"],
+    remove_control: ".task-badge .command-elem",
+    source: "#parents",
+    clone: "#modal-parent-list"
+  },
+  contributors: {
+    modal: "#modal-manage-contributors",
+    show: "#manage-contributors-open",
+    confirm: "#modal-manage-contributors-confirm",
+    cancel: "#modal-manage-contributors-cancel",
+    table: "#table-members",
+    data: ["#contributors"],
+    remove_control: ".member-badge .command-elem",
+    source: "#contributors",
+    clone: "#modal-contributor-list"  
+  }
+}
 
-var Member = function(id, name, creator) {
-    this.id = id;
-    this.name = name;
-    this.creator = creator || false;
-};
+function task_box(task, parent) {
+  var html = 
+    "<div class='col-md-4 col-sm-6 col-xs-12 task-box' data-task-id='" + child.id + "'>" +
+    "<a href='/stem/child/" + child.id + "'>" +
+    "<div class='info-box " +
+      (child.status===0?priority_color[child.priority]:status_color[child.status]) +
+      "'>" +
+      "<span class='info-box-icon'><i class='fa fa-exclamation'></i></span>" +
+      "<div class='info-box-content'>" +
+        "<span class='info-box-number'>" + child.repr(level, task) + "</span>" +
+        "<span class='info-box-text'>" + child.name + "</span>" +
+      "<div class='progress'>" +
+        "<div class='progress-bar' style='width:" + child.progress + "%'></div>" +
+      "</div>" +
+    "<span class='progress-description'>" +
+    child.progress + "% 완료" +
+  "</span></div></div></a></div>";
+  return html;
+}
 
-var parents = [
-    {% for task in task.parents %}
-    new Task({{task.id}}, {{task.local_id}}, "{{task.name}}",
-        {{task.status}}, {{task.priority}}){% if not loop.last %}, {% endif %}
-    {% endfor %}
-];
+function task_label(task) {
+  var html =
+    '<span class="label label-primary task-badge"' +
+    ' data-task-id=\'' + child.id + '\'>' + child.repr(level, task) + ' ' + child.name +
+    '<i class="fa fa-times command-elem"></i>' +
+    '</span>';
+  return html;
+}
 
-var tasks = [
-    {% for task in task.children %}
-    new Task({{task.id}}, {{task.local_id}}, "{{task.name}}",
-        {{task.status}}, {{task.priority}}){% if not loop.last %}, {% endif %}
-    {% endfor %}
-];
+function member_label(member) {
+  var html = '<span class="label label-primary member-badge"' +
+    ' data-member-id=\'' + member.id + '\'>' + member.nickname +
+    '<i class="fa fa-times command-elem"></i>' +
+    '</span>';
+}
 
-var contributors = [
-    {% for member in task.contributors %}
-    new Member({{member.id}}, "{{member.user.nickname}}"),
-    {% endfor %}
-    new Member({{task.creator.id}}, "{{task.creator.user.nickname}}", true)
-];
-
-
-function addTask() {
-  var box_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
-  var box_color2 = ['bg-red','bg-green','bg-gray', 'bg-black'];
-  var task_pane = [$("#task-opened"), $("#task-closed"), $("#task-archived")];
-  var name = $("#child-name").val();
-  var description = child_editor.getData();
+this.createTask = function(name, description, success, error, notChild) {
   $("#child-name").val("");
   child_editor.setData("");
   $.ajax({
@@ -311,219 +270,342 @@ function addTask() {
     data: {
         name: name,
         description: description,
-        level: 2,
-        parent: {{task.id}},
+        level: level + 1,
+        parents: notchild?[]:[task.id],
         priority: 0
     },
-    success: function(task) {
+    success: success,
+    error: error
+  });
+};
 
-      var taskbox_html =
-        "<div class='col-md-4 col-sm-6 col-xs-12 task-box' data-task-id='" + task.id + "'>" +
-          "<a href='/stem/child/" + task.id + "'>" +
-          "<div class='info-box " + (task.status===0?box_color[task.priority]:box_color2[task.status]) + "'>" +
-            "<span class='info-box-icon'><i class='fa fa-wrench'></i></span>" +
-            "<div class='info-box-content'>" +
-              "<span class='info-box-number'>#{{task.local_id}}-" + task.local_id +
-              "</span>" +
-              "<span class='info-box-text'>" + task.name + "</span>" +
-            "<div class='progress'>" +
-              "<div class='progress-bar' style='width:" + task.progress + "%'></div>" +
-            "</div>" +
-          "<span class='progress-description'>" +
-          task.progress + "% 완료" +
-        "</span></div></div></a></div>";
+this.getTask = function(task_id, success, error) {
+  $.ajax({
+    url: "/stem/api/task/" + task_id,
+    type: "GET",
+    success: success,
+    error: error
+  });
+};
 
-      var html =
-        '<span class="label label-primary task-badge"' +
-        ' data-task-id=\'' + task.id + '\'>#' + task.id + " " + task.name +
-        '<i class="fa fa-times command-elem" onclick="removeTask(' +
-          task.id + ')"></i>' +
-        '</span>';
-      tasks.push(new Task(task.id, task.local_id, task.name, task.status, task.priority));
-      task_pane[task.status].append(taskbox_html);
-      $("#modal-tasks").append(html);
-      closeTaskModalUpdate();
+this.addChild = function(child) {
+  if (! child instanceof Task)
+    child = new Task(child.id, child.local_id, child.name,
+      child.status, child.priority, child.level);
+
+  manager.children.push(child);
+
+  var controller = manager.selectors.children;
+
+  var label = $(task_label(child)).click(function() { manager.removeTask(child.id, "child"); });
+  $(controller.data[task.status]).append(task_box(child, task));
+  $(controller.list).append(label);
+};
+
+this.updateChild = function() {
+  $.ajax({
+    url:"/stem/api/task/" + task.id,
+    type:"PUT",
+    data: {
+      children: manager.children.map(function(task) {return task.id;})
     },
     error: function() {
-      alert("세부 업무를 추가하는 중 오류가 발생했습니다.");
-      $("#child-name").val(name);
-      child_editor.setData(description);
+      alert("하위 업무를 업데이트하는중 오류가 발생했습니다.");
     }
   });
 }
 
-
-function removeTask(taskID) {
+this.removeTask = function(taskID, type) {
+  if (type === "child") {
+    manager.children = manager.children.filter(function(task) {return task.id !== taskID;});
+  } else if (type === "parent"){
+    manager.parents = manager.parents.filter(function(task) {return task.id !== taskID;});
+  } else return;
   var task = $(".task-box[data-task-id='"+taskID+"']");
   task.remove();
   task = $(".task-badge[data-task-id='"+taskID+"']");
   task.remove();
-  tasks = tasks.filter(function(task) {return task.id !== taskID;});
 }
 
-function updateTask() {
+this.updateParent = function() {
   $.ajax({
-    url:"/stem/api/task/" + {{task.id}},
+    url:"/stem/api/task/" + task.id,
     type:"PUT",
     data: {
-      children: tasks.map(function(task) {return task.id;})
+      parents: manager.parents.map(function(task) {return task.id;})
     },
     error: function() {
-      alert("Error occured while updating children");
+      alert("상위 업무를 업데이트하는중 오류가 발생했습니다.");
     }
   });
 }
-function addParent(taskID) {
-    if (parents.find(function(t) {return t.id === taskID;})) {
+
+this.addParent = function(taskID) {
+    if (manager.parents.find(function(t) {return t.id === taskID;})) {
       alert("already exists.");
       return;
     }
     $.ajax({
       url: "/stem/api/task/" + taskID,
       type: "GET",
-      success: function(task) {
-        var html = '<span class="label label-info task-badge"' +
-          ' data-task-id=\'' + task.id + '\'><small>[M#' +
-          task.local_id + '</small> ' + task.name +
-          '<i class="fa fa-times command-elem" onclick="removeParent(' +
-            task.id + ')"></i>' +
-          '</span>';
-        $("#parents").append(html);
-        parents.push(new Task(task.id, task.local_id, task.name, task.status, task.priority));
-        $("#modal-parents").html($("#parents").html());
+      success: function(parent) {
+        var label = $(task_label(parent)).click(function(){manager.removeTask(parent.id,"parent");});
+        var controller = manager.selectors.parents;
+        parents.push(new Task(parent.id, parent.local_id, parent.name, parent.status, parent.priority, parent.level));
+        $(controller.source).append(label);
+        $(controller.clone).html($(controller.source).html());
       }
     });
 }
 
-function updateParent() {
-  $.ajax({
-    url:"/stem/api/task/{{task.id}}",
-    type:"PUT",
-    data: {
-      parent: parents.map(function(task) {return task.id;})
-    },
-    error: function() {
-      alert("마일스톤을 업데이트하는 중 오류가 발생했습니다.");
-    }
-  });
-}
-
-function removeParent(taskID) {
+this.removeParent = function(taskID) {
   task = $(".task-badge[data-task-id='"+taskID+"']");
   task.remove();
-  $("#modal-parents").html($("#parents").html());
-  parents = parents.filter(function(t) { return t.id !== taskID;});
+  var controller = manager.selectors.parents;
+  $(controller.clone).html($(controller.source).html());
+  manager.parents = manager.parents.filter(function(t) { return t.id !== taskID;});
 }
 
-function addContributor(memberID) {
-    if (contributors.find(function(m) {return m.id === memberID;})) {
-      alert("already exists.");
-      return;
+//Child task management
+if (level == 0 || level == 1) {
+  function openChildModal() {
+    var controller = manager.selectors.children;
+    manager.updated = false;
+    manager.old_children = manager.children.slice();
+    manager.old_html = controller.data.map(function(sel) {return $(sel).html();});
+
+    $(controller.modal).trigger('openModal');
+  }
+
+  function closeChildModalUpdate() {
+    var controller = manager.selectors.children;
+    manager.updateChild();
+    manager.updated = true;
+    $(controller.modal).trigger('closeModal');
+  }
+
+  function closeChildModal() {
+    var controller = manager.selectors.children;
+    if (!manager.updated) {
+      manager.children = manager.old_children.slice();
+      controller.data.map(function(sel,i) {$(sel).html(manager.old_html[i])});
     }
+  }
+
+  var controller = manager.selectors.children;
+  $(controller.modal).easyModal({onClose: closeChildModal});
+  $(controller.show).click(openChildModal)
+  $(controller.cancel).click(function() {
+    $(controller.modal).trigger('closeModal');
+  });
+  $(controller.confirm).click(closeChildModalUpdate);
+}
+// Parent task management
+if (level == 1) {
+
+  function openParentModal() {
+    var controller = manager.selectors.parents;
+    manager.updated = false;
+    manager.old_parents = manager.parents.slice();
+    manager.old_html = controller.data.map(function(sel) {return $(sel).html();});
+    $(controller.remove_control).css("display","inline");
+    $(controller.modal).trigger('openModal');
+  }
+
+  function closeParentModalUpdate() {
+    var controller = manager.selectors.parents;
+    manager.updateParent();
+    manager.updated = true;
+    $(controller.modal).trigger('closeModal');
+  }
+
+  function closeParentModal() {
+    var controller = manager.selectors.parents;
+    if (!manager.updated) {
+      manager.parents = manager.old_parents.slice();
+      $(mana).html(old_html);
+    }
+    controller.data.map(function(sel,i) {$(sel).html(manager.old_html[i])});
+    $(controller.remove_control).css("display","none");
+  }
+
+  var controller = manager.selectors.parents;
+
+  $(controller.modal).easyModal({onClose: closeParentModal});
+  $(controller.show).click(openParentModal)
+  $(controller.cancel).click(function() {
+    $(controller.modal).trigger('closeModal');
+  });
+  $(controller.confirm).click(closeParentModalUpdate);
+}
+
+{
+  this.addContributor = function(memberID) {
+      if (manager.contributors.find(function(m) {return m.id === memberID;})) {
+        alert("already exists.");
+        return;
+      }
+      $.ajax({
+        url: "/stem/api/member/" + memberID,
+        type: "GET",
+        success: function(member) {
+         var controller = manager.selectors.contributors;
+         var label = member_label(member);
+          contributors.push(new Member(member.id, member.user.nickname));
+          $(controller.source).append(html);
+          $(controller.clone).html($(controller.source).html());
+        }
+      });
+  }
+
+  this.updateContributor = function() {
     $.ajax({
-      url: "/stem/api/member/" + memberID,
-      type: "GET",
-      success: function(member) {
-        var html = '<span class="label label-primary contributor-badge"' +
-          ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
-          '<i class="fa fa-times command-elem" onclick="removeContributor(' +
-            member.id + ')"></i>' +
-          '</span>';
-        $("#contributors").append(html);
-        contributors.push(new Member(member.id, member.user.nickname));
-        $("#modal-contributors").html($("#contributors").html());
+      url:"/stem/api/task/" + task.id,
+      type:"PUT",
+      data: {
+        contributor: manager.contributors.map(function(mem) {return mem.id;})
+      },
+      error: function() {
+        alert("참여자를 업데이트하는 중 오류가 발생했습니다.");
       }
     });
-}
+  }
 
-function updateContributor() {
-  $.ajax({
-    url:"/stem/api/task/{{task.id}}",
-    type:"PUT",
-    data: {
-      contributor: contributors.map(function(mem) {return mem.id;})
-    },
-    error: function() {
-      alert("Error occured while updating contributors");
+  this.removeContributor = function(memberID) {
+    var controller = manager.selectors.contributors;
+    member = $(".member-badge[data-member-id='"+memberID+"']");
+    member.remove();
+    $(controller.clone).html($(controller.source).html());
+    manager.contributors = manager.contributors.filter(function(m) { return m.id !== memberID;});
+  }
+
+  function openContributorModal() {
+    var controller = manager.selectors.contributors;
+    manager.updated = false;
+    parent.old_contributors = parent.contributors.slice();
+    parent.old_html = $(controller.source).html();
+    $(controller.clone).html($(controller.source).html());
+    $(controller.remove_control).css("display","inline");
+    $(controller.modal).trigger('openModal');
+  }
+
+  function closeContributorModalUpdate() {
+    var controller = manager.selectors.contributors;
+    parent.updateContributor();
+    manager.updated = true;
+    $(controller.modal).trigger('closeModal');
+  }
+
+  function closeContributorModal() {
+    var controller = manager.selectors.contributors;
+    if (!manager.updated) {
+      manager.contributors = manager.old_contributors.slice();
+      $(controller.source).html(manager.old_html);
     }
+    $(controller.remove_control).css("display","none");
+  }
+
+  var controller = manager.selectors.contributors;
+  $(controller.modal).easyModal({onClose: closeContributorModal});
+  $(controller.show).click(openContributorModal)
+  $(controller.cancel).click(function() {
+    $(controller.modal).trigger('closeModal');
   });
+  $(controller.confirm).click(closeContributorModalUpdate);
 }
 
-function removeContributor(memberID) {
-  member = $(".contributor-badge[data-member-id='"+memberID+"']");
-  member.remove();
-  $("#modal-contributors").html($("#contributors").html());
-  contributors = contributors.filter(function(m) { return m.id !== memberID;});
-}
-
-var member_table = $('#members').DataTable({
+var member_table = $(manager.selectors.contributors.table).DataTable({
     ajax: {
       url: "/people",
       dataSrc: ""
     },
     processing: true,
     columns: [
-        {data:"cycle"},
-        {data:"user.nickname"},
-        {data:"stem_dept"},
-        {data:"id"}
+      {data:"cycle"},
+      {data:"user.nickname"},
+      {data:"stem_dept"},
+      {data:"id"}
     ],
     columnDefs: [
-        {targets:[3],
-            render: function(data, type, row) {
-                return "<button class='btn btn-primary btn-xs' " +
-                "onclick='addContributor(" + data + ")'>Add</button>";
-            }
+      {targets:[3],
+        render: function(data, type, row) {
+          return "<button class='add btn btn-primary btn-xs' " +
+            "data-member-id='" + data + "'>추가</button>";
         }
-    ]
+      }
+    ],
+    drawCallback: function() {
+      $(".add", this).each(function() {
+        $(this).click(function() {
+          manager.addContributor($(this).attr('data-member-id'));
+        });
+      });
+    }
 });
 
-var child_table = $('#children').DataTable({
+if (level == 0) {
+  var child_table = $(manager.selectors.children.table).DataTable({
     ajax: {
-      url: "/stem/api/subtask/{{task.id}}",
+      url: "/stem/api/subtask/" + task.id,
       dataSrc: ""
     },
     processing: true,
     columns: [
-        {data:"local_id"},
-        {data:"name"},
-        {data:"id"}
-        ],
+      {data:"local_id"},
+      {data:"name"},
+      {data:"id"}
+    ],
     columnDefs: [
-        {targets:[0],
-          render: function(data, type, row) {
-            return "{{task.local_id}}" + data;
-          }
-        },
-        {targets:[2],
-            render: function(data, type, row) {
-                return "<button class='btn btn-primary btn-xs' onclick='addTask(" +
-                    data + ")'>Add</button>";
-            }
+      {targets:[0],
+        render: function(data, type, row) {
+         return task.local_id + "-" + data;
         }
-    ]
-});
-
-var parent_table = $('#table-parents').DataTable({
+      },
+      {targets:[2],
+        render: function(data, type, row) {
+          return "<button class='btn btn-primary btn-xs' " +
+            "data-task-id='" + data + "'>추가</button>";
+        }
+      }
+    ],
+    drawCallback: function() {
+      $(".add", this).each(function() {
+        $(this).click(function() {
+          manager.addChild(this.attr('data-task-id'));
+        });
+      });
+    }
+  });
+}
+if (level == 1) {
+  var parent_table = $(manager.selectors.children.table).DataTable({
     ajax: {
       url: "/stem/api/milestone",
       dataSrc: ""
     },
     processing: true,
     columns: [
-        {data:"local_id"},
-        {data:"name"},
-        {data:"id"}
-        ],
+      {data:"local_id"},
+      {data:"name"},
+      {data:"id"}
+      ],
     columnDefs: [
-        {targets:[2],
-            render: function(data, type, row) {
-                return "<button type='button' class='btn btn-primary btn-xs' onclick='addParent(" +
-                    data + ")'>Add</button>";
-            }
+      {targets:[2],
+        render: function(data, type, row) {
+          return "<button class='add btn btn-primary btn-xs' " +
+            "data-task-id='" + data + "'>추가</button>";
         }
-    ]
-});
+      }
+    ],
+    drawCallback: function() {
+      $(".add", this).each(function() {
+        $(this).click(function() {
+          manager.addParent(this.attr('data-task-id'));
+        });
+      });
+    }
+  });
+}
 /* End Task and Contributor (Modal) Control */
 
 /* Task Name and Description Control */
@@ -535,6 +617,8 @@ function modifyName() {
     txt = $("#task-name").text();
 }
 
+$("#task-name-modify").click(modifyName);
+
 $("#task-name").focusout(function(event) {
     if ($(this).attr("contenteditable") === "false") return;
     $(this).attr("contenteditable", false);
@@ -542,7 +626,7 @@ $("#task-name").focusout(function(event) {
 
     if (new_txt !== task_txt) {
       $.ajax({
-        url:"/stem/api/task/{{task.id}}",
+        url:"/stem/api/task/" + task.id,
         type:"PUT",
         data: {
           name: $("#task-name").text()
@@ -576,12 +660,14 @@ function modifyDescription() {
   $("#task-description").focus();
 }
 
+$("#task-description-modify").click(modifyDescription);
+
 function destroyEditor(confirm) {
   if (!confirm || !editor.checkDirty()) {
     $("#task-description").html(description);
   } else {
     $.ajax({
-      url:"/stem/api/task/{{task.id}}",
+      url:"/stem/api/task/" + task.id,
       type: "PUT",
       data: {
         description: editor.getData()
@@ -597,6 +683,32 @@ function destroyEditor(confirm) {
   editor.destroy();
   $("#task-description").attr("contenteditable",false);
   $(".editor-control").remove();
+}
+
+$(".member-badge .command-elem").each(function(i, elem) {
+  $(elem).click(function() {
+    manager.removeContributor($(this).parent().attr('data-member-id'));
+  })
+});
+if (level === 0 || level === 1)
+  $(manager.selectors.children.list + " .command-elem").each(function(i, elem) {
+    $(elem).click(function() {
+      manager.removeTask($(this).parent().attr('data-task-id'),"child");
+    })
+  });
+if (level === 1) {
+  $(manager.selectors.parents.source + " .command-elem").each(function(i, elem) {
+    $(elem).click(function() {
+      manager.removeTask($(this).parent().attr('data-task-id'),"parent");
+    })
+  });
+  $(manager.selectors.parents.clone + " .command-elem").each(function(i, elem) {
+    $(elem).click(function() {
+      manager.removeTask($(this).parent().attr('data-task-id'),"parent");
+    })
+  });
+}
+
 }
 
 /* End Task Name and Description Control */

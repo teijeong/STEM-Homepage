@@ -181,11 +181,7 @@ class Task(Resource):
             list(set(args['contributors']) - {current_user.member.id})
         parent = None
         if len(args['parents']) > 0 :
-            parent = models.Task.query. \
-                filter_by(level=(args['level']-1)). \
-                filter_by(local_id=args['parents'][0]).first()
-
-            print(parent)
+            parent = models.Task.query.get(args['parents'][0])
 
         deadline = datetime.fromtimestamp(args['deadline'])
         task = models.Task(args['level'], args['name'], args['description'],
@@ -463,7 +459,6 @@ class TaskComment(Resource):
     @member_required
     def post(self):
         args = self.commentParser.parse_args()
-        print(args)
         task = models.Task.query.get(args['task_id'])
         if not task:
             abort(404)
@@ -479,6 +474,7 @@ class TaskComment(Resource):
                 task_comment.tags.append(tag_data)
             else:
                 tag_data = models.Tag(tag)
+                task_comment.tags.append(tag_data)
                 db.session.add(tag_data)
 
 

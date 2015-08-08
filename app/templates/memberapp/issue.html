@@ -592,7 +592,7 @@ function addIssue() {
         name: name,
         description: description,
         level: 2,
-        parent: {{issue.id}},
+        parents: [{{issue.id}}],
         priority: 0
     },
     success: function(issue) {
