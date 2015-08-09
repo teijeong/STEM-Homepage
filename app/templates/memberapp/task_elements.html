@@ -409,7 +409,7 @@ function {%if modal%}modal_{%endif%}addTask(level) {
 var children = [
     {% for task in task.children %}
     new Task({{task.id}},{{task.local_id}},"{{task.name}}",
-        {{task.status}},{{task.priority}},{{task.level}}){% if not loop.last %}, {% endif %}
+        {{task.status}},{{task.priority}},{{task.level}},{{task.progress}}){% if not loop.last %}, {% endif %}
     {% endfor %}
 ];
 
@@ -428,6 +428,38 @@ var contributors = [
 ];
 
 var task = new Task({{task.id}},{{task.local_id}},"{{task.name}}",
-        {{task.status}},{{task.priority}},{{task.level}});
+        {{task.status}},{{task.priority}},{{task.level}},{{task.progress}});
 task.deadline = {{task.deadline.timestamp()}}
+{%- endmacro %}
+
+{% macro modal_contributors() -%}
+<div class="modal-dialog" id="modal-manage-contributors">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <h4 class="modal-title">참여자</h4>
+    </div>
+    <div class="modal-body">
+      <div class="box">
+        <div class="box-body">
+          <div id="modal-contributor-list"></div>
+          <table id="table-members" class="table table-bordered table-hover dataTable">
+            <thead>
+              <tr>
+                <th>기수</th>
+                <th>이름</th>
+                <th>부서</th>
+                <th>추가</th>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default pull-left" id="modal-manage-contributors-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="modal-manage-contributors-confirm">확인</button>
+    </div>
+  </div><!-- /.modal-content -->
+</div>
 {%- endmacro %}

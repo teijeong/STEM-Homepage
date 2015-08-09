@@ -318,7 +318,7 @@ class Task(Resource):
             pass
         if args['progress'] != -1 and task.progress != args['progress']:
             task.progress = args['progress']
-            comment_text += '진행도가 %d%%로 변경되었습니다.'
+            comment_text += '진행도가 %d%%로 변경되었습니다.' % task.progress
             task.update_progress(True)
 
         if args['priority'] != -1 and args['priority'] != task.priority:
@@ -389,7 +389,8 @@ class Task(Resource):
             original_list = [member.id for member in task.contributors]
             original_list.append(task.creator.id)
             add, sub = helper.list_diff(original_list, args['contributor'])
-
+            print ((original_list,args['contributor']))
+            print ((add, sub))
             deleted_contributors = ['%s'%member.user.nickname
                 for member in task.contributors if member.id in sub]
             task.contributors = [member for member in task.contributors if not member.id in sub]

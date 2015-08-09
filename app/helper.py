@@ -35,9 +35,10 @@ def process_file(file, parent):
     return file_data
 
 def get_tags(text):
+    html = re.compile('<.*?>')
     tag = re.compile('#\w+')
     reject = re.compile('#\d+')
-    words = re.split("\s+",text)
+    words = re.split("\s+",html.sub(' ', text))
     print(words)
     tags = []
     for word in words:

@@ -258,7 +258,7 @@ function task_label(task_) {
 
 function member_label(member) {
   var html = '<span class="label label-primary member-badge"' +
-    ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
+    ' data-member-id=\'' + member.id + '\'>' + member.name +
     '<i class="fa fa-times command-elem"></i>' +
     '</span>';
   return html;
@@ -360,7 +360,7 @@ this.addParent = function(taskID) {
       var controller = manager.selectors.parents;
       parents.push(parent);
       $(controller.source).append(label);
-      $(controller.clone).append(label);
+      $(controller.clone).append(label.clone());
     });
 }
 
@@ -394,6 +394,7 @@ if (level == 0 || level == 1) {
   $(controller.modal).easyModal({onClose: closeChildModal});
   $(controller.show).click(openChildModal)
   $(controller.cancel).click(function() {
+    var controller = manager.selectors.children;
     $(controller.modal).trigger('closeModal');
   });
   $(controller.confirm).click(closeChildModalUpdate);
@@ -439,6 +440,7 @@ if (level == 1) {
   $(controller.modal).easyModal({onClose: closeParentModal});
   $(controller.show).click(openParentModal)
   $(controller.cancel).click(function() {
+    var controller = manager.selectors.parents;
     $(controller.modal).trigger('closeModal');
   });
   $(controller.confirm).click(closeParentModalUpdate);
@@ -455,11 +457,12 @@ if (level == 1) {
       url: "/stem/api/member/" + memberID,
       type: "GET",
       success: function(member) {
+        member = new Member(member.id, member.user.nickname);
         var controller = manager.selectors.contributors;
         var label = $(member_label(member)).click(function(){manager.removeContributor(member.id);});
-        contributors.push(new Member(member.id, member.user.nickname));
+        manager.contributors.push(member);
         $(controller.source).append(label);
-        $(controller.clone).append(label);
+        $(controller.clone).append(label.clone());
       }
     });
   }
@@ -482,7 +485,6 @@ if (level == 1) {
     var controller = manager.selectors.contributors;
     member = $(".member-badge[data-member-id='"+memberID+"']");
     member.remove();
-    memberID = Number(memberID);
     manager.contributors = manager.contributors.filter(function(m) { return m.id !== memberID;});
   }
 
@@ -523,6 +525,7 @@ if (level == 1) {
   $(controller.modal).easyModal({onClose: closeContributorModal});
   $(controller.show).click(openContributorModal)
   $(controller.cancel).click(function() {
+    var controller = manager.selectors.contributors;
     $(controller.modal).trigger('closeModal');
   });
   $(controller.confirm).click(closeContributorModalUpdate);
@@ -549,6 +552,7 @@ var member_table = $(manager.selectors.contributors.table).DataTable({
       }
     ],
     drawCallback: function() {
+      $(".add", this).off('click');
       $(".add", this).each(function() {
         $(this).click(function() {
           manager.addContributor($(this).attr('data-member-id'));
@@ -578,6 +582,7 @@ if (level == 0) {
       }
     ],
     drawCallback: function() {
+      $(".add", this).off('click');
       $(".add", this).each(function() {
         $(this).click(function() {
           manager.addChild($(this).attr('data-task-id'));
@@ -607,6 +612,7 @@ if (level == 1) {
       }
     ],
     drawCallback: function() {
+      $(".add", this).off('click');
       $(".add", this).each(function() {
         $(this).click(function() {
           manager.addParent($(this).attr('data-task-id'));
@@ -719,6 +725,58 @@ if (level === 1) {
   });
 }
 
-}
-
 /* End Task Name and Description Control */
+
+/* Progress Control */
+
+this.old_val = task.progress;
+this.slider_val = task.progress;
+$(".slider").css("display","none");
+
+$("#edit-progress").click(function() {
+  $(".slider").slider().css("display","default");
+  $(".progress").css("display","none");
+  $("#progress-control").css("display","block");
+  $(".slider").slider({
+    min: 0,
+    max: 100,
+    step: 1,
+    value: task.progress,
+    tooltip:'hide',
+    id: 'green'
+  });
+  $(".slider").on("slide", function(evt) {
+    manager.slider_val = evt.value;
+    $(".progress-text").text(manager.slider_val);
+  });
+});
+
+$("#progress-cancel").click(function() {
+  $(".progress").css("display","block");
+  $(".slider").css("display","none");
+  $("#progress-control").css("display","none");
+  $(".progress-text").text(manager.old_val);
+});
+
+$("#progress-confirm").click(function() {
+  $.ajax({
+    url: "/stem/api/task/" + task.id,
+    type: "PUT",
+    data: {
+      progress: manager.slider_val
+    },
+    success: function() {
+      $(".progress .progress-bar").css("width", manager.slider_val + "%");
+      $(".progress-text").text(manager.slider_val);
+      $("#progress-control").css("display","none");
+      $(".progress").css("display","block");
+      $(".slider").css("display","none");
+      manager.old_val = manager.slider_val;
+    },
+    error: function() {
+      alert("진행도를 업데이트하는 중 오류가 발생했습니다.")
+    }
+  });
+});
+/* End Progress Control */
+}
