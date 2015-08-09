@@ -22,6 +22,9 @@
   *     Subtask add on Issue: implemented by jinja macro
   */
 
+//python None resolution
+var None = undefined;
+
 var Task = function(id, local_id, name, stat, priority, level, progress) {
   this.id = id;
   this.local_id = local_id;
@@ -58,8 +61,6 @@ var Member = function(id, name, creator) {
 var TaskManager = function(level, task, parents, children, contributors) {
   if (level === undefined) level = 0;
 
-  //python None resolution
-  var None = undefined;
 
   var manager = this;
   this.parents = parents;
@@ -248,7 +249,7 @@ function task_box(task_, parent) {
 
 function task_label(task_) {
   var html =
-    '<span class="label label-primary task-badge"' +
+    '<span class="label bg-aqua task-badge"' +
     ' data-task-id=\'' + task_.id + '\'>' + task_.repr(task) + ' ' + task_.name +
     '<i class="fa fa-times command-elem"></i>' +
     '</span>';
@@ -350,17 +351,17 @@ this.addParent = function(taskID) {
     alert("already exists.");
     return;
   }
-  $.ajax({
-    url: "/stem/api/task/" + taskID,
-    type: "GET",
-    success: function(parent) {
+  manager.getTask(taskID,
+    function(parent) {
+      parent = new Task(parent.id, parent.local_id, parent.name,
+        parent.status, parent.priority, parent.level, parent.progress);
+
       var label = $(task_label(parent)).click(function(){manager.removeTask(parent.id,"parent");});
       var controller = manager.selectors.parents;
-      parents.push(new Task(parent.id, parent.local_id, parent.name, parent.status, parent.priority, parent.level));
+      parents.push(parent);
       $(controller.source).append(label);
-      $(controller.clone).html($(controller.source).html());
-    }
-  });
+      $(controller.clone).append(label);
+    });
 }
 
 //Child task management
@@ -405,8 +406,16 @@ if (level == 1) {
     manager.updated = false;
     manager.old_parents = manager.parents.slice();
     manager.old_html = controller.data.map(function(sel) {return $(sel).html();});
+    $(controller.clone).html($(controller.source).html());
     $(controller.remove_control).css("display","inline");
     $(controller.modal).trigger('openModal');
+
+    $(controller.clone + " .command-elem").off('click');
+    $(controller.clone + " .command-elem").each(function(i, elem) {
+      $(elem).click(function() {
+        manager.removeTask($(this).parent().attr('data-task-id'),"parent");
+      })
+    });
   }
 
   function closeParentModalUpdate() {
@@ -420,9 +429,8 @@ if (level == 1) {
     var controller = manager.selectors.parents;
     if (!manager.updated) {
       manager.parents = manager.old_parents.slice();
-      $(mana).html(old_html);
+      controller.data.map(function(sel,i) {$(sel).html(manager.old_html[i]);});
     }
-    controller.data.map(function(sel,i) {$(sel).html(manager.old_html[i])});
     $(controller.remove_control).css("display","none");
   }
 
@@ -448,10 +456,10 @@ if (level == 1) {
       type: "GET",
       success: function(member) {
         var controller = manager.selectors.contributors;
-        var label = member_label(member);
+        var label = $(member_label(member)).click(function(){manager.removeContributor(member.id);});
         contributors.push(new Member(member.id, member.user.nickname));
         $(controller.source).append(label);
-        $(controller.clone).html($(controller.source).html());
+        $(controller.clone).append(label);
       }
     });
   }
@@ -474,16 +482,8 @@ if (level == 1) {
     var controller = manager.selectors.contributors;
     member = $(".member-badge[data-member-id='"+memberID+"']");
     member.remove();
-    $(controller.clone).html($(controller.source).html());
     memberID = Number(memberID);
     manager.contributors = manager.contributors.filter(function(m) { return m.id !== memberID;});
-
-    $(".member-badge .command-elem").off('click');
-    $(".member-badge .command-elem").each(function(i, elem) {
-      $(elem).click(function() {
-        manager.removeContributor($(this).parent().attr('data-member-id'));
-      })
-    });
   }
 
   function openContributorModal() {
@@ -587,7 +587,7 @@ if (level == 0) {
   });
 }
 if (level == 1) {
-  var parent_table = $(manager.selectors.children.table).DataTable({
+  var parent_table = $(manager.selectors.parents.table).DataTable({
     ajax: {
       url: "/stem/api/milestone",
       dataSrc: ""

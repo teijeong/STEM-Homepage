@@ -55,15 +55,22 @@ $(".select-wrapper select").change();
 {% set task_type = ['마일스톤','일거리','세부 업무'] %}
 {% set task_type_eng = ['milestone','issue','subtask'] %}
 
-{% macro task_form(level=0) -%}
+{% macro task_form(level=0, modal=False) -%}
+{% if modal %}
+  {% set modal_prefix="modal-" %}
+  {% set modal_class="modal-elem " %}
+{% else %}
+  {% set modal_prefix="" %}
+  {% set modal_class="" %}
+{% endif %}
 <form role="form">
     <div class="form-group">
-        <label for="task-name">{{task_type[level]}} 이름</label>
-        <input class="form-control" id="task-name" type="text">
+        <label for="{{modal_prefix}}task-name">{{task_type[level]}} 이름</label>
+        <input class="form-control" id="{{modal_prefix}}task-name" type="text">
     </div>
     <div class="form-group">
-        <label for="task-deadline">마감일</label>
-        <div class="input-group date" id="task-deadline">
+        <label for="{{modal_prefix}}task-deadline">마감일</label>
+        <div class="input-group date" id="{{modal_prefix}}task-deadline">
             <input class="form-control" type="text">
             <span class="input-group-addon">
                 <span class="glyphicon glyphicon-calendar"></span>
@@ -72,14 +79,14 @@ $(".select-wrapper select").change();
     </div>
     <div class="form-group">
         <div class="label select-wrapper">
-            <select class="select-priority command-elem">
+            <select class="{{modal_class}}select-priority command-elem">
                 <option value="3">급함</option>
                 <option value="2">중요함</option>
                 <option value="1">보통</option>
                 <option value="0">시간날 때</option>
             </select>
         </div>&nbsp;
-        <div class="label select-wrapper">
+        <div class="{{modal_class}}label select-wrapper">
             <select class="select-status command-elem">
                 <option value="0">진행중</option>
                 <option value="1">완료</option>
@@ -90,91 +97,105 @@ $(".select-wrapper select").change();
     </div>
     {% if level == 0 %}
     <div class="form-group">
-        <label for="task-children">하위 업무 ID (, 로 구분)</label>
-        <input class="form-control" id="task-children" type="text">
+        <label for="{{modal_prefix}}task-children">하위 업무 ID (, 로 구분)</label>
+        <input class="form-control" id="{{modal_prefix}}task-children" type="text">
     </div>
     {% elif level == 1 %}
     <div class="form-group">
-        <label for="task-parents">상위 업무 ID (, 로 구분)</label>
-        <input class="form-control" id="task-parents" type="text">
+        <label for="{{modal_prefix}}task-parents">상위 업무 ID (, 로 구분)</label>
+        <input class="form-control" id="{{modal_prefix}}task-parents" type="text">
     </div>
     {% endif %}
     <div class="form-group">
-        <label for="task-contributors">참여자 ID (, 로 구분)</label>
-        <input class="form-control" id="task-contributors" type="text">
+        <label for="{{modal_prefix}}task-contributors">참여자 ID (, 로 구분)</label>
+        <input class="form-control" id="{{modal_prefix}}task-contributors" type="text">
     </div>
     <div class="checkbox">
       <label>
-        <input id="task-contrubutor-auto" type="checkbox"> 참여자 자동으로 채우기
+        <input id="{{modal_prefix}}task-contrubutor-auto" type="checkbox"> 참여자 자동으로 채우기
       </label>
     </div>
     <div class="form-group">
-        <label for="task-description">설명</label>
-        <textarea id="task-description"></textarea>
+        <label for="{{modal_prefix}}task-description">설명</label>
+        <textarea id="{{modal_prefix}}task-description"></textarea>
     </div>
+    {% if modal %}
+      <button type="button" class="pull-right btn btn-primary" onclick="modal_addTask({{level}})">추가</button>
+    {% endif %}
 </form>
 {%- endmacro %}
 
-{% macro task_form_script(level=0) -%}
-$("#task-description").attr("contenteditable", true);
-var description_editor = CKEDITOR.replace('task-description',
-    {toolbarGroups:[
-        { name: 'clipboard',   groups: ['undo' ] },
-        { name: 'links' },
-        { name: 'insert' },
-        { name: 'forms' },
-        { name: 'tools' },
-        { name: 'others' },
-        '/',
-        { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-        { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
-        { name: 'styles' },
-        { name: 'colors' }]
+{% macro task_form_script(level=0, modal=False) -%}
+{% if modal %}
+  {% set modal_prefix="modal-" %}
+  {% set modal_class=".modal-elem" %}
+{% else %}
+  {% set modal_prefix="" %}
+  {% set modal_class="" %}
+{% endif %}
+$("#{{modal_prefix}}task-description").attr("contenteditable", true);
+var description_editor = CKEDITOR.replace(
+  '{{modal_prefix}}task-description',
+  {toolbarGroups:[
+    { name: 'clipboard',   groups: ['undo' ] },
+    { name: 'links' },
+    { name: 'insert' },
+    { name: 'forms' },
+    { name: 'tools' },
+    { name: 'others' },
+    '/',
+    { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+    { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+    { name: 'styles' },
+    { name: 'colors' }]
 });
-$('#task-deadline').datetimepicker({
+$('#{{modal_prefix}}task-deadline').datetimepicker({
     locale: 'ko',
     defaultDate: moment().add(7, 'days').minute(0).second(0)
 });
 
-function addTask(level) {
-    function parse(text) {
-        return text.split(/ *, */).map(Number);
-    }
-    if (!level) level = {{level}};
-    var data = {}
-    data.level = level;
-    data.name = $("#task-name").val().trim();
-    data.description = description_editor.getData();
-    data.deadline = $("#task-deadline").data("DateTimePicker").date().unix();
-    data.parents = [];
-    data.children = [];
-    data.status = $(".select-status").val();
-    data.priority = $(".select-priority").val();
+function {%if modal%}modal_{%endif%}addTask(level) {
+  function parse(text) {
+    return text.split(/ *, */).map(Number);
+  }
+  if (!level) level = {{level}};
+  var data = {}
+  data.level = level;
+  data.name = $("#{{modal_prefix}}task-name").val().trim();
+  data.description = description_editor.getData();
+  data.deadline = $("#{{modal_prefix}}task-deadline")
+    .data("DateTimePicker").date().unix();
+  data.parents = [];
+  data.children = [];
+  data.status = $("{{modal_class}}.select-status").val();
+  data.priority = $("{{modal_class}}.select-priority").val();
 
-    if (data.name === "") {
-        alert("이름을 입력해 주세요.");
-        return;
-    }
+  if (data.name === "") {
+    alert("이름을 입력해 주세요.");
+    return;
+  }
 
-    if (level === 0) {
-        data.children = parse($("#task-children").val());
-    } else if (level === 1) {
-        data.parents = parse($("#task-parents").val());
-    }
-    data.contributors = parse($("#task-contributors").val());
-    data.contributor_auto = $("#task-contrubutor-auto").prop("checked");
+  if (level === 0) {
+    data.children = parse($("#task-children").val());
+  } else if (level === 1) {
+    data.parents = parse($("#task-parents").val());
+  } {% if level == 2 %}else if (level === 2) {
+    data.parents = [{{task.id}}];
+  }{% endif %}
+  data.contributors = parse($("#{{modal_prefix}}task-contributors").val());
+  data.contributor_auto = $("#{{modal_prefix}}task-contrubutor-auto").prop("checked");
 
-    $.ajax({
-        url: "/stem/api/task",
-        type: "POST",
-        data: data,
-        success: function(data) {
-            location.reload();
-        },
-        error: function() {
-            alert("일정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
-        }
-    });
+  $.ajax({
+    url: "/stem/api/task",
+    type: "POST",
+    data: data,
+    success: function(data) {
+      location.reload();
+    },
+    error: function() {
+      alert("일정 생성 중 오류가 발생했습니다. 다시 시도해주세요.");
+    }
+  });
 }
 {{ all_select_noupdate_script() }}
 
@@ -328,9 +349,9 @@ function addTask(level) {
 {%- endmacro %}
 
 {% macro comments() -%}
-{% for comment in milestone.comments[::-1] %}
+{% for comment in task.comments[::-1] %}
   {% if loop.first or comment.timestamp.strftime('%Y%m%d') !=
-    milestone.comments[loop.revindex0 + 1].timestamp.strftime('%Y%m%d') %}
+    task.comments[loop.revindex0 + 1].timestamp.strftime('%Y%m%d') %}
 
     <li class="time-label">
       <span class="bg-red">
@@ -400,10 +421,10 @@ var parents = [
 ];
 
 var contributors = [
-    {% for member in milestone.contributors %}
+    {% for member in task.contributors %}
     new Member({{member.id}}, "{{member.user.nickname}}"),
     {% endfor %}
-    new Member({{milestone.creator.id}}, "{{milestone.creator.user.nickname}}", true)
+    new Member({{task.creator.id}}, "{{task.creator.user.nickname}}", true)
 ];
 
 var task = new Task({{task.id}},{{task.local_id}},"{{task.name}}",

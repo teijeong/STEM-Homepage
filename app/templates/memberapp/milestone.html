@@ -19,21 +19,21 @@
                 <div class="col-md-12">
 <div class="box">
   <div class="box-header with-border">
-    <h3 class="box-title"><small>M#{{milestone.local_id}}</small>&nbsp;
-        <strong><span id="task-name">{{milestone.name}}</span></strong>&nbsp;
-        {% if current_user.member.editable(milestone) %}<small><i id="task-name-modify" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
+    <h3 class="box-title"><small>M#{{task.local_id}}</small>&nbsp;
+        <strong><span id="task-name">{{task.name}}</span></strong>&nbsp;
+        {% if current_user.member.editable(task) %}<small><i id="task-name-modify" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
     <div class="box-tools pull-right">
       <!-- Buttons, labels, and many other things can be placed here! -->
       <!-- Here is a label for example -->
       <div class="label select-wrapper">
-        <select class="select-priority" {% if not current_user.member.editable(milestone) %}disabled="true"{% endif %}>
+        <select class="select-priority" {% if not current_user.member.editable(task) %}disabled="true"{% endif %}>
           <option value="3">급함</option>
           <option value="2">중요함</option>
           <option value="1">보통</option>
           <option value="0">시간날 때</option>
         </select>
       </div>&nbsp;
-      <div class="label select-wrapper" {% if not current_user.member.editable(milestone) %}disabled="true"{% endif %}>
+      <div class="label select-wrapper" {% if not current_user.member.editable(task) %}disabled="true"{% endif %}>
         <select class="select-status">
           <option value="0">진행중</option>
           <option value="1">완료</option>
@@ -47,17 +47,17 @@
   <div class="row">
     <div class="col-sm-10">
       <div class="progress progress-sm">
-        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{milestone.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{milestone.progress}}%">
-          <span class="sr-only">{{milestone.progress}}% 완료</span>
+        <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{task.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{task.progress}}%">
+          <span class="sr-only">{{task.progress}}% 완료</span>
         </div>
       </div>
     </div>
     <div class="col-sm-2">
-      <span class="text-green">{{milestone.progress}}% 완료</span>
+      <span class="text-green">{{task.progress}}% 완료</span>
     </div>
     <div class="col-sm-3 col-sm-offset-9" style="text-align:right;">
-      <h5>마감: <strong id="deadline">{{milestone.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
-      {% if current_user.member.editable(milestone) %}
+      <h5>마감: <strong id="deadline">{{task.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
+      {% if current_user.member.editable(task) %}
       <small><i class="fa fa-pencil command-elem" id="edit-deadline"></i></small>
       <div id='dtpicker'><input type='text'></div>
       {% endif %}
@@ -66,29 +66,29 @@
   </div>
 
   <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
-    {% if current_user.member.editable(milestone) %}
+    {% if current_user.member.editable(task) %}
     <button id="task-description-modify" class="btn btn-sm btn-default" style="position:absolute;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
     {% endif %}
     <div id="task-description" style="z-index:0;">
-      {{milestone.description | safe }}
+      {{task.description | safe }}
     </div>
   </div>
 
   {{ elements.child_task_accordion() }}
 
-  {% if current_user.member.editable(milestone) %}
+  {% if current_user.member.editable(task) %}
   <button class="btn btn-primary pull-right" id="manage-children-open">일거리 관리</button>
   {% endif %}
 </div><!-- /.box-body -->
 <div class="box-footer">
   <h5>참여자
-    {% if current_user.member.editable(milestone) %}
+    {% if current_user.member.editable(task) %}
     <small><i class="fa fa-pencil command-elem" id="manage-contributors-open"></i></small>
     {% endif %}
   </h5>
-  <span class="label label-primary"><i class="fa fa-star"></i> {{milestone.creator.user.nickname}}</span>
+  <span class="label label-primary"><i class="fa fa-star"></i> {{task.creator.user.nickname}}</span>
   <div id="contributors">
-    {% for member in milestone.contributors %}
+    {% for member in task.contributors %}
       <span class="label label-primary member-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
         <i class="fa fa-times command-elem" style="display:none;"></i></span>
     {% endfor %}
@@ -199,405 +199,5 @@
 
 var manager = new TaskManager({{task.level}}, task, parents, children, contributors);
 
-{#
-/*
-}CKEDITOR.disableAutoInline = true;
-
-$("#add-issue").easyModal({onClose: closeIssueModal});
-$("#add-contributor").easyModal({onClose: closeMemberModal});
-
-$("#member-close").click(function() {
-  $("#add-contributor").trigger('closeModal');
-})
-$("#issue-close").click(function() {
-  $("#add-issue").trigger('closeModal');
-})
-
-//python None resolution
-var None = undefined;
-
-var init_select = 2;
-$(".select-wrapper select").change(function(event) {
-  var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
-  var status_color = ['bg-aqua','bg-green','bg-gray','bg-black'];
-  var label_width = [0,16,26,36,46,50];
-  var w = label_width[$("option:selected", this).text().length];
-  var i = $(this).val();
-  $(this).css("width", w + "px");
-  if ($(this).hasClass("select-priority")) {
-    $(this).parent().removeClass(priority_color.join(' '));
-    $(this).parent().addClass(priority_color[i]);
-    if (init_select > 0) {
-      init_select--;
-      return;
-    }
-    $.ajax({
-      url: "/stem/api/task/{{milestone.id}}",
-      type: "PUT",
-      data: {
-        priority: Number(i)
-      }, error: function(data) {
-        alert("중요도를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
-      }
-    });
-  } else {
-    $(this).parent().removeClass(status_color.join(' '));
-    $(this).parent().addClass(status_color[i]);
-    if (init_select > 0) {
-      init_select--;
-      return;
-    }
-    $.ajax({
-      url: "/stem/api/task/{{milestone.id}}",
-      type: "PUT",
-      data: {
-        status: Number(i)
-      }, error: function(data) {
-        alert("상태를 업데이트하는 중 문제가 발생했습니다.\n다시 시도해주세요.")
-      }
-    });
-  }
-});
-
-$(".select-priority").val({{milestone.priority}} || 0);
-$(".select-status").val({{milestone.status}} || 0);
-$(".select-wrapper select").change();
-
-var dtpicker;
-
-$("#edit-deadline").click(function() {
-  $('#dtpicker input').datetimepicker({
-    locale:'ko',
-    defaultDate: moment.unix({{milestone.deadline.timestamp()}})
-  }).focus();
-  dtpicker = $('#dtpicker input').data('DateTimePicker');
-});
-
-$("#dtpicker input").focusout(function() {
-  if(dtpicker.destroyed) return;
-  dtpicker.destroyed = true;
-  var date = dtpicker.date();
-  $("#deadline").text(date.format("YYYY.MM.DD HH:mm"));
-  dtpicker.destroy();
-  $.ajax({
-    url: "/stem/api/task/{{milestone.id}}",
-    type: "PUT",
-    data: {
-      deadline: date.unix()
-    },
-    error :function() {
-      alert("마감일 업데이트 중 오류가 발생했습니다.");
-    }
-  });
-});
-
-var updated = false;
-var old_issues, old_contributors, old_html;
-
-function addComment() {
-  var title = $("#comment-title").val();
-  var body = $("#comment-body").val();
-  if (title === "") return;
-  $("#comment-title").val("");
-  $("#comment-body").val("");
-  $.ajax({
-    url: "/stem/api/task_comment",
-    type:"POST",
-    data: {
-      title: title,
-      body: body,
-      task_id: {{milestone.id}}
-    },
-    success: function(data) {
-      location.reload();
-    }
-  });
-}
-
-var Task = function(id, local_id, name, stat, priority, level) {
-    this.id = id;
-    this.local_id = local_id;
-    this.name = name;
-    this.stat = stat;
-    this.priority = priority;
-    this.level = level;
-};
-
-var Member = function(id, name, creator) {
-    this.id = id;
-    this.name = name;
-    this.creator = creator || false;
-};
-
-function addIssue(issueID, init) {
-
-  var box_color = ['bg-red','bg-yellow','bg-green','bg-aqua'];
-  var box_color2 = ['bg-red','bg-green','bg-gray', 'bg-black'];
-  var issue_pane = [$("#issue-opened"), $("#issue-closed"), $("#issue-archived")];
-  if (issues.find(function(t) {return t.id === issueID;})) {
-    alert("already exists.");
-    return;
-  }
-
-  $.ajax({
-    url: "/stem/api/task/" + issueID,
-    type: "GET",
-    success: function(issue) {
-      var issuebox_html =
-        "<div class='col-md-4 col-sm-6 col-xs-12 issue-box' data-issue-id='" + issue.id + "'>" +
-          "<a href='/stem/issue/" + issue.id + "'>" +
-          "<div class='info-box " + (issue.status===0?box_color[issue.priority]:box_color2[issue.status]) + "'>" +
-            "<span class='info-box-icon'><i class='fa fa-wrench'></i></span>" +
-            "<div class='info-box-content'>" +
-              "<span class='info-box-number'>#" + issue.local_id + "</span>" +
-              "<span class='info-box-text'>" + issue.name + "</span>" +
-            "<div class='progress'>" +
-              "<div class='progress-bar' style='width:" + issue.progress + "%'></div>" +
-            "</div>" +
-          "<span class='progress-description'>" +
-          issue.progress + "% 완료" +
-        "</span></div></div></a></div>";
-
-      var html =
-        '<span class="label label-primary issue-badge"' +
-        ' data-issue-id=\'' + issue.id + '\'>#' + issue.id + " " + issue.name +
-        '<i class="fa fa-times command-elem" onclick="removeIssue(' +
-          issue.id + ')"></i>' +
-        '</span>';
-      issues.push(new Issue(issue.id, issue.local_id, issue.name, issue.status, issue.priority));
-      issue_pane[issue.status].append(issuebox_html);
-      $("#modal-issues").append(html);
-    }
-  });
-}
-
-
-function removeIssue(issueID) {
-  var issue = $(".issue-box[data-issue-id='"+issueID+"']");
-  issue.remove();
-  issue = $(".issue-badge[data-issue-id='"+issueID+"']");
-  issue.remove();
-  issues = issues.filter(function(issue) {return issue.id !== issueID;});
-}
-
-function updateIssue() {
-  $.ajax({
-    url:"/stem/api/task/{{milestone.id}}",
-    type:"PUT",
-    data: {
-      children: issues.map(function(task) {return task.id;})
-    },
-    error: function() {
-      alert("Error occured while updating children");
-    }
-  });
-}
-
-function addContributor(memberID) {
-    if (contributors.find(function(m) {return m.id === memberID;})) {
-      alert("already exists.");
-      return;
-    }
-    $.ajax({
-      url: "/stem/api/member/" + memberID,
-      type: "GET",
-      success: function(member) {
-        var html = '<span class="label label-primary contributor-badge"' +
-          ' data-member-id=\'' + member.id + '\'>' + member.user.nickname +
-          '<i class="fa fa-times command-elem" onclick="removeContributor(' +
-            member.id + ')"></i>' +
-          '</span>';
-        $("#contributors").append(html);
-        contributors.push(new Member(member.id, member.user.nickname));
-        $("#modal-contributors").html($("#contributors").html());
-      }
-    });
-}
-
-function updateContributor() {
-  $.ajax({
-    url:"/stem/api/task/{{milestone.id}}",
-    type:"PUT",
-    data: {
-      contributor: contributors.map(function(mem) {return mem.id;})
-    },
-    error: function() {
-      alert("Error occured while updating contributors");
-    }
-  });
-}
-
-function removeContributor(memberID) {
-  member = $(".contributor-badge[data-member-id='"+memberID+"']");
-  member.remove();
-  $("#modal-contributors").html($("#contributors").html());
-  contributors = contributors.filter(function(m) { return m.id !== memberID;});
-}
-
-var member_table = $('#members').DataTable({
-    ajax: {
-      url: "/people",
-      dataSrc: ""
-    },
-    processing: true,
-    columns: [
-        {data:"cycle"},
-        {data:"user.nickname"},
-        {data:"stem_dept"},
-        {data:"id"}
-    ],
-    columnDefs: [
-        {targets:[3],
-            render: function(data, type, row) {
-                return "<button class='btn btn-primary btn-xs' " +
-                "onclick='addContributor(" + data + ")'>Add</button>";
-            }
-        }
-    ]
-});
-
-var issue_table = $('#issues').DataTable({
-    ajax: {
-      url: "/stem/api/issue",
-      dataSrc: ""
-    },
-    processing: true,
-    columns: [
-        {data:"local_id"},
-        {data:"name"},
-        {data:"id"}
-        ],
-    columnDefs: [
-        {targets:[2],
-            render: function(data, type, row) {
-                return "<button class='btn btn-primary btn-xs' onclick='addIssue(" +
-                    data + ")'>Add</button>";
-            }
-        }
-    ]
-});
-
-var task_txt = '';
-
-$("#milestone-name").focusout(function() {
-  if ($(this).attr("contenteditable") === "false") return;
-  $(this).attr("contenteditable", false);
-  var new_txt = $("#milestone-name").text();
-
-  if (new_txt !== task_txt) {
-    $.ajax({
-      url:"/stem/api/task/{{milestone.id}}",
-      type:"PUT",
-      data: {
-        name: $("#milestone-name").text()
-      },
-      error: function() {
-        alert("Request failed. Please try again.");
-        $(this).attr("contenteditable", true);
-      },
-      success: function () {
-        task_txt = new_txt;
-      }
-    });
-  }
-});
-
-$("#milestone-name").keydown(function(event) {
-    if (event.which == 13) {
-      $(this).focusout();
-    }
-});
-
-function modifyName() {
-  $("#milestone-name").attr("contenteditable", true);
-  $("#milestone-name").focus();
-  task_txt = $("#milestone-name").text();
-}
-
-function openMemberModal() {
-  updated = false;
-  old_contributors = contributors.slice();
-  old_html = $("#contributors").html();
-  $("#modal-contributors").html($("#contributors").html());
-  $(".contributor-badge .command-elem").css("display","inline");
-  $("#add-contributor").trigger('openModal');
-}
-
-function closeMemberModalUpdate() {
-  updateContributor();
-  updated = true;
-  $("#add-contributor").trigger('closeModal');
-}
-
-function closeMemberModal() {
-  if (!updated) {
-    contributors = old_contributors.slice();
-    $("#contributors").html(old_html);
-  }
-  $(".contributor-badge .command-elem").css("display","none");
-}
-
-function openIssueModal() {
-  updated = false;
-  old_issues = issues.slice();
-  old_html = [$("#issue-opened").html(), $("#issue-closed").html(),
-    $("#issue-archived").html(), $("#modal-issues").html()];
-  $("#add-issue").trigger('openModal');
-}
-
-function closeIssueModalUpdate() {
-  updateIssue();
-  updated = true;
-  $("#add-issue").trigger('closeModal');
-}
-
-function closeIssueModal() {
-  if (!updated) {
-    issues = old_issues.slice();
-    var issue_pane = [$("#issue-opened"), $("#issue-closed"),
-      $("#issue-archived"), $("#modal-issues")];
-    for (var i in issue_pane) issue_pane[i].html(old_html[i]);
-  }
-}
-
-
-
-var description;
-var editor;
-
-function modifyDescription() {
-  description = $("#milestone-description").html();
-  $("#milestone-description").attr("contenteditable", true);
-  editor = CKEDITOR.inline("milestone-description");
-  $("#milestone-description").after("<button type='button' style='margin-right:5px;' class='editor-control btn btn-danger pull-right' onclick='destroyEditor(false)'>Cancel</button>");
-  $("#milestone-description").after("<button type='button' class='editor-control btn btn-primary pull-right' onclick='destroyEditor(true)'>Done</button>");
-  $("#milestone-description").focus();
-}
-
-function destroyEditor(confirm) {
-  if (!confirm || !editor.checkDirty()) {
-    $("#milestone-description").html(description);
-  } else {
-    $.ajax({
-      url:"/stem/api/task/{{milestone.id}}",
-      type: "PUT",
-      data: {
-        description: editor.getData()
-      },
-      success: function(data) {
-
-      },
-      error: function(data) {
-
-      }
-    });
-  }
-  editor.destroy();
-  $("#milestone-description").attr("contenteditable",false);
-  $(".editor-control").remove();
-}
-
-*/
-#}
 </script>
 {% endblock %}

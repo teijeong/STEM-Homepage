@@ -20,11 +20,11 @@
     <div class="col-md-12">
         <div class="box">
 <div class="box-header with-border">
-  <h3 class="box-title"><small>#{{issue.local_id}}</small> <strong id="issue-name">{{issue.name}}</strong>
-    {% if current_user.member.editable(issue) %}<small><i onclick="modifyName()" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
+  <h3 class="box-title"><small>#{{task.local_id}}</small> <strong id="task-name">{{task.name}}</strong>
+    {% if current_user.member.editable(task) %}<small><i id="task-name-modify" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
   <div class="box-tools pull-right">
     <div class="label select-wrapper">
-      <select class="select-priority{% if current_user.member.editable(issue) %} command-elem{% else %}" disabled="true{% endif %}">
+      <select class="select-priority{% if current_user.member.editable(task) %} command-elem{% else %}" disabled="true{% endif %}">
         <option value="3">급함</option>
         <option value="2">중요함</option>
         <option value="1">보통</option>
@@ -32,7 +32,7 @@
       </select>
     </div>&nbsp;
     <div class="label select-wrapper">
-      <select class="select-status{% if current_user.member.editable(issue) %} command-elem{% else %}" disabled="true{% endif %}">
+      <select class="select-status{% if current_user.member.editable(task) %} command-elem{% else %}" disabled="true{% endif %}">
         <option value="0">진행중</option>
         <option value="1">완료</option>
         <option value="2">보관됨</option>
@@ -46,17 +46,17 @@
   <div class="row">
     <div class="col-sm-10">
       <div class="progress progress-sm">
-          <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{issue.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{issue.progress}}%">
-              <span class="sr-only">{{issue.progress}}% 완료</span>
+          <div class="progress-bar progress-bar-green" role="progressbar" aria-valuenow="{{task.progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{task.progress}}%">
+              <span class="sr-only">{{task.progress}}% 완료</span>
           </div>
       </div>
     </div>
     <div class="col-sm-2">
-      <span class="text-green">{{issue.progress}}% 완료</span>
+      <span class="text-green">{{task.progress}}% 완료</span>
     </div>
     <div class="col-sm-3 col-sm-offset-9" style="text-align:right;">
-      <h5>마감: <strong id="deadline">{{issue.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
-        {% if current_user.member.editable(issue) %}
+      <h5>마감: <strong id="deadline">{{task.deadline.strftime('%Y.%m.%d %H:%M')}}</strong>
+        {% if current_user.member.editable(task) %}
         <small><i class="fa fa-pencil command-elem" id="edit-deadline"></i></small>
         <div id='dtpicker'><input type='text'></div>
         {% endif %}
@@ -65,45 +65,45 @@
   </div>
 
   <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
-    {% if current_user.member.editable(issue) %}
-    <button onclick="modifyDescription()" class="btn btn-sm btn-default" style="position:absolute;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
+    {% if current_user.member.editable(task) %}
+    <button id="task-description-modify" class="btn btn-sm btn-default" style="position:absolute;right:10px;z-index:1;"><i class="fa fa-pencil"></i></button>
     {% endif %}
-    <div id="issue-description" style="z-index:0;">
-      {{issue.description | safe }}
+    <div id="task-description" style="z-index:0;">
+      {{task.description | safe }}
     </div>
   </div>
 
   {{ elements.child_task_accordion() }}
 
-  {% if current_user.member.editable(issue) %}
-  <button class="btn btn-primary pull-right" onclick="openIssueModal()">세부 업무 관리</button>
+  {% if current_user.member.editable(task) %}
+  <button class="btn btn-primary pull-right" id="manage-children-open">세부 업무 관리</button>
   {% endif %}
 </div><!-- /.box-body -->
 
 <div class="box-footer">
   <h5>마일스톤
-    {% if current_user.member.editable(issue) %}
-    <small><i class="fa fa-pencil command-elem" onclick="openMilestoneModal()"></i></small>
+    {% if current_user.member.editable(task) %}
+    <small><i class="fa fa-pencil command-elem" id="manage-parents-open"></i></small>
     {% endif %}
   </h5>
-  <div id="milestones">
-  {% for milestone in issue.parents %}
-		<span class="label label-info issue-badge" data-issue-id="{{milestone.id}}">
-      <small>[M#{{milestone.local_id}}]</small> {{milestone.name}}
-      <i class="fa fa-times command-elem" style="display:none;" onclick="removeMilestone({{milestone.id}})"></i>
+  <div id="parents">
+  {% for parent in task.parents %}
+		<span class="label label-info task-badge" data-task-id="{{parent.id}}">
+      <small>[M#{{parent.local_id}}]</small> {{parent.name}}
+      <i class="fa fa-times command-elem" style="display:none;"></i>
     </span>
 	{% endfor %}
   </div>
-  <h5>시작한 사람 <span class="label label-primary">{{issue.creator.user.nickname}}</span><br></h5>
+  <h5>시작한 사람 <span class="label label-primary">{{task.creator.user.nickname}}</span><br></h5>
   <h5>참여자
-    {% if current_user.member.editable(issue) %}
-    <small><i class="fa fa-pencil command-elem" onclick="openMemberModal()"></i></small>
+    {% if current_user.member.editable(task) %}
+    <small><i class="fa fa-pencil command-elem" id="manage-contributors-open"></i></small>
     {% endif %}
   </h5>
   <div id="contributors">
-	{% for member in issue.contributors %}
-    <span class="label label-primary contributor-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
-      <i class="fa fa-times command-elem" style="display:none;" onclick="removeContributor({{member.id}})"></i></span>
+	{% for member in task.contributors %}
+    <span class="label label-primary member-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
+      <i class="fa fa-times command-elem" style="display:none;"></i></span>
 	{% endfor %}
   </div>
 </div><!-- box-footer -->
@@ -111,75 +111,16 @@
     </div><!-- /.box -->
 </div>
 
-<div class="box">
-  <div class="box-header with-border">
-  댓글 쓰기
-  </div>
-  <div class="box-body">
-    <div class="form-group">
-      <label>제목</label>
-      <input class="form-control" type="text" placeholder="Title" id="comment-title">
-    </div>
-    <div class="form-group">
-      <label>내용</label>
-      <textarea class="form-control" rows="3" id="comment-body"></textarea>
-    </div>
-    <div class="form-group">
-      <button onclick="addComment()" type="add" class="btn btn-primary pull-right">쓰기</button>
-    </div>
-  </div>
-</div>
 
+{{ elements.comment_form() }}
 
   <!-- row -->
   <div class="row">
     <div class="col-md-12">
       <!-- The time line -->
       <ul class="timeline">
-
-{% for comment in issue.comments[::-1] %}
-  {% if loop.first or comment.timestamp.strftime('%Y%m%d') !=
-    issue.comments[loop.revindex0 + 1].timestamp.strftime('%Y%m%d') %}
-
-    <li class="time-label">
-      <span class="bg-red">
-        {{ comment.timestamp.strftime('%Y.%m.%d') }}
-      </span>
-    </li>
-    {% endif %}
-
-    <li>
-  {% if comment.comment_type == 0 %}
-      <i class="fa fa-trophy bg-yellow"></i>
-  {% else %}
-        <i class="fa fa-trophy bg-yellow"></i>
-  {% endif %}
-    <div class="timeline-item">
-      <span class="time"><i class="fa fa-clock-o"></i> {{ comment.timestamp.strftime('%y-%m-%d %H:%M')}} by <a href="#">{{comment.member.user.nickname}}</a></span>
-        <h3 class="timeline-header">{{comment.title}}</h3>
-
-        <div class="timeline-body">
-      {{comment.body | safe}}
-        </div>
-        <div class='timeline-footer'>
-      <p>
-      {% for tag in comment.tags %}
-              <span class="label label-info">{{tag.title}}</span>
-      {% endfor %}
-      </p>
-      {% if comment.comment_type == 2 %}
-              <a class="btn btn-primary btn-xs">See detailed subtask</a>
-              <a class="btn btn-danger btn-xs">Modify subtask</a>
-      {% endif %}
-        </div>
-  </div>
-    </li>
-{% endfor %}
-        <!-- timeline time label -->
-        <li>
-          <i class="fa fa-clock-o bg-gray"></i>
-        </li>
-        <!-- /.timeline-label -->
+        {{ elements.comments() }}
+        {#
         <!-- timeline item -->
         <li>
           <i></i>
@@ -265,6 +206,7 @@
         <li>
           <i class="fa fa-clock-o bg-gray"></i>
         </li>
+        #}
       </ul>
     </div><!-- /.col -->
   </div><!-- /.row -->
@@ -273,112 +215,91 @@
 
 
 {% block modals %}
-<div class="modal-dialog" id="add-issue">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">세부 업무 관리</h4>
+<div class="modal-dialog" id="modal-manage-children">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <h4 class="modal-title">세부 업무 관리</h4>
+    </div>
+    <div class="modal-body">
+      <div class="box">
+        <div class="box-body">
+          <div id="modal-child-list">
+          {% for child in task.children %}
+            <span class="label bg-aqua task-badge" data-task-id="{{child.id}}">
+              #{{task.local_id}}-{{child.local_id}} {{child.name}}
+              <i class="fa fa-times command-elem"></i>
+            </span>
+          {% endfor %}
+          </div>
+          {{ elements.task_form(2,True) }}
         </div>
-        <div class="modal-body">
-            <div class="box">
-                <div class="box-body">
-                    <div id="modal-issues">
-                    {% for subtask in issue.children %}
-                      <span class="label label-primary issue-badge" data-issue-id="{{subtask.id}}">
-                        #{{issue.local_id}}-{{subtask.local_id}} {{subtask.name}}
-                        <i class="fa fa-times command-elem" onclick="removeIssue({{subtask.id}})"></i>
-                      </span>
-                    {% endfor %}
-                    </div>
-                    {#<!--
-                    <table id="issues" class="table table-bordered table-hover dataTable">
-                        <thead>
-                            <tr>
-                            <th>#</th>
-                            <th>일거리</th>
-                            <th>추가</th>
-                            </tr>
-                        </thead>
-                    </table>
-                    -->#}
-                    <form role="form">
-                      <div class="form-group">
-                        <label for="issue-name">이름</label>
-                        <input class="form-control" id="subtask-name" type="text">
-                      </div>
-                      <div class="form-group">
-                        <label for="subtask-description">설명</label>
-                        <textarea id="subtask-description"></textarea>
-                      </div>
-                      <button type="button" class="pull-right btn btn-primary" onclick="addIssue()">추가</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" id="issue-close">취소</button>
-            <button type="button" class="btn btn-primary" id="issue-confirm">확인</button>
-        </div>
-    </div><!-- /.modal-content -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default pull-left" id="modal-manage-children-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="modal-manage-children-confirm">확인</button>
+    </div>
+  </div><!-- /.modal-content -->
 </div>
 
-<div class="modal-dialog" id="add-milestone">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">마일스톤 관리</h4>
+<div class="modal-dialog" id="modal-manage-parents">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <h4 class="modal-title">마일스톤 관리</h4>
+    </div>
+    <div class="modal-body">
+      <div class="box">
+        <div class="box-body">
+          <div id="modal-parent-list"></div>
+          <table id="table-parents" class="table table-bordered table-hover dataTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>마일스톤</th>
+                <th>추가</th>
+              </tr>
+            </thead>
+          </table>
         </div>
-        <div class="modal-body">
-            <div class="box">
-                <div class="box-body">
-                    <div id="modal-milestones"></div>
-                    <table id="table-milestones" class="table table-bordered table-hover dataTable">
-                        <thead>
-                            <tr>
-                            <th>#</th>
-                            <th>마일스톤</th>
-                            <th>추가</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" id="milestone-close">취소</button>
-            <button type="button" class="btn btn-primary" id="milestone-confirm">확인</button>
-        </div>
-    </div><!-- /.modal-content -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default pull-left" id="modal-manage-parents-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="modal-manage-parents-confirm">확인</button>
+    </div>
+  </div><!-- /.modal-content -->
 </div>
 
-<div class="modal-dialog" id="add-contributor">
-    <div class="modal-content">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
-            <h4 class="modal-title">참여자</h4>
+<div class="modal-dialog" id="modal-manage-contributors">
+  <div class="modal-content">
+    <div class="modal-header">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+      <h4 class="modal-title">참여자</h4>
+    </div>
+    <div class="modal-body">
+      <div class="box">
+        <div class="box-body">
+          <div id="modal-contributor-list"></div>
+          <table id="table-members" class="table table-bordered table-hover dataTable">
+            <thead>
+              <tr>
+                <th>기수</th>
+                <th>이름</th>
+                <th>부서</th>
+                <th>추가</th>
+              </tr>
+            </thead>
+          </table>
         </div>
-        <div class="modal-body">
-            <div class="box">
-                <div class="box-body">
-                    <div id="modal-contributors"></div>
-                    <table id="members" class="table table-bordered table-hover dataTable">
-                        <thead>
-                            <tr>
-                            <th>기수</th>
-                            <th>이름</th>
-                            <th>부서</th>
-                            <th>추가</th>
-                            </tr>
-                        </thead>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-default pull-left" id="member-close">취소</button>
-            <button type="button" class="btn btn-primary" id="member-confirm">확인</button>
-        </div>
-    </div><!-- /.modal-content -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default pull-left" id="modal-manage-contributors-cancel">취소</button>
+      <button type="button" class="btn btn-primary" id="modal-manage-contributors-confirm">확인</button>
+    </div>
+  </div><!-- /.modal-content -->
 </div>
 {% endblock %}
 
@@ -391,9 +312,16 @@
 <script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
 <script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
 <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/task_manager.js')}}"></script>
 
 <script type="text/javascript">
 
+{{ elements.generate_data() }}
+
+var manager = new TaskManager({{task.level}}, task, parents, children, contributors);
+
+{{ elements.task_form_script(2, True) }}
+/*
 CKEDITOR.disableAutoInline = true;
 
 $("#add-issue").easyModal({onClose: closeIssueModal});
@@ -948,7 +876,7 @@ function destroyEditor(confirm) {
   editor.destroy();
   $("#issue-description").attr("contenteditable",false);
   $(".editor-control").remove();
-}
+}*/
 </script>
 
 {% endblock %}

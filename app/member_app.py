@@ -283,8 +283,8 @@ class Task(Resource):
     taskModifyParser.add_argument('status', type=int, default=-1)
     taskModifyParser.add_argument('progress', type=int, default=-1)
     taskModifyParser.add_argument('deadline', type=int, default=0)
-    taskModifyParser.add_argument('parent[]', type=int, default=[-1],
-            action='append', dest='parent')
+    taskModifyParser.add_argument('parents[]', type=int, default=[-1],
+            action='append', dest='parents')
     taskModifyParser.add_argument('children[]', type=int, default=[-1],
             action='append', dest='children')
     taskModifyParser.add_argument('contributor[]', type=int, default=[-1],
@@ -336,9 +336,9 @@ class Task(Resource):
                 task.deadline = datetime.fromtimestamp(args['deadline'])
                 comment_text += '마감일이 변경되었습니다: %s' % task.deadline.strftime('%Y.%m.%d %H:%M')
 
-        if args['parent'] != [-1]:
+        if args['parents'] != [-1]:
             original_list = [task.id for task in task.parents]
-            add, sub = helper.list_diff(original_list, args['parent'])
+            add, sub = helper.list_diff(original_list, args['parents'])
             deleted_tasks = ['#%d %s'%(task.local_id, task.name)
                 for task in task.parents if task.id in sub]
             task.parents = [task for task in task.parents if not task.id in sub]
@@ -351,7 +351,7 @@ class Task(Resource):
                 parent = models.Task.query.get(taskID)
                 if parent:
                     task.parents.append(parent)
-                    task.parent.update_progress(True)
+                    parent.update_progress(True)
                     new_tasks.append('#%d %s'%(parent.local_id, parent.name))
 
             if new_tasks != []:
