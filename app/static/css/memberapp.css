@@ -19,18 +19,13 @@
     margin: 5px;
 }
 
-.command-elem {
-   cursor: pointer;
-   color: #777;
-}
+.command-elem {cursor: pointer;color: #777;}
 
-select.command-elem {
-    color: #fff;
-}
+select.command-elem {color: #fff;}
 
-.member-badge, .task-badge {
-    margin-right: 2px;
-}
+.member-badge, .task-badge, .tag-badge {margin-right: 2px;}
+
+#tags {margin-top: 10px;}
 
 .select-wrapper {
 
@@ -45,11 +40,7 @@ select.command-elem {
     border: 0;
 }
 
-#dtpicker {
-    width:0;
-    height:0;
-    overflow:hidden;
-}
+#dtpicker {width:0;height:0;overflow:hidden;}
 
 .dataTable a{color:#000;}
 .dataTable a:hover{color:#888;}

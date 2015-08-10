@@ -1,3 +1,26 @@
+{% macro tag_list() -%}
+{% if (task.tags|length) > 0 %}
+<div id="tags"><i class="fa fa-tag"></i>
+  {% for tag in task.tags %}<span class="tag-badge label bg-orange">#{{tag.title}}</span>{% endfor %}
+</div>
+{% endif %}
+{%- endmacro %}
+
+{% macro contributor_list() -%}
+<h5>시작한 사람 <span class="label label-primary"><i class="fa fa-star"></i>{{task.creator.user.nickname}}</span><br></h5>
+<h5>참여자
+  {% if current_user.member.editable(task) %}
+  <small><i class="fa fa-pencil command-elem" id="manage-contributors-open"></i></small>
+  {% endif %}
+</h5>
+<div id="contributors">
+{% for member in task.contributors %}
+  <span class="label label-primary member-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
+    <i class="fa fa-times command-elem" style="display:none;"></i></span>
+{% endfor %}
+</div>
+{%- endmacro %}
+
 {% macro status_select() -%}
 <div class="label select-wrapper">
   <select class="select-status{% if current_user.member.editable(task) %} command-elem{% else %}" disabled="true{% endif %}">

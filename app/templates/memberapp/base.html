@@ -237,7 +237,7 @@
           <ul class="sidebar-menu">
             <li class="header">HEADER</li>
             <!-- Optionally, you can add icons to the links -->
-            <li class="active"><a href="/stem"><i class='fa fa-dashboard'></i> <span>대시보드</span></a></li>
+            <li><a href="/stem"><i class='fa fa-dashboard'></i> <span>대시보드</span></a></li>
             <li><a href="/stem/people"><i class='fa fa-users'></i> <span>스템 사람들</span></a></li>
             <li><a href="/stem/suggestion"><i class='fa fa-hand-o-up'></i> <span>건의 사항</span></a></li>
             <li><a href="/stem/milestone"><i class='fa fa-road'></i> <span>마일스톤</span></a></li>
@@ -358,14 +358,19 @@
     <!-- REQUIRED JS SCRIPTS -->
 
     <!-- jQuery 2.1.4 -->
-    <script src="{{url_for('static', filename='adminLTE/plugins/jQuery/jQuery-2.1.4.min.js')}}"></script>
-    <!-- Bootstrap 3.3.2 JS -->
-    <script src="{{url_for('static', filename='adminLTE/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js" type="text/javascript"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ko.js" type="text/javascript"></script>
-    <script src="{{url_for('static', filename='js/bootstrap-datetimepicker.min.js')}}" type="text/javascript"></script>
-        <!-- AdminLTE App -->
-    <script src="{{url_for('static', filename='adminLTE/dist/js/app.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/jQuery/jQuery-2.1.4.min.js')}}"></script>
+<!-- Bootstrap 3.3.2 JS -->
+<script src="{{url_for('static', filename='adminLTE/bootstrap/js/bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/locale/ko.js" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/bootstrap-datetimepicker.min.js')}}" type="text/javascript"></script>
+    <!-- AdminLTE App -->
+<script src="{{url_for('static', filename='adminLTE/dist/js/app.min.js')}}" type="text/javascript"></script>
+<script>
+
+$(".sidebar-menu li:nth-child({{(nav_id or 0)+1}})").addClass("active");
+
+</script>
 {% block scripts %}
     {% endblock %}
     <!-- Optionally, you can add Slimscroll and FastClick plugins.

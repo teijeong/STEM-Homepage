@@ -47,7 +47,7 @@ def main():
 
     try:
         return render_template('dashboard.html', member=current_user.member,
-            task_lists=task_lists)
+            task_lists=task_lists,nav_id=1)
     except TemplateNotFound:
         abort(404)
 
@@ -55,7 +55,8 @@ def main():
 @member_required
 def showPeople():
     try:
-        return render_template('memberapp/people.html', member=current_user.member)
+        return render_template('memberapp/people.html', member=current_user.member,
+            nav_id=2)
     except TemplateNotFound:
         abort(404)
 
@@ -67,7 +68,7 @@ def showMilestone(id):
         if milestone and milestone.level == 0:
             return render_template('milestone.html',
                 member=current_user.member,
-                milestone=milestone,task=milestone)
+                milestone=milestone,task=milestone,nav_id=4)
         else:
             abort(404)
     except TemplateNotFound:
@@ -80,7 +81,7 @@ def showIssue(id):
         issue = models.Task.query.get(id)
         if issue and issue.level == 1:
             return render_template('issue.html', member=current_user.member,
-                issue=issue,task=issue)
+                issue=issue,task=issue,nav_id=5)
         else:
             abort(404)
     except TemplateNotFound:
@@ -93,7 +94,7 @@ def showSubtask(id):
         task = models.Task.query.get(id)
         if task and task.level == 2:
             return render_template('subtask.html', member=current_user.member,
-                task=task)
+                task=task,nav_id=5)
         else:
             abort(404)
     except TemplateNotFound:
@@ -105,7 +106,7 @@ def showIssues():
     try:
         issues = models.Task.query.filter_by(level=1).all()
         return render_template('issue_list.html', member=current_user.member,
-            issues=issues)
+            issues=issues,nav_id=5)
     except TemplateNotFound:
         abort(404)
 
@@ -115,7 +116,7 @@ def showMilestones():
     try:
         milestones = models.Task.query.filter_by(level=0).all()
         return render_template('milestone_list.html', member=current_user.member,
-            milestones=milestones)
+            milestones=milestones,nav_id=4)
     except TemplateNotFound:
         abort(404)
 
@@ -125,7 +126,7 @@ def showSuggestion():
     try:
         return render_template('suggestion.html',
             milestone=models.Task.query.get(0),
-            member=current_user.member)
+            member=current_user.member,nav_id=3)
     except TemplateNotFound:
         abort(404)
 
@@ -134,7 +135,7 @@ def showSuggestion():
 def showCalendar():
     try:
         return render_template('calendar.html',
-            member=current_user.member)
+            member=current_user.member,nav_id=6)
     except TemplateNotFound:
         abort(404)
 
@@ -192,6 +193,17 @@ class Task(Resource):
 
         db.session.add(task)
         db.session.commit()
+
+        tags = helper.get_tags(task.description)
+
+        for tag in tags:
+            tag_data = models.Tag.query.filter_by(title=tag).first()
+            if tag_data:
+                task.tags.append(tag_data)
+            else:
+                tag_data = models.Tag(tag)
+                task.tags.append(tag_data)
+                db.session.add(tag_data)
 
         priority_text = ['[시간날 때]','[보통]','[중요함]','[급함]']
         comment_text += '중요도: %s, ' % priority_text[task.priority]
@@ -310,9 +322,22 @@ class Task(Resource):
         if args['name'] != '':
             task.name = args['name']
             comment_text += '이름이 변경되었습니다: %s<br>' % task.name
+
         if args['description'] != '':
             task.description = args['description']
             comment_text += '설명이 변경되었습니다:<p>%s</p>' % task.description
+
+            tags = helper.get_tags(task.description)
+            task.tags = []
+
+            for tag in tags:
+                tag_data = models.Tag.query.filter_by(title=tag).first()
+                if tag_data:
+                    task.tags.append(tag_data)
+                else:
+                    tag_data = models.Tag(tag)
+                    task.tags.append(tag_data)
+                    db.session.add(tag_data)
 
         if args['level'] != -1:
             pass

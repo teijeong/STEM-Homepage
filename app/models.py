@@ -253,8 +253,10 @@ class Task(db.Model):
     deadline = db.Column(db.DateTime)
 
     comments = db.relationship('TaskComment', backref='task', lazy='dynamic')
+    tags = db.relationship('Tag', secondary=task_tag_table,
+        backref=db.backref('tasks', lazy='joined'))
     contributors = db.relationship('Member', secondary=task_member_table,
-        backref=db.backref('issues', lazy='dynamic'))
+        backref=db.backref('tasks', lazy='dynamic'))
     creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
 
     def __init__(self, level = 0, name='', description='',

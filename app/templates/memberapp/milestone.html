@@ -23,24 +23,7 @@
         <strong><span id="task-name">{{task.name}}</span></strong>&nbsp;
         {% if current_user.member.editable(task) %}<small><i id="task-name-modify" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
     <div class="box-tools pull-right">
-      <!-- Buttons, labels, and many other things can be placed here! -->
-      <!-- Here is a label for example -->
-      <div class="label select-wrapper">
-        <select class="select-priority" {% if not current_user.member.editable(task) %}disabled="true"{% endif %}>
-          <option value="3">급함</option>
-          <option value="2">중요함</option>
-          <option value="1">보통</option>
-          <option value="0">시간날 때</option>
-        </select>
-      </div>&nbsp;
-      <div class="label select-wrapper" {% if not current_user.member.editable(task) %}disabled="true"{% endif %}>
-        <select class="select-status">
-          <option value="0">진행중</option>
-          <option value="1">완료</option>
-          <option value="2">보관됨</option>
-          <option value="3">제외됨</option>
-        </select>
-      </div>
+      {{ elements.all_select() }}
     </div><!-- /.box-tools -->
   </div><!-- /.box-header -->
 <div class="box-body">
@@ -81,24 +64,13 @@
   {% endif %}
 </div><!-- /.box-body -->
 <div class="box-footer">
-  <h5>참여자
-    {% if current_user.member.editable(task) %}
-    <small><i class="fa fa-pencil command-elem" id="manage-contributors-open"></i></small>
-    {% endif %}
-  </h5>
-  <span class="label label-primary"><i class="fa fa-star"></i> {{task.creator.user.nickname}}</span>
-  <div id="contributors">
-    {% for member in task.contributors %}
-      <span class="label label-primary member-badge" data-member-id="{{member.id}}">{{member.user.nickname}}
-        <i class="fa fa-times command-elem" style="display:none;"></i></span>
-    {% endfor %}
-  </div>
+  {{ elements.contributor_list() }}
+  {{ elements.tag_list() }}
 </div><!-- box-footer -->
 </div><!-- /.box -->
 </div>
 
 {{ elements.comment_form() }}
-
 
           <!-- row -->
           <div class="row">
