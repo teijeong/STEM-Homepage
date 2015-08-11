@@ -53,18 +53,26 @@ $('#calendar').fullCalendar({
       day: 'day'
     },
     googleCalendarApiKey: 'AIzaSyA2C5FY8AH365dq2APeJZe6_BFtSa6quBc',
-    eventSources: [{
+    eventSources: [
+      {
         googleCalendarId: '8qbpapc1361o57ilrajo13j9fs@group.calendar.google.com',
         color: '#c3d6e0',
         textColor: '#444'
-    },
-    {
+      },
+      {
         googleCalendarId: 'ko.south_korea#holiday@group.v.calendar.google.com',
         color: '#e8d197'
-    }],
+      },
+      {
+        url: '/stem/api/deadlines',
+        color: '#ff0080'
+      }
+    ],
     eventClick: function(event) {
       // opens events in a popup window
-      window.open(event.url, 'gcalevent', 'width=700,height=600');
+      if (event.url.contains("https://www.google.com")) {
+        window.open(event.url, 'gcalevent', 'width=700,height=600');
+      } else location.href = event.url;
       return false;
     }
 });

@@ -9,7 +9,7 @@ from werkzeug import secure_filename
 import uuid, os
 
 from sqlalchemy import or_, and_
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from app import db, models, app, helper
 
@@ -563,3 +563,44 @@ class Member(Resource):
         return member
 
 api.add_resource(Member, '/api/member/<int:memberID>')
+
+
+class Event(Resource):
+    class DateFormat(fields.Raw):
+        def format(self, date):
+            return date.isoformat()
+
+    event_fields = {
+        'id': fields.Integer,
+        'title': fields.String(attribute='name'),
+        'start': DateFormat(attribute='deadline'),
+        'url': fields.String
+    }
+
+    dateParser = reqparse.RequestParser()
+    dateParser.add_argument('start', type=str, default='')
+    dateParser.add_argument('end', type=str)
+    dateParser.add_argument('level', type=int, default=-1)
+
+    @member_required
+    @marshal_with(event_fields)
+    def get(self):
+        args = self.dateParser.parse_args()
+        if args['start'] == '':
+            return models.Task.query.all()
+        start = datetime.strptime(args['start'],'%Y-%m-%d')
+        end = datetime.strptime(args['end'],'%Y-%m-%d')
+
+        events = models.Task.query.filter(
+            and_(models.Task.deadline >= start,
+                models.Task.deadline < end)).filter_by(status=0)
+        if args['level'] >= 0:
+            events = events.filter_by(level=args['level'])
+        events = events.all()
+        task_type = ['milestone','issue','subtask']
+        for event in events:
+            event.url = "/stem/%s/%d"%(task_type[event.level], event.id)
+
+        return events
+
+api.add_resource(Event, '/api/deadlines')
