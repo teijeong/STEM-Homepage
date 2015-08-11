@@ -48,8 +48,13 @@
 {{ status_select() }}
 {%- endmacro %}
 
-{% macro all_select_noupdate_script() -%}
-$(".select-wrapper select").change(function(event) {
+{% macro all_select_noupdate_script(modal=False) -%}
+{% if modal %}
+{% set modal_prefix = ".modal-elem" %}
+{% else %}
+{% set modal_prefix = "" %}
+{% endif %}
+$("{{modal_prefix}}.select-wrapper select").change(function(event) {
   var priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'];
   var status_color = ['bg-aqua','bg-green','bg-gray', 'bg-black'];
   var label_width = [0,16,26,36,46,50];
@@ -66,9 +71,9 @@ $(".select-wrapper select").change(function(event) {
   }
 });
 
-$(".select-priority").val(1);
-$(".select-status").val(0);
-$(".select-wrapper select").change();
+$("{{modal_prefix}}.select-priority").val(1);
+$("{{modal_prefix}}.select-status").val(0);
+$("{{modal_prefix}}.select-wrapper select").change();
 {%- endmacro %}
 
 {% set priority_color = ['bg-aqua','bg-green','bg-yellow','bg-red'] %}
@@ -220,7 +225,7 @@ function {%if modal%}modal_{%endif%}addTask(level) {
     }
   });
 }
-{{ all_select_noupdate_script() }}
+{{ all_select_noupdate_script(modal) }}
 
 {%- endmacro %}
 

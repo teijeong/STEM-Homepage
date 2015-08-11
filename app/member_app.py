@@ -8,7 +8,7 @@ from functools import wraps
 from werkzeug import secure_filename
 import uuid, os
 
-from sqlalchemy import or_, and_
+from sqlalchemy import or_, and_, not_
 from datetime import datetime, timedelta
 
 from app import db, models, app, helper
@@ -574,7 +574,8 @@ class Event(Resource):
         'id': fields.Integer,
         'title': fields.String(attribute='name'),
         'start': DateFormat(attribute='deadline'),
-        'url': fields.String
+        'url': fields.String,
+        'color': fields.String
     }
 
     dateParser = reqparse.RequestParser()
@@ -593,13 +594,17 @@ class Event(Resource):
 
         events = models.Task.query.filter(
             and_(models.Task.deadline >= start,
-                models.Task.deadline < end)).filter_by(status=0)
+                models.Task.deadline < end)).filter(
+            not_ (and_ (models.Task.level == 2,
+                ~models.Task.parents.any()))).filter_by(status=0)
         if args['level'] >= 0:
             events = events.filter_by(level=args['level'])
         events = events.all()
         task_type = ['milestone','issue','subtask']
+        task_color = ['#00c0ef','#00a65a','#f39c12','#dd4b39']
         for event in events:
             event.url = "/stem/%s/%d"%(task_type[event.level], event.id)
+            event.color = task_color[event.priority]
 
         return events
 

@@ -79,7 +79,7 @@ var TaskManager = function(level, task, parents, children, contributors) {
 
   /* Status, Priority Select Control */
   this.init_select = 2;
-  $(".select-wrapper select").change(function(event) {
+  $(".box-tools .select-wrapper select").change(function(event) {
     var label_width = [0,16,26,36,46,50];
     var w = label_width[$("option:selected", this).text().length];
     var i = $(this).val();
@@ -119,9 +119,9 @@ var TaskManager = function(level, task, parents, children, contributors) {
     }
   });
 
-  $(".select-priority").val(task.priority || 0);
-  $(".select-status").val(task.status || 0);
-  $(".select-wrapper select").change();
+  $(".box-tools .select-priority").val(task.priority || 0);
+  $(".box-tools .select-status").val(task.status || 0);
+  $(".box-tools .select-wrapper select").change();
 
   /* End Status, Priority Select Control */
 

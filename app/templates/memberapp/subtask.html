@@ -19,7 +19,9 @@
     <div class="col-md-12">
         <div class="box">
 <div class="box-header with-border">
-  <h3 class="box-title"><small>#{{task.parents[0].local_id}}-{{task.local_id}}</small> <strong id="task-name">{{task.name}}</strong>
+  <h3 class="box-title"><small>#
+    {% if (task.parents | length) > 0 %}{{task.parents[0].local_id}}
+    {% else %}?{% endif %}-{{task.local_id}}</small> <strong id="task-name">{{task.name}}</strong>
     {% if current_user.member.editable(task) %}<small><i id="task-name-modify" class="fa fa-pencil command-elem"></i></small>{% endif %}</h3>
   <div class="box-tools pull-right">
     {{ elements.all_select() }}
