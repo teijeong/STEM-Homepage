@@ -64,7 +64,8 @@ $('#calendar').fullCalendar({
         color: '#e8d197'
       },
       {
-        url: '/stem/api/deadlines'
+        url: '/stem/api/deadlines',
+        editable: true
       }
     ],
     eventClick: function(event) {
@@ -73,6 +74,20 @@ $('#calendar').fullCalendar({
         window.open(event.url, 'gcalevent', 'width=700,height=600');
       } else location.href = event.url;
       return false;
+    },
+    eventDrop: function(event, delta, revertFunc) {
+      event.start = event.start.utcOffset(9);
+      $.ajax({
+        url: '/stem/api/task/' + event.id,
+        type: 'PUT',
+        data: {
+          deadline: event.start.unix()
+        },
+        error: function(){
+          alert("일정을 수정할 수 없습니다. 서버 오류 또는 권한이 없습니다.");
+          revertFunc();
+        }
+      });
     }
 });
 
