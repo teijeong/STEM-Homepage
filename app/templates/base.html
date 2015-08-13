@@ -46,6 +46,12 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js" type="text/javascript"></script>
+<script type='text/javascript'>
+$(".date").each(function() {
+    var timestamp = moment.utc($(this).attr('data-timestamp')*1000);
+    $(this).text(timestamp.local().format($(this).attr('data-time-format')));
+});
+</script>
 {% block scripts %}
 {% endblock %}
 </body>

@@ -569,7 +569,7 @@ api.add_resource(Member, '/api/member/<int:memberID>')
 class Event(Resource):
     class DateFormat(fields.Raw):
         def format(self, date):
-            return date.isoformat()
+            return date.timestamp() * 1000
 
     event_fields = {
         'id': fields.Integer,

@@ -121,7 +121,7 @@ class Post(db.Model):
         self.body = body
         self.user_id = userid
         self.board_id = boardid
-        self.timestamp = datetime.datetime.now(utc)
+        self.timestamp = datetime.datetime.now()
         self.hitCount = 0
         self.commentCount = 0
 
@@ -153,7 +153,7 @@ class Comment(db.Model):
         self.body = body
         self.user_id = userid
         self.post_id = postid
-        self.timestamp = datetime.datetime.now(utc)
+        self.timestamp = datetime.datetime.now()
         post = Post.query.get(postid)
         if post:
             post.commentCount += 1
@@ -273,9 +273,9 @@ class Task(db.Model):
 
         self.priority = priority
         self.secret = secret
-        self.timestamp = datetime.datetime.now(utc)
+        self.timestamp = datetime.datetime.now()
         self.deadline = deadline or \
-            (datetime.datetime.now(utc) + datetime.timedelta(days=7))
+            (datetime.datetime.now() + datetime.timedelta(days=7))
         self.status = status
 
         if self.level == 0 or self.level == 1:
@@ -376,7 +376,7 @@ class TaskComment(db.Model):
         self.member = member
         self.task = task
         self.comment_type = comment_type
-        self.timestamp = datetime.datetime.now(utc)
+        self.timestamp = datetime.datetime.now()
 
     def __repr__(self):
         return '<Comment %r for Task #%r>' % (self.id, self.task_id)

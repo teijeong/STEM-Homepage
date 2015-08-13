@@ -83,7 +83,7 @@
                 </td>
                 {% if post.author %}
                 <td class="name" style="text-align:center">{{ post.author.nickname }}</td>
-                <td class="date" style="text-align:center">{{ post.timestamp.strftime('%y-%m-%d') }}</td>
+                <td class="date" style="text-align:center" data-timestamp='{{ post.timestamp.timestamp() }}' data-time-format='YY-MM-DD'></td>
                 <td class="hit" style="text-align:center">{{ post.hitCount }}</td>
                 {% endif %}
             </tr>

@@ -17,7 +17,7 @@
         <th scope="row">작성자</th>
         <td>{{ post.author.nickname }}</td>
         <th scope="row">작성일</th>
-        <td class="num">{{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+        <td class="date" data-timestamp='{{ post.timestamp.timestamp() }}' data-time-format='YYYY-MM-DD HH:mm:ss'></td>
         <th scope="row">조회</th>
         <td class="num">{{ post.hitCount }}</td>
     </tr>
