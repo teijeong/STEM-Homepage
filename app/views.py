@@ -7,6 +7,7 @@ from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
 from sqlalchemy import and_
 import datetime
 from app.helper import process_file
+import pytz
 
 class AnymousUser(AnonymousUserMixin):
     def __init__(self):
@@ -99,8 +100,8 @@ def showHistory(sub, page):
     yearRec = [n for n in range(2010, datetime.date.today().year + 1)]
     if not page in yearRec:
         page = year
-    start = datetime.datetime(page, 1, 1, tzinfo = datetime.timezone.utc)
-    end = datetime.datetime(page, 12, 31, tzinfo = datetime.timezone.utc)
+    start = datetime.datetime(page, 1, 1, tzinfo = pytz.utc)
+    end = datetime.datetime(page, 12, 31, tzinfo = pytz.utc)
     allRec = db.session.query(models.Post).filter(
         and_(models.Post.timestamp.between(start, end),
             models.Post.board_id == 3

@@ -5,7 +5,7 @@
         <dd><a class="title" href="post/{{article.id}}/view">{{ article.title }}
         {% if article.commentCount %} <span class="comment-count">[{{article.commentCount}}]</span>{% endif %}
         {% if article.new %}<img src="{{url_for('static', filename='images/ico_new.gif')}}"  border='0' alt='NEW'/>{% endif %}
-        </a><span class="date">{{ article.date }}</span></dd>
+        </a><span class="date" data-timestamp='{{ article.timestamp.timestamp() }}'></span></dd>
     {% endfor %}
 {%- endmacro %}                                
 
@@ -70,7 +70,7 @@
                 <div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="{{ url_for('static', filename='images/m_recruit.gif') }}" /></a></div>
                 <div><a href="javascript:go_menu('sub2_1')"><img src="{{ url_for('static', filename='images/m_activities.gif') }}" /></a></div>
             </div>
-        </div>
+        </div>s
         <div class="m_con2">
             <div class="m_notice_img"><img src="{{ url_for('static', filename='images/m_notice_img.gif') }}" /></div>
             <div class="boards">
@@ -86,4 +86,13 @@
         </div>
     </div>
     <!--//container-->
+{% endblock %}
+
+{% block scripts %}
+<script type='text/javascript'>
+$(".date").each(function() {
+    var timestamp = moment.unix($(this).attr('data-timestamp'));
+    $(this).text(timestamp.format("MM.DD"));
+});
+</script>
 {% endblock %}

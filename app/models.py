@@ -7,6 +7,7 @@ import math
 import pytz
 
 timezone = pytz.timezone('Asia/Seoul')
+utc = pytz.utc
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -120,7 +121,7 @@ class Post(db.Model):
         self.body = body
         self.user_id = userid
         self.board_id = boardid
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = datetime.datetime.now(utc)
         self.hitCount = 0
         self.commentCount = 0
 
@@ -132,7 +133,7 @@ class Post(db.Model):
     @classmethod
     def historyPost(self, title, startDate, endDate = None):
         post = Post(0, title, '', None, 3)
-        timezero = datetime.time(tzinfo=datetime.timezone.utc)
+        timezero = datetime.time(tzinfo=utc)
         post.timestamp = datetime.datetime.combine(startDate, timezero)
         if endDate and endDate != startDate:
             endtime = datetime.datetime.combine(endDate, timezero)
@@ -152,7 +153,7 @@ class Comment(db.Model):
         self.body = body
         self.user_id = userid
         self.post_id = postid
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = datetime.datetime.now(utc)
         post = Post.query.get(postid)
         if post:
             post.commentCount += 1
@@ -272,9 +273,9 @@ class Task(db.Model):
 
         self.priority = priority
         self.secret = secret
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = datetime.datetime.now(utc)
         self.deadline = deadline or \
-            (datetime.datetime.now() + datetime.timedelta(days=7))
+            (datetime.datetime.now(utc) + datetime.timedelta(days=7))
         self.status = status
 
         if self.level == 0 or self.level == 1:
@@ -375,7 +376,7 @@ class TaskComment(db.Model):
         self.member = member
         self.task = task
         self.comment_type = comment_type
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = datetime.datetime.now(utc)
 
     def __repr__(self):
         return '<Comment %r for Task #%r>' % (self.id, self.task_id)
