@@ -299,7 +299,7 @@ $.extend( $.fn.dataTable.defaults, {
         {title:"진행도"},
         {title:"status"},
         {title:""},
-        {title:"deadline"}
+        {title:"마감일"}
     ]
 });
 
@@ -313,6 +313,7 @@ var colDefs = [
       orderable: false
     },//local_id
     {targets: 3,
+      visible: false,
       width: "30%",
       render: function(data, type, row) {
         if (type=="display")
@@ -343,7 +344,25 @@ var colDefs = [
         }
       }
     },//priority
-    {targets: 6, visible:false}//timestamp
+    {targets: 6,
+      width: "50px",
+      render: function(data, type, row) {
+        if (type!="display")
+          if (data < 10000)
+            return Number.MAX_VALUE;
+          else
+            return data;
+
+        if (data < 10000) return "TBD";
+        var time = moment(data*1000);
+        var today = moment();
+        if (time.diff(today, 'days') < 0)
+          return "<span style='color:#ccc'>" + time.format("YY-MM-DD") + "</span>";
+        else if (time.diff(today, 'days') < 3)
+          return "<span style='color:#dd4839'>" + time.format("YY-MM-DD") + "</span>";
+        return time.format("YY-MM-DD");
+      }
+    }//timestamp
   ];
 
 var task_type = ['milestone', 'issue', 'subtask'];
@@ -354,8 +373,9 @@ for (var i = 0; i < 3; i++)
       columnDefs: colDefs.concat([
         {targets:2,
           render: function(data, type, row) {
+            var progress = (Math.round(row[3]*10)/10) + "%";
             return "<a href='/stem/"+task_type[i]+"/" + row[0] +
-              "'>" + data + "</a>";
+              "'>" + data + " (" +  progress + ")</a>";
           }
         }])
   });
