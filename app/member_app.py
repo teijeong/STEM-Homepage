@@ -629,6 +629,7 @@ class Event(Resource):
         for event in events:
             event.url = "/stem/%s/%d"%(task_type[event.level], event.id)
             event.color = task_color[event.priority]
+            event.name = "[%s] %s" % (event.repr_id(), event.name)
 
         return events
 
