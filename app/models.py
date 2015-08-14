@@ -3,6 +3,8 @@ from app import db
 import datetime
 from sqlalchemy_utils import PasswordType
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import IntegrityError
+import uuid
 import math
 import pytz
 
@@ -23,9 +25,10 @@ class User(db.Model):
     def __init__(self, username='', password='123456', nickname='', email=''):
         self.username = username
         self.password = password
-        self.email = email
         self.nickname = nickname
         self.member = None
+        self.email = email
+
 
     def __repr__(self):
         return '<User %r>' % self.nickname

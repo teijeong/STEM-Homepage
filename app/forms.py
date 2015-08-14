@@ -86,8 +86,24 @@ class RegisterForm(RedirectForm):
             self.userid.errors.append('Duplicate')
             return False
 
+        member = None
+        user = models.User.query.filter_by(email=self.email.data).first()
+        if (user and user.username[0:11] == 'stem_member' and \
+            user.member and user.nickname==self.name.data):
+            member = user.member
+            user.member = None
+            db.session.delete(user)
+            db.session.commit()
+        elif user:
+            self.userid.errors.append('Duplicate')
+            return False
+        
         user = models.User(self.userid.data, self.passwd.data,
             self.name.data, self.email.data)
+        if member:
+            user.member = member
+
+
         db.session.add(user)
         db.session.commit()
 
