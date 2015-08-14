@@ -140,7 +140,30 @@ def showCalendar():
     except TemplateNotFound:
         abort(404)
 
+@member_app.route('/tag')
+@member_required
+def showTagList():
+    try:
+        tags = models.Tag.query.all()
+        return render_template('tag_list.html',
+            member=current_user.member,nav_id=7,
+            tags=tags)
+    except TemplateNotFound:
+        abort(404)
 
+@member_app.route('/tag/<int:id>')
+@member_required
+def showTag(id):
+    try:
+        tag = models.Tag.query.get(id)
+        if not tag:
+            abort(404)
+
+        return render_template('tag.html',
+            member=current_user.member,nav_id=7,
+            tag=tag)
+    except TemplateNotFound:
+        abort(404)
 
 simple_task_fields = {
     'id': fields.Integer,

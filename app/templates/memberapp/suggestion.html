@@ -19,19 +19,19 @@
         <div class="col-md-12">
             <div class="box">
               <div class="box-header with-border">
-                <h3 class="box-title">Suggestions</h3>
+                <h3 class="box-title">건의사항 등록</h3>
               </div><!-- /.box-header -->
               <div class="box-body">
                 <div class="form-group">
-                  <label>Title</label>
+                  <label>제목</label>
                   <input class="form-control" type="text" placeholder="Title" id="issue-title">
                 </div>
                 <div class="form-group">
-                  <label>Description</label>
+                  <label>내용</label>
                   <textarea class="form-control" rows="3" id="issue-description"></textarea>
                 </div>
                 <div class="form-group">
-                <button onclick="addIssue()" type="add" class="btn btn-primary pull-right">Add</button>
+                <button onclick="addIssue()" type="add" class="btn btn-primary pull-right">등록</button>
                 </div>
               </div><!-- /.box-body -->
             </div><!-- /.box -->
@@ -78,17 +78,25 @@ function addIssue() {
   var name = $("#issue-title").val();
   var description = $("#issue-description").val();
 
+  $("#issue-title").val('');
+  $("#issue-description").val('');
+
   $.ajax({
     url: "/stem/api/task",
     type:"POST",
     data: {
         name: name,
-        description: description,
+        description: description.replace('\n','<br>'),
         level: 1,
-        parent: 0
+        parents: [0]
     },
     success: function(data) {
       location.reload();
+    },
+    error: function() {
+      alert('오류가 발생했습니다.');
+      $("#issue-title").val(name);
+      $("#issue-description").val(description);
     }
   });
 }

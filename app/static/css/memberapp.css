@@ -1,3 +1,5 @@
+textarea {resize:none;}
+
 .editor {
     background-color: #ccc;
     min-height: 100px;

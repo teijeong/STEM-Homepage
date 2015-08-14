@@ -347,7 +347,18 @@ class Task(db.Model):
         else:
             return '<?#%r %r>' % (self.id, self.name)
 
-
+    def repr_id(self):
+        if self.level == 0:
+            return 'M#%r' % self.local_id
+        elif self.level == 1:
+            return '#%r' % self.local_id
+        elif self.level == 2:
+            if self.parents != []:
+                return '#%r-%r' % (self.parents[0].local_id, self.local_id)
+            else:
+                return '#?-%r' % self.local_id
+        else:
+            return '?#%r' % self.id
 
 comment_tag_table = db.Table('comment_tags',
     db.Column('comment_id', db.Integer, db.ForeignKey('task_comment.id')),

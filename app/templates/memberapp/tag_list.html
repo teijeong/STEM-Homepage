@@ -1,0 +1,31 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+ <section class="content-header">
+  <h1>
+    태그 검색
+    <small>태그를 클릭하면 해당 태그 아래의 게시물들이 보입니다.</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li class="active">Milestone</li>
+  </ol>
+  <div class="add-task"><i class="fa fa-plus command-elem" onclick="showModal()"></i></div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-sm-12">
+      {% for tag in tags %}
+      <a href="/stem/tag/{{tag.id}}"><span class="label bg-orange badge-tag" data-tag-id="{{tag.id}}">#{{tag.title}}</span></a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block styles %}
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
