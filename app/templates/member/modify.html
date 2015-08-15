@@ -196,8 +196,42 @@ STEM에게 하고 싶은 말
 
 {% block scripts %}
 <script type="text/javascript">
+(function( factory ) {
+    if ( typeof define === "function" && define.amd ) {
+
+        // AMD. Register as an anonymous module.
+        define([ "../jquery.ui.datepicker" ], factory );
+    } else {
+
+        // Browser globals
+        factory( jQuery.datepicker );
+    }
+}(function( datepicker ) {
+    datepicker.regional['ko-KR'] = {
+        closeText: '닫기',
+        prevText: '이전',
+        nextText: '다음',
+        currentText: '오늘',
+        monthNames: '1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월'.split('_'),
+        monthNamesShort: '1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월'.split('_'),
+        dayNames: '일요일_월요일_화요일_수요일_목요일_금요일_토요일'.split('_'),
+        dayNamesShort: '일_월_화_수_목_금_토'.split('_'),
+        dayNamesMin: '일_월_화_수_목_금_토'.split('_'),
+        weekHeader: '周',
+        dateFormat: 'yy-mm-dd',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: true,
+        yearSuffix: '년'};
+    datepicker.setDefaults(datepicker.regional['ko_KR']);
+
+    return datepicker.regional['ko-KR'];
+
+}));
+
 $("#birthday").datepicker({
     dateFormat:"yy-mm-dd"
 });
+$("#birthday").datepicker("option",$.datepicker.regional['ko-KR']);
 </script>
 {% endblock %}
