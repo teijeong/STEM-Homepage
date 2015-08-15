@@ -184,7 +184,7 @@ def modify():
     else:
         form = ModifyForm()
         if form.validate_on_submit():
-            return form.redirect()
+            return form.redirect('/')
         return render_template('member/modify.html', form=form)
 
 @app.route('/logout')

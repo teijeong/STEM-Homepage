@@ -99,7 +99,7 @@ function autoGrow (oField) {
     <tr>
         <th scope="row" class="import">생년월일</th>
         <td style="padding:5px 0 5px 10px;">
-            <input name="birthday" maxlength="10" type="date" class="input" value="{{current_user.member.birthday or ''}}"/>
+            <input name="birthday" id="birthday" placeholder="YYYY-MM-DD" maxlength="10" type="date" class="input" value="{{current_user.member.birthday or ''}}"/>
         </td>
     </tr>
     <tr>
@@ -192,4 +192,12 @@ STEM에게 하고 싶은 말
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+$("#birthday").datepicker({
+    dateFormat:"yy-mm-dd"
+});
+</script>
 {% endblock %}
