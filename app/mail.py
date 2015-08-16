@@ -12,9 +12,10 @@ def sendMail(to, subject, text, html=False, files=[],server="localhost",
     sender='stem_admin@aws.stemsnu.com'):
     if type(to) != list:
         to = [to]
-        to = list(map(lambda user: "%s <%s>"%(user.nickname, user.email), to))
     if type(files) != list:
         files = [files]
+
+    to = list(map(lambda user: "%s <%s>"%(user.nickname, user.email), to))
 
     msg = MIMEMultipart()
     msg['From'] = sender
