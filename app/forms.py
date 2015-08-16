@@ -85,6 +85,11 @@ class RegisterForm(RedirectForm):
             self.userid.errors.append('Duplicate')
             return False
 
+        self.userid.data = self.userid.data.strip()
+        self.name.data = self.name.data.strip()
+        self.passwd.data = self.passwd.data.strip()
+        self.email.data = self.email.data.strip()
+
         member = None
         user = models.User.query.filter_by(email=self.email.data).first()
         if (user and user.username[0:11] == 'stem_member' and \
