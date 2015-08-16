@@ -1,11 +1,10 @@
 #-*- coding: utf-8 -*-
 
-import app
 import os
 from flask.ext.wtf import Form
 from wtforms import IntegerField, TextField, PasswordField, HiddenField, validators
 from flask_wtf.file import FileField, FileAllowed
-from app import models, db
+from app import app, models, db
 from flask.ext.login import current_user
 from datetime import datetime
 from werkzeug import secure_filename
@@ -160,14 +159,14 @@ class ModifyMemberForm(ModifyForm):
         if self.photo.data.filename != '':
             ext = self.photo.data.filename.rsplit('.',1)[1]
             filename = 'profile/%d.' % self.user.id + ext
-            file_path = os.path.join(app.config.UPLOAD_FOLDER, filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             self.photo.data.save(file_path)
             self.user.member.img = filename
 
         if self.cover.data.filename != '':
             ext = self.cover.data.filename.rsplit('.',1)[1]
             filename = 'cover/%d.' % self.user.id + ext
-            file_path = os.path.join(app.config.UPLOAD_FOLDER, filename)
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             self.cover.data.save(file_path)
             self.user.member.cover = filename
 
