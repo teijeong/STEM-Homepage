@@ -123,7 +123,7 @@ class ModifyForm(RedirectForm):
             return False
 
         if self.passwd.data != '':
-            self.user.passwd = self.passwd.data
+            self.user.password = self.passwd.data
         if self.email.data != '':
             self.user.email = self.email.data
         db.session.commit()
@@ -147,7 +147,7 @@ class ModifyMemberForm(ModifyForm):
     social = TextField('Social Network')
 
     def validate(self):
-        rv = ModifyForm.validate(self)
+        rv = super().validate()
         if not rv:
             return False
 
