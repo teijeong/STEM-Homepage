@@ -8,3 +8,4 @@ dbinfo
 app/static/upload/*
 
 uwsgi.ini
+client_secret.json

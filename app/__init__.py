@@ -39,4 +39,4 @@ admin = Admin(url='/admin',template_mode='bootstrap3')
 
 from app.member_app import member_app
 app.register_blueprint(member_app, url_prefix='/stem')
-from app import views, models, forms, config, admin_views, filters
+from app import views, models, forms, config, admin_views, filters, mail
