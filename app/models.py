@@ -1,12 +1,11 @@
 #-*-coding: utf-8 -*-
 from app import db
 import datetime
-from sqlalchemy_utils import PasswordType
+from sqlalchemy_utils import PasswordType, ChoiceType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
-import uuid
-import math
-import pytz
+import uuid, math, pytz
+from enum import IntEnum
 
 timezone = pytz.timezone('Asia/Seoul')
 utc = pytz.utc
@@ -64,6 +63,11 @@ class Member(db.Model):
     social = db.Column(db.Unicode(256))
     owned_task = db.relationship('Task', backref='creator', lazy='dynamic')
     task_comments = db.relationship('TaskComment', backref='member',lazy='joined')
+
+    sent_notifications = db.relationship('Notification', backref='sender', lazy='dynamic',
+        primaryjoin='Notification.sender_id==Member.id')
+    received_notifications = db.relationship('Notification', backref='receiver', lazy='dynamic',
+        primaryjoin='Notification.receiver_id==Member.id')
 
     def __repr__(self):
         return '<Member %d>' % self.id
@@ -404,3 +408,35 @@ class Tag(db.Model):
 
     def __repr__(self):
         return '<Tag %r>' % self.title
+
+class ObjectType(IntEnum):
+    User = 1
+    Member = 2
+    Post = 3
+    Comment = 4
+    Board = 5
+    Task = 6
+    TaskComment = 7
+    Tag = 8
+
+class NotificationAction(IntEnum):
+    create = 1
+    update = 2
+    delete = 3
+
+class Notification(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    receiver_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    object_type = db.Column(db.Integer())
+    object_id = db.Column(db.Integer)
+    verb = db.Column(db.Integer())
+    timestamp = db.Column(db.DateTime)
+    is_read = db.Column(db.Boolean)
+    message = db.Column(db.Unicode(256))
+
+    def __repr__(self):
+        target = globals()[ObjectType(self.object_type).name].query.get(self.object_id)
+
+        return "Notification for %r, about %r-%s, sent by %r" % \
+            (self.receiver.user, target, NotificationAction(self.verb).name, self.sender.user)
