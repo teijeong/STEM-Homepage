@@ -6,6 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
 import uuid, math, pytz
 from enum import IntEnum
+import re
 
 timezone = pytz.timezone('Asia/Seoul')
 utc = pytz.utc
@@ -367,6 +368,12 @@ class Task(db.Model):
         else:
             return '?#%r' % self.id
 
+    def to_string(self):
+        return self.repr_id() + ' ' + self.name
+
+    def all_contributors(self):
+        return list(set(self.contributors) | {self.creator})
+
 comment_tag_table = db.Table('comment_tags',
     db.Column('comment_id', db.Integer, db.ForeignKey('task_comment.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
@@ -434,6 +441,26 @@ class Notification(db.Model):
     timestamp = db.Column(db.DateTime)
     is_read = db.Column(db.Boolean)
     message = db.Column(db.Unicode(256))
+
+    def __init__(self, sender, receiver, target, verb, message):
+        type_parser = re.compile('models\.(\w*)')
+        try:
+            target_type = type_parser.findall(str(type(target)))[0]
+            target_type = ObjectType[target_type]
+        except IndexError:
+            print("Invalid Object type - not a model")
+            raise IndexError
+        except KeyError:
+            print("Invalid Object type - no such model")
+            raise KeyError
+        self.sender = sender
+        self.receiver = receiver
+        self.object_type = target_type
+        self.object_id = target.id
+        self.verb = verb
+        self.timestamp = datetime.datetime.now()
+        self.is_read = False
+        self.message = message
 
     def __repr__(self):
         target = globals()[ObjectType(self.object_type).name].query.get(self.object_id)

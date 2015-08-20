@@ -4,7 +4,7 @@ import os
 from flask.ext.wtf import Form
 from wtforms import IntegerField, TextField, PasswordField, HiddenField, validators
 from flask_wtf.file import FileField, FileAllowed
-from app import app, models, db
+from app import app, models, db, notification
 from flask.ext.login import current_user
 from datetime import datetime
 from werkzeug import secure_filename
@@ -46,7 +46,7 @@ class RedirectForm(Form):
 
 class LoginForm(RedirectForm):
     userid = TextField('ID')
-    passwd = PasswordField('PW')
+    password = PasswordField('PW')
     next = TextField('next')
     user = None
 
@@ -59,7 +59,7 @@ class LoginForm(RedirectForm):
         if user is None:
             self.userid.errors.append('Unknown user')
             return False
-        if user.password != self.passwd.data:
+        if user.password != self.password.data:
             self.passwd.errors.append('Incorrect password')
             return False
 
@@ -116,6 +116,7 @@ class RegisterForm(RedirectForm):
 
 class ModifyForm(RedirectForm):
     passwd = PasswordField('PW')
+    passwd_original = PasswordField('PW-original')
     email = TextField('E-mail')
     user = current_user
 
@@ -147,7 +148,6 @@ class ModifyMemberForm(ModifyForm):
     department = IntegerField('Department')
     stem_department = IntegerField('STEM_Department')
     cv = TextField('CV')
-    passwd_original = PasswordField('PW-original')
     comment = TextField('Comment')
     social = TextField('Social Network')
 
@@ -192,5 +192,8 @@ class ModifyMemberForm(ModifyForm):
         self.user.member.stem_dept_id = self.stem_department.data
 
         db.session.commit()
+
+        notification.Push(self.user.member, models.Member.query.all(),
+            self.user.member, models.NotificationAction.update)
 
         return True

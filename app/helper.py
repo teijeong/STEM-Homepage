@@ -39,7 +39,6 @@ def get_tags(text):
     tag = re.compile('#\w+')
     reject = re.compile('#\d+')
     words = re.split("\s+",html.sub(' ', text))
-    print(words)
     tags = []
     for word in words:
         if not word:

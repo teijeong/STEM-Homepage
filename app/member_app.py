@@ -12,7 +12,7 @@ from sqlalchemy import or_, and_, not_
 from datetime import datetime, timedelta
 import pytz
 
-from app import db, models, app, helper
+from app import db, models, app, helper, notification
 
 member_app = Blueprint('member_app', __name__,
                         template_folder='templates/memberapp')
@@ -462,6 +462,9 @@ class Task(Resource):
             modify_comment = models.TaskComment('내용이 변경되었습니다.', comment_text, 1, current_user.member, task)
             db.session.add(modify_comment)
         db.session.commit()
+
+        notification.Push(current_user.member, task.all_contributors(), task,
+            models.NotificationAction.update)
         return task
 
     @member_required
@@ -542,6 +545,9 @@ class TaskComment(Resource):
         db.session.commit()
         if (args['redirect']):
             return redirect(args['redirect'])
+
+        notification.Push(current_user.member, task.all_contributors(),
+            task_comment, models.NotificationAction.create)
         return str(task_comment)
 
     @member_required
