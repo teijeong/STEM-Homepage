@@ -218,9 +218,9 @@ function mainLoginSend(form) {
         form.userid.focus();
         return;
     }
-    if(form.passwd.value=="") {
+    if(form.password.value=="") {
         alert("패스워드를 입력해 주십시오.");
-        form.passwd.focus();
+        form.password.focus();
         return;
     }
     form.submit();

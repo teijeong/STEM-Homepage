@@ -219,8 +219,6 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 #footer .foot {float:left;}
 #footer .foot_familysite {float:right;}
 
-
-
 /* 왼쪽 메뉴 */
 .left {position:relative; width:220px; float:left; left repeat-y; margin-top:20px;}
 .category {position:relative; width:220px; overflow:hidden; padding-bottom:20px;}
@@ -232,15 +230,11 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .category dd.sub4_3_2 {padding-left:5px; background:url('../images/sub2_1_dot.gif') left 18% no-repeat;}
 .category dd.sub4_3_2 strong {color:#777;}
 
-
 /*서브*/
 .contain {position:relative; margin-top:35px; width:980px; z-index:8;}
 .con {float:left; width:750px;}
 .s_contents {float:right;}
 .con_img {width:718px; margin:20px 0; padding:15px; border:1px solid #e7e7e7;min-height:300px; overflow:hidden;}
-
-
-
 
 /* 버튼 */
 .m_login_btn {width:55px; height:35px; padding:1px; border:none; color:#f47a35; background-color:#e6e6e6; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; font-weight:bold; cursor:pointer; letter-spacing:-0.01em;}
@@ -248,7 +242,6 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .button2 {width:90px; padding:3px 0; border:solid 1px #f47a35; color:#f47a35; background-color:#f2f2f2; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; font-weight:bold; cursor:pointer;}
 .button3 {width:65px; height:52px; border:solid 1px #f47a35; color:#f47a35; background-color:#f2f2f2; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; font-weight:bold; cursor:pointer;}
 .submit {width:160px; height:35px; border:solid 1px #f47a35; color:#f47a35; background-color:#f2f2f2; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; font-weight:bold; cursor:pointer;}
-
 
 /*  css 핵 */
 /* 익스6,7 */
@@ -283,7 +276,6 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .tbl_type .title .pic,.tbl_type .title .new{margin:0 0 2px;vertical-align:middle}
 .tbl_type tr.reply .title a{padding-left:15px;background:url('../images/ico_reply.gif') 0 1px no-repeat}
 .tbl_type tr.reply td a.comment{padding:0;background:none;color:#f00;font-size:12px;font-weight:bold}
-
 
 /* 게시판 페이지 */
 .paginate_complex {padding:15px 0; line-height:normal; text-align:center;width:100%;}
@@ -347,15 +339,13 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .join_com:after {content:""; display:block; clear:both;}
 .join_com input {margin:175px 0 0 60px;}
 
-/* LoGin */
+/* Login */
 .login {position:relative; margin:30px auto; width:660px; height:300px; background:url('../images/loginbox_bg.gif') no-repeat;}
 .logbox {margin:50px 0 0 350px;}
 .logbox span {width:80px;}
 .logbox th {text-align:right;}
 .logbox .memb {border:1px solid #999; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:12px; color:#555; font-weight:normal; line-height:2em;}
 .logbox a {padding-right:17px; vertical-align:middle;}
-
-
 
 /* 아이디 비번 찾기 */
 #seek {overflow:hidden; background:none !important; border:solid 5px #70839e;}
@@ -379,14 +369,6 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .check .id_result td {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:11px; color:#999; line-height:1.5em; letter-spacing:-1px;}
 .check .id_btn {padding:2px 0; text-align:center;}
 
-/* 우편번호 검색 */
-.post01 {overflow:hidden; width:330px; background-color:#fff; border:solid 5px #70839e;}
-.post01 * {vertical-align:middle;}
-.post01 .tit {padding:5px 0; border-bottom:2px solid #34445d; margin-bottom:10px; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size: 16px; font-weight:bold; color:#444; line-height:1.5em; text-align:center;}
-.post01 .id_result {border-top:1px solid #d2d2d2; border-bottom:1px solid #d2d2d2; background-color:#f5f5f5; text-align:center;}
-.post01 .id_btn {padding:15px 0; text-align:center;}
-.post01 .post_list {height:215px; overflow:auto; margin-top:15px;}
-
 #contentFrame {margin:-250px 0 0 0}
 
 /* people */
@@ -399,9 +381,9 @@ a:active {font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-size:1
 .people li dd span {display:inline-block; width:90px; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-weight:bold; }
 .people li dd em {display:inline-block; width:350px; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-weight:bold; font-weight:normal; font-size:14px; line-height:1.7em; vertical-align:top;}
 
-/* 회사소개 */
+/* History */
 .history {width:100%; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; color:#000; line-height:2em; margin-top:10px}
-.history thead th {padding:5px 0 4px;border-top:solid 1px #f75900;border-bottom:solid 1px #fff;background-color:#f0f0f0;color:#f75900;font-weight:bold;line-height:18px;}
+.history thead th {padding:5px 10px;border-top:solid 1px #f75900;border-bottom:solid 1px #fff;background-color:#f0f0f0;color:#f75900;font-weight:bold;line-height:18px;}
 .history tbody th {border-bottom:1px dotted #d6d6d6; color:#777; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; font-weight:normal; font-size:14px; padding:10px;}
 .history tbody td {border-bottom:1px dotted #d6d6d6; padding:10px;}
 .history tbody td p {background:url('../images/ico_arrow_orange.png') left 8px no-repeat; font-family:"NanumGothic", "Helvetica", "Arial", "돋움"; color:#000; font-size:12px; padding-left:10px}

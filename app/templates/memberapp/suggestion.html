@@ -7,7 +7,7 @@
     <small>suggestions for next meeting</small>
   </h1>
   <ol class="breadcrumb">
-    <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
+    <li><a href="/stem"><i class="fa fa-hand-o-up"></i> Home</a></li>
     <li class="active">Suggestions</li>
   </ol>
 </section>
@@ -46,14 +46,23 @@
       <ul class="timeline">
         {% for issue in milestone.children[::-1] %}
         <!-- timeline item -->
+        {% if loop.first or issue.timestamp.strftime('%Y%m%d') !=
+          milestone.children[loop.revindex0 + 1].timestamp.strftime('%Y%m%d') %}
+
+          <li class="time-label">
+            <span class="bg-red">
+              {{ issue.timestamp.strftime('%Y.%m.%d') }}
+            </span>
+          </li>
+        {% endif %}
         <li>
           <i class="fa fa-gears bg-green"></i>
           <div class="timeline-item">
-            <span class="time"><i class="fa fa-clock-o"></i> by <a href="#">{{ issue.creator.user.nickname }}</a></span>
+            <span class="time"><i class="fa fa-clock-o"></i> {{ issue.timestamp.strftime('%H:%M')}} by <a href="#">{{ issue.creator.user.nickname }}</a></span>
             <h3 class="timeline-header"><small>[#{{ issue.id }}]</small> <em>{{ issue.name }}</em></h3>
             <div class="timeline-body">
                 <blockquote style="font-size:100%">
-                {{ issue.description | nl2br}}
+                {{ issue.description | nl2br | safe}}
                 </blockquote>
             </div>
             <div class='timeline-footer'>

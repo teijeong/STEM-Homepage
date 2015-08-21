@@ -2,15 +2,16 @@
 {% import "task_elements.html" as elements with context %}
 {% block content %}
 <section class="content-header">
-          <h1>
-            마일스톤
-            <small>큰 프로젝트 단위의 업무입니다</small>
-          </h1>
-          <ol class="breadcrumb">
-            <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active">Milestone</li>
-          </ol>
-        </section>
+  <h1>
+    마일스톤
+    <small>큰 프로젝트 단위의 업무입니다</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="/stem"><i class="fa fa-road"></i> Home</a></li>
+    <li><a href="/stem/milestone">Milestone</a></li>
+    <li class="active">{{task.repr_id()}}</li>
+  </ol>
+</section>
 
         <!-- Main content -->
         <section class="content">
