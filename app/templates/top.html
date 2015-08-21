@@ -3,52 +3,52 @@
         <div id="header">
             <div class="topmenu">
                 <ul class="nostyle">
-                    <li class="nostyle"><a href="javascript:go_menu('main')">메인으로</a></li>
-                    <li class="nostyle"><a href="javascript:go_menu('sub5_2')">문의하기</a></li>
+                    <li class="nostyle"><a href="/">메인으로</a></li>
+                    <li class="nostyle"><a href="#">문의하기</a></li>
                     <li class="nostyle"><a href="javascript:go_menu('favorite')">즐겨찾기 추가</a></li>
                 </ul>
             </div>
-            <h1 class="logo"><a href="javascript:go_menu('main')"><img src="{{ url_for('static', filename='images/logo.gif') }}" alt="우수학생센터 공우" /></a></h1>
+            <h1 class="logo"><a href="/"><img src="{{ url_for('static', filename='images/logo.gif') }}" alt="우수학생센터 공우" /></a></h1>
             <!-- gnb -->
             <div class="headMenu">
                 <ul class="nostyle" id="gnb">
-                    <li id="item1"><a href="javascript:go_menu('sub1_1')" onmouseover="onTopNavi(1, 6);" onfocus="onTopNavi(1, 6);"><span class="main-list">About Us</span></a>
+                    <li id="item1"><a href="/sub/1-1" onmouseover="onTopNavi(1, 6);" onfocus="onTopNavi(1, 6);"><span class="main-list">About Us</span></a>
                         <dl id="m1">
-                            <dd id="item11"><a href="javascript:go_menu('sub1_1')" ><span class="sub-list">Greetings</span></a></dd>
-                            <dd id="item12"><a href="javascript:go_menu('sub1_2')" ><span class="sub-list">Vision</span></a></dd>
-                            <dd id="item13"><a href="javascript:go_menu('sub1_3')" ><span class="sub-list">Organization</span></a></dd>
-                            <dd id="item14"><a href="javascript:go_menu('sub1_4')" ><span class="sub-list">Map</span></a></dd>
-                            <dd id="item15"><a href="javascript:go_menu('sub1_5')" ><span class="sub-list">Contact</span></a></dd>
+                            <dd id="item11"><a href="/sub/1-1" ><span class="sub-list">Greetings</span></a></dd>
+                            <dd id="item12"><a href="/sub/1-2" ><span class="sub-list">Vision</span></a></dd>
+                            <dd id="item13"><a href="/sub/1-3" ><span class="sub-list">Organization</span></a></dd>
+                            <dd id="item14"><a href="/sub/1-4" ><span class="sub-list">Map</span></a></dd>
+                            <dd id="item15"><a href="/sub/1-5" ><span class="sub-list">Contact</span></a></dd>
                         </dl>
                     </li>
-                    <li id="item2" ><a href="javascript:go_menu('sub2_1')" onmouseover="onTopNavi(2, 6);" onfocus="onTopNavi(2, 6);" target="_self" ><span class="main-list">Activities</span></a>
+                    <li id="item2" ><a href="/sub/2-1" onmouseover="onTopNavi(2, 6);" onfocus="onTopNavi(2, 6);" target="_self" ><span class="main-list">Activities</span></a>
                         <dl id="m2">
-                            <dd id="item21"><a href="javascript:go_menu('sub2_1')" ><span class="sub-list">Academic Activity</span></a></dd>
-                            <dd id="item22"><a href="javascript:go_menu('sub2_2')" ><span class="sub-list">Voluntary Service</span></a></dd>
-                            <dd id="item23"><a href="javascript:go_menu('sub2_3')" ><span class="sub-list">Public Relation</span></a></dd>
-                            <dd id="item24"><a href="javascript:go_menu('sub2_4')" ><span class="sub-list">Leadership</span></a></dd>
-                            <dd id="item25"><a href="javascript:go_menu('sub2_5')" ><span class="sub-list">History</span></a></dd>
+                            <dd id="item21"><a href="/sub/2-1" ><span class="sub-list">Academic Activity</span></a></dd>
+                            <dd id="item22"><a href="/sub/2-2" ><span class="sub-list">Voluntary Service</span></a></dd>
+                            <dd id="item23"><a href="/sub/2-3" ><span class="sub-list">Public Relation</span></a></dd>
+                            <dd id="item24"><a href="/sub/2-4" ><span class="sub-list">Leadership</span></a></dd>
+                            <dd id="item25"><a href="/sub/2-5" ><span class="sub-list">History</span></a></dd>
                         </dl>
                     </li>
-                    <li id="item3" ><a href="javascript:go_menu('sub3_1')" onmouseover="onTopNavi(3, 6);" onfocus="onTopNavi(3, 6);" target="_self" ><span class="main-list">People</span></a></li>
+                    <li id="item3" ><a href="/sub/3-1" onmouseover="onTopNavi(3, 6);" onfocus="onTopNavi(3, 6);" target="_self" ><span class="main-list">People</span></a></li>
                     {% if current_user.member %}
                     <li id="item4" ><a href="/stem" onmouseover="onTopNavi(4, 6);" onfocus="onTopNavi(4, 6);" target="_self" ><span class="main-list">Member Page</span></a>
                     {% else %}
-                    <li id="item4" ><a href="javascript:go_menu('sub4_1')" onmouseover="onTopNavi(4, 6);" onfocus="onTopNavi(4, 6);" target="_self" ><span class="main-list">Join Us</span></a>
+                    <li id="item4" ><a href="/sub/4-1" onmouseover="onTopNavi(4, 6);" onfocus="onTopNavi(4, 6);" target="_self" ><span class="main-list">Join Us</span></a>
                         <dl id="m4">
-                            <dd id="item41"><a href="javascript:go_menu('sub4_1')" ><span class="sub-list">Recruiting</span></a></dd>
-                            <dd id="item42"><a href="javascript:go_menu('sub4_2')" ><span class="sub-list">Cooperation</span></a></dd>
-                            <dd id="item42"><a href="javascript:go_menu('sub4_3')" ><span class="sub-list">Donation</span></a></dd>
+                            <dd id="item41"><a href="/sub/4-1" ><span class="sub-list">Recruiting</span></a></dd>
+                            <dd id="item42"><a href="/sub/4-2" ><span class="sub-list">Cooperation</span></a></dd>
+                            <dd id="item42"><a href="/sub/4-3" ><span class="sub-list">Donation</span></a></dd>
                         </dl>
                     </li>
                     {% endif %}
-                    <li id="item5" ><a href="javascript:go_menu('sub5_1')" onmouseover="onTopNavi(5, 6);" onfocus="onTopNavi(5, 6);" target="_self" ><span class="main-list">Board</span></a>
+                    <li id="item5" ><a href="/sub/5-1" onmouseover="onTopNavi(5, 6);" onfocus="onTopNavi(5, 6);" target="_self" ><span class="main-list">Board</span></a>
                         <dl id="m5">
-                            <dd id="item51"><a href="javascript:go_menu('sub5_1')" ><span class="sub-list">Notice</span></a></dd>
-                            <dd id="item52"><a href="javascript:go_menu('sub5_2')" ><span class="sub-list">Q &amp; A</span></a></dd>
-                            <dd id="item54"><a href="javascript:go_menu('sub5_4')" ><span class="sub-list">자유게시판</span></a></dd>
+                            <dd id="item51"><a href="/sub/5-1" ><span class="sub-list">Notice</span></a></dd>
+                            <dd id="item52"><a href="/sub/5-2" ><span class="sub-list">Q &amp; A</span></a></dd>
+                            <dd id="item54"><a href="/sub/5-4" ><span class="sub-list">자유게시판</span></a></dd>
                             {% if current_user.member %}
-                            <dd id="item55"><a href="javascript:go_menu('sub5_5')"><span class="sub-list">STEM 회원게시판</span></a></dd>
+                            <dd id="item55"><a href="/sub/5-5"><span class="sub-list">STEM 회원게시판</span></a></dd>
                             {% endif %}
                         </dl>
                     </li>

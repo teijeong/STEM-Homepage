@@ -53,7 +53,7 @@ def Generate(member):
             message += '외 %d명' % (len(members)-2)
         task = models.Task.query.get(k)
         if task:
-            message += '이 %s 업무를 수정했습니다.' % task.to_string()
+            message += '이 [%s] 업무를 수정했습니다.' % task.to_string()
         else:
             continue
         descriptions.append(NotificationDescription(message, task_time[k],'fa-gear'))
@@ -64,11 +64,11 @@ def Generate(member):
             message += '외 %d명' % (len(members)-2)
         task = models.Task.query.get(k)
         if task:
-            message += '이 %s 업무에 댓글을 달았습니다.' % task.to_string()
+            message += '이 [%s] 업무에 댓글을 달았습니다.' % task.to_string()
         else:
             continue
         descriptions.append(NotificationDescription(message, task_time[k],'fa-comments'))
-    return descriptions
+    return sorted(descriptions, key=lambda noti: noti.timestamp)
 
 class NotificationDescription:
     icon = ''
@@ -76,7 +76,10 @@ class NotificationDescription:
     def __init__(self, message, timestamp=datetime.now(), icon=''):
         self.icon = icon
         self.message = message
-        if type(timestamp) == type(datetime):
-            self.timestamp = timestamp.timestamp()
-        else:
+        if type(timestamp) == float:
             self.timestamp = timestamp
+        else:
+            self.timestamp = timestamp.timestamp()
+
+    def __repr__(self):
+        return self.message
