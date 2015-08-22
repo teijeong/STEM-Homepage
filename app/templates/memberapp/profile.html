@@ -1,0 +1,80 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+<section class="content-header">
+  <h1>
+    {{profile_member.user.nickname}}
+    <small>{{profile_member.cycle}}기 {{profile_member.stem_department.name}}, {{profile_member.department.name}}</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="/stem"><i class="fa fa-user"></i> Home</a></li>
+    <li><a href="/stem/people">Member</a></li>
+    <li class="active">[{{profile_member.cycle}}] {{profile_member.user.nickname}}</li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="box">
+<div class="box-header with-border">
+  <h3 class="box-title">프로필
+  </h3>
+</div><!-- /.box-header -->
+
+<div class="box-body">
+  <div class="row">
+  </div>
+
+  <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
+    <div id="member-comment">
+      {{profile_member.comment | nl2br}}
+    </div>
+    <hr>
+    <div id="member-cv">
+      {{profile_member.cv | nl2br }}
+    </div>
+  </div>
+</div><!-- /.box-body -->
+
+<div class="box-footer">
+  {#
+  {{ elements.tag_list() }}
+  #}
+</div><!-- box-footer -->
+
+    </div><!-- /.box -->
+</div>
+
+{#{{ elements.comment_form() }}#}
+
+  <!-- row -->
+  <div class="row">
+    <div class="col-md-12">
+      <!-- The time line -->
+      <ul class="timeline">
+      </ul>
+    </div><!-- /.col -->
+  </div><!-- /.row -->
+</section><!-- /.content -->
+{% endblock %}
+
+
+{% block modals %}
+
+{% endblock %}
+
+{% block styles %}
+<link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css" /  >
+{% endblock %}
+
+{% block scripts %}
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+</script>
+
+{% endblock %}

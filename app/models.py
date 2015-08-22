@@ -48,6 +48,11 @@ class User(db.Model):
         except NameError:
             return str(self.id)
 
+member_tag_table = db.Table('member_tags',
+    db.Column('member_id', db.Integer, db.ForeignKey('member.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+)
+
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -69,6 +74,14 @@ class Member(db.Model):
         primaryjoin='Notification.sender_id==Member.id')
     received_notifications = db.relationship('Notification', backref='receiver', lazy='dynamic',
         primaryjoin='Notification.receiver_id==Member.id')
+
+    profile_comments = db.relationship('MemberComment', backref='member', lazy='dynamic',
+        primaryjoin='MemberComment.member_id==Member.id')
+    member_comments = db.relationship('MemberComment', backref='author', lazy='dynamic',
+        primaryjoin='MemberComment.author_id==Member.id')
+
+    tags = db.relationship('Tag', secondary=member_tag_table,
+        backref=db.backref('members', lazy='joined'))
 
     def __repr__(self):
         return '<Member %d>' % self.id
@@ -92,6 +105,22 @@ class Member(db.Model):
             return (self in task.contributors) or (self == task.creator)
         else:
             return False
+
+class MemberComment(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    body = db.Column(db.Unicode(1024))
+    timestamp = db.Column(db.DateTime)
+    member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey('member.id'))
+
+    def __init__(self, member, author, body=''):
+        self.body = body
+        self.timestamp = datetime.datetime.now()
+        self.member = member
+        self.author = author
+
+    def __repr__(self):
+        return '<Comment %r of Member %r>' % (self.id, self.member_id)
 
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -378,7 +407,6 @@ comment_tag_table = db.Table('comment_tags',
     db.Column('comment_id', db.Integer, db.ForeignKey('task_comment.id')),
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
 )
-
 
 class TaskComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

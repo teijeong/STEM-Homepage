@@ -48,7 +48,8 @@ def main():
 
     try:
         return render_template('dashboard.html', member=current_user.member,
-            task_lists=task_lists,nav_id=1)
+            task_lists=task_lists,nav_id=1,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -57,7 +58,47 @@ def main():
 def showPeople():
     try:
         return render_template('memberapp/people.html', member=current_user.member,
-            nav_id=2)
+            nav_id=2,
+            notifications=notification.Generate(current_user.member))
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/people/<int:id>')
+@member_required
+def showMember(id):
+    try:
+        mem = models.Member.query.get(id)
+        if not mem:
+            abort(404)
+        return render_template('memberapp/profile.html', member=current_user.member,
+            profile_member=mem,
+            nav_id=2,
+            notifications=notification.Generate(current_user.member))
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/task/<int:id>')
+@member_required
+def showTask(id):
+    try:
+        task = models.Task.query.get(id)
+        if not task:
+            abort(404)
+        if task.level == 0:
+            return render_template('milestone.html',
+                member=current_user.member,
+                milestone=task,task=task,nav_id=4,
+                notifications=notification.Generate(current_user.member))
+        if task.level == 1:
+            return render_template('issue.html',
+                member=current_user.member,
+                issue=issue,task=issue,nav_id=5,
+                notifications=notification.Generate(current_user.member))
+        if task.level == 2:
+            return render_template('subtask.html',
+                member=current_user.member,
+                task=task,nav_id=5,
+                notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -69,7 +110,8 @@ def showMilestone(id):
         if milestone and milestone.level == 0:
             return render_template('milestone.html',
                 member=current_user.member,
-                milestone=milestone,task=milestone,nav_id=4)
+                milestone=milestone,task=milestone,nav_id=4,
+                notifications=notification.Generate(current_user.member))
         else:
             abort(404)
     except TemplateNotFound:
@@ -82,7 +124,8 @@ def showIssue(id):
         issue = models.Task.query.get(id)
         if issue and issue.level == 1:
             return render_template('issue.html', member=current_user.member,
-                issue=issue,task=issue,nav_id=5)
+                issue=issue,task=issue,nav_id=5,
+                notifications=notification.Generate(current_user.member))
         else:
             abort(404)
     except TemplateNotFound:
@@ -95,7 +138,8 @@ def showSubtask(id):
         task = models.Task.query.get(id)
         if task and task.level == 2:
             return render_template('subtask.html', member=current_user.member,
-                task=task,nav_id=5)
+                task=task,nav_id=5,
+                notifications=notification.Generate(current_user.member))
         else:
             abort(404)
     except TemplateNotFound:
@@ -107,7 +151,8 @@ def showIssues():
     try:
         issues = models.Task.query.filter_by(level=1).all()
         return render_template('issue_list.html', member=current_user.member,
-            issues=issues,nav_id=5)
+            issues=issues,nav_id=5,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -117,7 +162,8 @@ def showMilestones():
     try:
         milestones = models.Task.query.filter_by(level=0).all()
         return render_template('milestone_list.html', member=current_user.member,
-            milestones=milestones,nav_id=4)
+            milestones=milestones,nav_id=4,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -127,7 +173,8 @@ def showSuggestion():
     try:
         return render_template('suggestion.html',
             milestone=models.Task.query.get(0),
-            member=current_user.member,nav_id=3)
+            member=current_user.member,nav_id=3,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -136,7 +183,8 @@ def showSuggestion():
 def showCalendar():
     try:
         return render_template('calendar.html',
-            member=current_user.member,nav_id=6)
+            member=current_user.member,nav_id=6,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -147,7 +195,8 @@ def showTagList():
         tags = models.Tag.query.all()
         return render_template('tag_list.html',
             member=current_user.member,nav_id=7,
-            tags=tags)
+            tags=tags,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 
@@ -161,7 +210,8 @@ def showTag(id):
 
         return render_template('tag.html',
             member=current_user.member,nav_id=7,
-            tag=tag)
+            tag=tag,
+            notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
 

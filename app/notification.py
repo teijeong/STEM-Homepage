@@ -31,10 +31,11 @@ def Generate(member):
             if noti.object_id in member_set:
                 continue
             member_set |= {noti.object_id}
+            link = "/stem/people/%d" % noti.sender.id
             descriptions.append(
                 NotificationDescription(
                     '[%d]기 %s 님의 정보가 수정되었습니다.' % (noti.sender.cycle,noti.sender.user.nickname),
-                    noti.timestamp, 'fa-user'))
+                    noti.timestamp, link, 'fa-user'))
         elif noti.object_type == ObjectType.Task:
             if task_time[noti.object_id] < noti.timestamp.timestamp():
                 task_time[noti.object_id] = noti.timestamp.timestamp()
@@ -56,7 +57,8 @@ def Generate(member):
             message += '이 [%s] 업무를 수정했습니다.' % task.to_string()
         else:
             continue
-        descriptions.append(NotificationDescription(message, task_time[k],'fa-gear'))
+        link = "/stem/task/%d" % task.id
+        descriptions.append(NotificationDescription(message, task_time[k],link,'fa-gear'))
 
     for k, members in task_comment_members.items():
         message = ", ".join(["[%d기] %s" % (m.cycle, m.user.name) for m in list(members)[0:2]]) + '님'
@@ -67,15 +69,18 @@ def Generate(member):
             message += '이 [%s] 업무에 댓글을 달았습니다.' % task.to_string()
         else:
             continue
-        descriptions.append(NotificationDescription(message, task_time[k],'fa-comments'))
+        link = "/stem/task/%d" % task.id
+        descriptions.append(NotificationDescription(message, task_time[k],link,'fa-comments'))
     return sorted(descriptions, key=lambda noti: noti.timestamp)
 
 class NotificationDescription:
     icon = ''
     message = ''
-    def __init__(self, message, timestamp=datetime.now(), icon=''):
+    link = ''
+    def __init__(self, message, timestamp=datetime.now(), link='', icon=''):
         self.icon = icon
         self.message = message
+        self.link = link
         if type(timestamp) == float:
             self.timestamp = timestamp
         else:
