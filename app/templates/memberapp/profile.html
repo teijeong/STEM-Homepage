@@ -27,7 +27,7 @@
   <div class="row">
   </div>
 
-  <div style="margin:5px;min-height:80px;padding-bottom:50px;position:relative;">
+  <div style="margin:5px;min-height:80px;position:relative;">
     <div id="member-comment">
       {{profile_member.comment | nl2br}}
     </div>
@@ -42,6 +42,10 @@
   {#
   {{ elements.tag_list() }}
   #}
+  <i class="fa fa-birthday-cake"></i> {{profile_member.birthday.strftime("%Y.%m.%d")}}<br>
+  <i class="fa fa-facebook-square"></i> <a href="{{profile_member.social}}">{{profile_member.social.split('://')[1]}}</a><br>
+  <i class="fa fa-envelope"></i> <a href="mailto:{{profile_member.user.email}}">{{profile_member.user.email}}</a><br>
+  <i class="fa fa-phone"></i> {{profile_member.phone}}
 </div><!-- box-footer -->
 
     </div><!-- /.box -->
