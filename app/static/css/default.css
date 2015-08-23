@@ -2,7 +2,7 @@
 /* devel-designer Taehee Jeong */
 * {font-family:"NanumGothic", "Gothic", "Arial", "Helvetica";}
 .command-elem {cursor:pointer;color: #777;}
-.title .comment-count {font-weight:bold;color:#ffac7d;}
+.comment-count {font-weight:bold;color:#ffac7d;}
 
 .m_notice_img {width:240px;}
 .boards * {box-sizing: border-box;}
