@@ -75,8 +75,24 @@
 </form>
 
 <div style="float:left; padding: 10px 0;">
-    <button class="button1" onclick="javascript:viewPost({{ post.prev }})">이전글</button>&nbsp;
-    <button class="button1" onclick="javascript:viewPost({{ post.next }})">다음글</button>
+    {% if prev %}
+        <a href="/post/{{prev.id}}/view"><i class="fa fa-caret-up"></i> {{prev.title}}
+        {% if prev.files %}
+            <i class="fa fa-paperclip"></i>
+        {% endif %}
+        {% if prev.commentCount > 0 %}
+            <span class="comment-count">[{{prev.commentCount}}]</span>
+        {% endif %}</a><br>
+    {% endif %}
+    {% if next %}
+        <a href="/post/{{next.id}}/view"><i class="fa fa-caret-down"></i> {{next.title}}
+        {% if next.files %}
+            <i class="fa fa-paperclip"></i>
+        {% endif %}
+        {% if next.commentCount > 0 %}
+            <span class="comment-count">[{{next.commentCount}}]</span>
+        {% endif %}</a><br>
+    {% endif %}
 </div>
 
 <div style="float:right; padding: 10px 0;">
@@ -143,7 +159,7 @@ function submitComment() {
                     data.author.nickname + "<small>" + time.format('YYYY-MM-DD HH:mm') +
                     "</small> <i onclick='deleteComment(" + data.id + ")'" +
                     "class='fa fa-times command-elem'></i></h3>" +
-                    "<div class='comment-body'>" + data.body + "</div></li>";
+                    "<div class='comment-body'>" + data.body.replace(/\n/g,'<br>') + "</div></li>";
 
                     $("#comments").append(text);
                     $("comment-text").val("");

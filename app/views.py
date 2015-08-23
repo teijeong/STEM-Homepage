@@ -127,8 +127,14 @@ def viewPost(id):
     post.hitCount = post.hitCount + 1
     board = models.Board.query.get(post.board_id)
     db.session.commit()
+    prev = models.Post.query.filter(
+        and_(models.Post.id < id, models.Post.board_id == post.board_id)). \
+        order_by(models.Post.timestamp.desc()).first()
+    next = models.Post.query.filter(
+        and_(models.Post.id > id, models.Post.board_id == post.board_id)). \
+        order_by(models.Post.timestamp.asc()).first()
     return render_template('sub5.html', mNum=5, sNum=post.board_id,
-        mode='view', post=post, board=board,
+        mode='view', post=post, board=board, prev=prev, next=next,
         form=LoginForm())
 
 
