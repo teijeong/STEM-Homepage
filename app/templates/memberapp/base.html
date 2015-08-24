@@ -252,6 +252,7 @@
             <li><a href="/stem/issue"><i class='fa fa-list-ul'></i> <span>일거리</span></a></li>
             <li><a href="/stem/calendar"><i class='fa fa-calendar'></i> <span>달력</span></a></li>
             <li><a href="/stem/tag"><i class='fa fa-tag'></i> <span>태그검색</span></a></li>
+            <li><a href="/stem/board"><i class='fa fa-list-ul'></i> <span>게시판</span></a></li>
             <li class="treeview">
               <a href="#"><i class='fa fa-flask'></i> <span>Created by</span> <i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
@@ -380,6 +381,10 @@
 
 $(".sidebar-menu li:nth-child({{(nav_id or 0)+1}})").addClass("active");
 
+$(".date").each(function() {
+    var timestamp = moment.utc($(this).attr('data-timestamp')*1000);
+    $(this).text(timestamp.local().format($(this).attr('data-time-format')));
+});
 </script>
 {% block scripts %}
     {% endblock %}

@@ -120,7 +120,7 @@ def showHistory(sub, page):
 @app.route('/post/<int:id>/view')
 def viewPost(id):
     post = models.Post.query.get(id)
-    if not post:
+    if not post or not post.board:
         return abort(404)
     if post.board_id == 5 and not current_user.member:
         return abort(404)

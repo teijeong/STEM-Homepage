@@ -139,6 +139,11 @@ class StemDepartment(db.Model):
     def __repr__(self):
         return '<SD %r>' % self.name
 
+post_tag_table = db.Table('post_tags',
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
+)
+
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer)
@@ -151,6 +156,9 @@ class Post(db.Model):
     board_id = db.Column(db.Integer, db.ForeignKey('board.id'))
     files = db.relationship('File', backref='post', lazy='joined')
     comments = db.relationship('Comment', backref='post', lazy='joined')
+
+    tags = db.relationship('Tag', secondary=post_tag_table,
+        backref=db.backref('posts', lazy='joined'))
 
     def __init__(self, level=0, title='', body='', userid=0, boardid=0):
         self.level = level
@@ -437,9 +445,11 @@ class TaskComment(db.Model):
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.Unicode(64))
+    special = db.Column(db.Integer)
 
-    def __init__(self, title=''):
+    def __init__(self, title='', special=0):
         self.title = title
+        self.special = special
 
     def __repr__(self):
         return '<Tag %r>' % self.title
