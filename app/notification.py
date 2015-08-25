@@ -5,19 +5,22 @@ import re
 from datetime import datetime, timedelta
 from collections import defaultdict
 
+
 def Push(sender, receivers, target, verb, message=""):
     for receiver in receivers:
         if receiver == sender:
             continue
-        noti = models.Notification(sender,receiver,
-           target,verb,message)
+        noti = models.Notification(sender, receiver,
+                                   target, verb, message)
         db.session.add(noti)
     db.session.commit()
 
+
 def Generate(member):
     limit = datetime.now() - timedelta(days=7)
-    notifications = models.Notification.query.filter_by(receiver=member) \
-        .filter(models.Notification.timestamp > limit).all()
+    query = models.Notification.query
+    notifications = query.filter_by(receiver=member) \
+                         .filter(models.Notification.timestamp > limit).all()
 
     descriptions = []
     member_set = set()
@@ -34,7 +37,8 @@ def Generate(member):
             link = "/stem/people/%d" % noti.sender.id
             descriptions.append(
                 NotificationDescription(
-                    '[%d]기 %s 님의 정보가 수정되었습니다.' % (noti.sender.cycle,noti.sender.user.nickname),
+                    '[%d]기 %s 님의 정보가 수정되었습니다.' %
+                    (noti.sender.cycle, noti.sender.user.nickname),
                     noti.timestamp, link, 'fa-user'))
         elif noti.object_type == ObjectType.Task:
             if task_time[noti.object_id] < noti.timestamp.timestamp():
@@ -49,7 +53,8 @@ def Generate(member):
             task_comment_members[comment.task.id] |= {noti.sender}
 
     for k, members in task_members.items():
-        message = ", ".join(["[%d기] %s" % (m.cycle, m.user.nickname) for m in list(members)[0:2]]) + '님'
+        message = ", ".join(["[%d기] %s" % (m.cycle, m.user.nickname)
+                            for m in list(members)[0:2]]) + '님'
         if (len(members) > 2):
             message += '외 %d명' % (len(members)-2)
         task = models.Task.query.get(k)
@@ -58,10 +63,12 @@ def Generate(member):
         else:
             continue
         link = "/stem/task/%d" % task.id
-        descriptions.append(NotificationDescription(message, task_time[k],link,'fa-gear'))
+        descriptions.append(
+            NotificationDescription(message, task_time[k], link, 'fa-gear'))
 
     for k, members in task_comment_members.items():
-        message = ", ".join(["[%d기] %s" % (m.cycle, m.user.name) for m in list(members)[0:2]]) + '님'
+        message = ", ".join(["[%d기] %s" % (m.cycle, m.user.name)
+                            for m in list(members)[0:2]]) + '님'
         if (len(members) > 2):
             message += '외 %d명' % (len(members)-2)
         task = models.Task.query.get(k)
@@ -70,13 +77,17 @@ def Generate(member):
         else:
             continue
         link = "/stem/task/%d" % task.id
-        descriptions.append(NotificationDescription(message, task_time[k],link,'fa-comments'))
+        descriptions.append(
+            NotificationDescription(message, task_time[k], link,
+                                    'fa-comments'))
     return sorted(descriptions, key=lambda noti: noti.timestamp)
+
 
 class NotificationDescription:
     icon = ''
     message = ''
     link = ''
+
     def __init__(self, message, timestamp=datetime.now(), link='', icon=''):
         self.icon = icon
         self.message = message

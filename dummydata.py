@@ -2,7 +2,7 @@
 from app import db
 from app import models
 
-user = models.User('user' ,'1234', 'nickname', 1, 'user@stem.kr')
+user = models.User('user', '1234', 'nickname', 1, 'user@stem.kr')
 board1 = models.Board('Notice', 'notice')
 board1.id = 1
 board2 = models.Board('Q&A', 'questions and answers')
