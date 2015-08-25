@@ -57,10 +57,10 @@ class LoginForm(RedirectForm):
 
         user = models.User.query.filter_by(username=self.userid.data).first()
         if user is None:
-            self.userid.errors.append('Unknown user')
+            self.userid.errors.append('존재하지 않는 사용자입니다.')
             return False
         if user.password != self.password.data:
-            self.passwd.errors.append('Incorrect password')
+            self.password.errors.append('잘못된 암호입니다.')
             return False
 
         if self.next.data == "":
@@ -71,7 +71,7 @@ class LoginForm(RedirectForm):
 class RegisterForm(RedirectForm):
     name = TextField('Name')
     userid = TextField('ID')
-    password = PasswordField('PW')
+    passwd = PasswordField('PW')
     email = TextField('E-mail')
     user = None
 
@@ -87,7 +87,7 @@ class RegisterForm(RedirectForm):
 
         self.userid.data = self.userid.data.strip()
         self.name.data = self.name.data.strip()
-        self.password.data = self.password.data.strip()
+        self.passwd.data = self.passwd.data.strip()
         self.email.data = self.email.data.strip()
 
         member = None
@@ -102,7 +102,7 @@ class RegisterForm(RedirectForm):
             self.userid.errors.append('Duplicate')
             return False
         
-        user = models.User(self.userid.data, self.password.data,
+        user = models.User(self.userid.data, self.passwd.data,
             self.name.data, self.email.data)
         if member:
             user.member = member

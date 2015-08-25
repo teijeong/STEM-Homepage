@@ -59,6 +59,12 @@ form button {
                     <div style="float:left">
                         <button type="submit" class="btn_login" tabindex="3" onclick='mainLoginSend(login);'>로그인</button>
                     </div>
+                    {% if form.userid.errors | length > 0 %}
+                    <script>alert("{{form.userid.errors[0]}}");</script>
+                    {% endif %}
+                    {% if form.password.errors | length > 0 %}
+                    <script>alert("{{form.password.errors[0]}}");</script>
+                    {% endif %}
                 </div>
                 <div>
                     <button type="button" class="btn_mid" onclick="location.href='{{ url_for('register') }}'">회원가입</button>
