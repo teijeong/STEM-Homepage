@@ -71,7 +71,7 @@ class LoginForm(RedirectForm):
 class RegisterForm(RedirectForm):
     name = TextField('Name')
     userid = TextField('ID')
-    passwd = PasswordField('PW')
+    password = PasswordField('PW')
     email = TextField('E-mail')
     user = None
 
@@ -87,7 +87,7 @@ class RegisterForm(RedirectForm):
 
         self.userid.data = self.userid.data.strip()
         self.name.data = self.name.data.strip()
-        self.passwd.data = self.passwd.data.strip()
+        self.password.data = self.password.data.strip()
         self.email.data = self.email.data.strip()
 
         member = None
@@ -102,7 +102,7 @@ class RegisterForm(RedirectForm):
             self.userid.errors.append('Duplicate')
             return False
         
-        user = models.User(self.userid.data, self.passwd.data,
+        user = models.User(self.userid.data, self.password.data,
             self.name.data, self.email.data)
         if member:
             user.member = member
