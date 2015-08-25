@@ -119,13 +119,15 @@ class ModifyForm(RedirectForm):
     passwd_original = PasswordField('PW-original')
     email = TextField('E-mail')
     user = current_user
+    errors = []
 
     def validate(self):
         rv = Form.validate(self)
         if not rv:
             return False
-
+        self.errors = []
         if self.user.password != self.passwd_original.data:
+            self.errors.append("비밀번호가 맞지 않습니다.")
             return False
 
         if self.passwd.data != '':

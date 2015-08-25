@@ -181,16 +181,19 @@ def register():
 def modify():
     if current_user.member:
         form = ModifyMemberForm()
-        if form.validate_on_submit():
-            return form.redirect()
         departments = models.Department.query.all()
         stem_departments = models.StemDepartment.query.all()
+        if form.validate_on_submit():
+            return render_template('member/modify.html', form=form,
+                departments=departments, stem_departments=stem_departments,
+                message='수정이 완료되었습니다.')
         return render_template('member/modify.html', form=form,
             departments=departments, stem_departments=stem_departments)
     else:
         form = ModifyForm()
         if form.validate_on_submit():
-            return form.redirect('/')
+            return render_template('member/modify.html', form=form,
+                message='수정이 완료되었습니다.')
         return render_template('member/modify.html', form=form)
 
 @app.route('/logout')
