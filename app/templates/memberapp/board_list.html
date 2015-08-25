@@ -2,12 +2,12 @@
 {% block content %}
  <section class="content-header">
   <h1>
-    태그 검색
-    <small>태그를 클릭하면 해당 태그 아래의 게시물들이 보입니다.</small>
+    게시판 검색
+    <small>태그를 클릭하면 해당 게시판의 게시물들이 보입니다.</small>
   </h1>
   <ol class="breadcrumb">
-    <li><a href="/stem"><i class="fa fa-tag"></i> Home</a></li>
-    <li class="active">Tags</li>
+    <li><a href="/stem"><i class="fa fa-list-ul"></i> Home</a></li>
+    <li class="active">Boards</li>
   </ol>
 </section>
 
@@ -16,7 +16,9 @@
   <div class="row">
     <div class="col-sm-12">
       {% for tag in tags %}
-      <a href="/stem/tag/{{tag.id}}"><span class="label bg-orange badge-tag" data-tag-id="{{tag.id}}">#{{tag.title}}</span></a>
+      {% if tag.special % 2 == 1 %}
+      <a href="/stem/board/{{tag.id}}"><span class="label bg-orange badge-tag" data-tag-id="{{tag.id}}">#{{tag.title}}</span></a>
+      {% endif %}
       {% endfor %}
     </div>
   </div>

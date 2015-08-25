@@ -75,22 +75,22 @@
 </form>
 
 <div style="float:left; padding: 10px 0;">
-    {% if prev %}
-        <a href="/post/{{prev.id}}/view"><i class="fa fa-caret-up"></i> {{prev.title}}
-        {% if prev.files %}
-            <i class="fa fa-paperclip"></i>
-        {% endif %}
-        {% if prev.commentCount > 0 %}
-            <span class="comment-count">[{{prev.commentCount}}]</span>
-        {% endif %}</a><br>
-    {% endif %}
     {% if next %}
-        <a href="/post/{{next.id}}/view"><i class="fa fa-caret-down"></i> {{next.title}}
+        <a href="/post/{{next.id}}/view"><i class="fa fa-caret-up"></i> {{next.title}}
         {% if next.files %}
             <i class="fa fa-paperclip"></i>
         {% endif %}
         {% if next.commentCount > 0 %}
             <span class="comment-count">[{{next.commentCount}}]</span>
+        {% endif %}</a><br>
+    {% endif %}
+    {% if prev %}
+        <a href="/post/{{prev.id}}/view"><i class="fa fa-caret-down"></i> {{prev.title}}
+        {% if prev.files %}
+            <i class="fa fa-paperclip"></i>
+        {% endif %}
+        {% if prev.commentCount > 0 %}
+            <span class="comment-count">[{{prev.commentCount}}]</span>
         {% endif %}</a><br>
     {% endif %}
 </div>

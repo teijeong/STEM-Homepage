@@ -133,7 +133,7 @@ def showHistory(sub, page):
 @app.route('/post/<int:id>/view')
 def viewPost(id):
     post = models.Post.query.get(id)
-    if not post:
+    if not post or not post.board:
         return abort(404)
     if post.board_id == 5 and not current_user.member:
         return abort(404)
@@ -195,17 +195,23 @@ def register():
 def modify():
     if current_user.member:
         form = ModifyMemberForm()
-        if form.validate_on_submit():
-            return form.redirect()
         departments = models.Department.query.all()
         stem_departments = models.StemDepartment.query.all()
-        return render_template('member/modify.html', form=form,
-                               departments=departments,
-                               stem_departments=stem_departments)
+        if form.validate_on_submit():
+            return render_template(
+                'member/modify.html', form=form,
+                departments=departments, stem_departments=stem_departments,
+                message='수정이 완료되었습니다.')
+        return render_template(
+            'member/modify.html', form=form,
+            departments=departments,
+            stem_departments=stem_departments)
     else:
         form = ModifyForm()
         if form.validate_on_submit():
-            return form.redirect('/')
+            return render_template(
+                'member/modify.html', form=form,
+                message='수정이 완료되었습니다.')
         return render_template('member/modify.html', form=form)
 
 

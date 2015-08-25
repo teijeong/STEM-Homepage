@@ -128,8 +128,7 @@ function autoGrow (oField) {
     </tr>
     <tr>
         <th scope="row">자기소개<br>(STEM 내부용)</th>
-        <td style="padding:5px 0 5px 10px;"><textarea onkeyup="autoGrow(this);" style="width:98%;overflow:hidden;" class="input" rows="5" name="comment">{% if current_user.member.comment and  current_user.member.comment != '' %}{{ current_user.member.comment }}
-{% else %}Example)
+        <td style="padding:5px 0 5px 10px;"><textarea onkeyup="autoGrow(this);" style="width:98%;overflow:hidden;" class="input" rows="5" name="comment">{% if current_user.member.comment and current_user.member.comment != '' %}{{ current_user.member.comment }}{% else %}Example)
 학번
 주량/술버릇
 최근의 경력사항
@@ -196,6 +195,7 @@ STEM에게 하고 싶은 말
 
 {% block scripts %}
 <script type="text/javascript">
+
 (function( factory ) {
     if ( typeof define === "function" && define.amd ) {
 
@@ -233,5 +233,13 @@ $("#birthday").datepicker({
     dateFormat:"yy-mm-dd"
 });
 $("#birthday").datepicker("option",$.datepicker.regional['ko-KR']);
+$("textarea").each(function() {autoGrow(this);});
+
+{% if form.errors != [] %}
+alert("{% for err in form.errors %}{{err}}\n{% endfor %}");
+{% endif %}
+{% if message %}
+alert("{{message}}");
+{% endif %}
 </script>
 {% endblock %}

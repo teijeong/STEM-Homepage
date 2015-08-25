@@ -1,0 +1,75 @@
+{% extends "memberapp/base.html" %}
+{% import "task_elements.html" as elements with context %}
+{% block content %}
+ <section class="content-header">
+  <h1>
+    {{tag.title}}
+    <small>{{tag.posts | length}}개의 글이 있습니다.</small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="/stem"><i class="fa fa-list-ul"></i> Home</a></li>
+    <li class="active">Board</li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-body">
+                <table id="posts" class="table table-bordered">
+                    <thead>
+                        <tr>
+                        <th style="width:40px;">#</th>
+                        <th>제목</th>
+                        <th style="width:80px;">작성자</th>
+                        <th style="width:80px;">일시</th>
+                        <th style="width:60px;">조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                        <tr>
+                            <td>{{post.id}}</td>
+                            <td>{{post.title}}
+                                {% if post.files %}
+                                <i class="fa fa-paperclip"></i>
+                                {% endif %}
+                                {% if post.commentCount > 0 %}
+                                <span class="comment-count">[{{post.commentCount}}]</span>
+                                {% endif %}
+                            </td>
+                            <td>{{post.author.nickname}}</td>
+                            <td class="date" data-time-format="YY-MM-DD" data-timestamp="{{post.timestamp.timestamp()}}"></td>
+                            <td>{{post.hitCount}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                <div class="box-footer">
+                    <a class="btn btn-primary" href="{{tag.id}}/write">쓰기</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section><!-- /.content -->
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block styles %}
+    <link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+</script>
+{% endblock %}

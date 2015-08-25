@@ -65,10 +65,10 @@ class LoginForm(RedirectForm):
 
         user = models.User.query.filter_by(username=self.userid.data).first()
         if user is None:
-            self.userid.errors.append('Unknown user')
+            self.userid.errors.append('존재하지 않는 사용자입니다.')
             return False
         if user.password != self.password.data:
-            self.passwd.errors.append('Incorrect password')
+            self.password.errors.append('잘못된 암호입니다.')
             return False
 
         if self.next.data == "":
@@ -128,13 +128,15 @@ class ModifyForm(RedirectForm):
     passwd_original = PasswordField('PW-original')
     email = TextField('E-mail')
     user = current_user
+    errors = []
 
     def validate(self):
         rv = Form.validate(self)
         if not rv:
             return False
-
+        self.errors = []
         if self.user.password != self.passwd_original.data:
+            self.errors.append("비밀번호가 맞지 않습니다.")
             return False
 
         if self.passwd.data != '':

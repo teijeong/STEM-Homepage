@@ -238,6 +238,54 @@ def showTag(id):
         abort(404)
 
 
+@member_app.route('/board')
+@member_required
+def showBoardList():
+    try:
+        tags = models.Tag.query.filter_by(special=1).all()
+        return render_template(
+            'board_list.html',
+            member=current_user.member, nav_id=8, tags=tags,
+            notifications=notification.Generate(current_user.member))
+    except TemplateNotFound:
+        abort(404)
+
+
+@member_app.route('/board/<int:tag_id>')
+@member_required
+def showBoard(tag_id):
+    try:
+        tag = models.Tag.query.get(tag_id)
+        if not tag:
+            abort(404)
+
+        posts = tag.posts
+
+        return render_template(
+            'post_list.html', member=current_user.member, nav_id=8,
+            tag=tag, posts=posts,
+            notifications=notification.Generate(current_user.member))
+    except TemplateNotFound:
+        abort(404)
+
+
+@member_app.route('/board/<int:tag_id>/write')
+@member_required
+def writePost(tag_id):
+    try:
+        tag = models.Tag.query.get(tag_id)
+        if not tag:
+            abort(404)
+
+        return render_template(
+            'post_write.html',
+            member=current_user.member, nav_id=8, tag=tag,
+            notifications=notification.Generate(current_user.member))
+
+    except TemplateNotFound:
+        abort(404)
+
+
 simple_task_fields = {
     'id': fields.Integer,
     'local_id': fields.Integer,

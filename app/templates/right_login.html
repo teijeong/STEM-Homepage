@@ -16,6 +16,12 @@
             <input name="userid" maxlength='15' type=text class="input1" style="width:135px; height:13px;" tabindex="1" onkeydown="mainLoginInputSendit(login);"><br/>
             <input name="password" maxlength='50' type="password" class="input1" style="width:135px; height:13px;" tabindex="2" onkeydown="mainLoginInputSendit(login);">
         </dt>
+        {% if form.userid.errors | length > 0 %}
+        <script>alert("{{form.userid.errors[0]}}");</script>
+        {% endif %}
+        {% if form.password.errors | length > 0 %}
+        <script>alert("{{form.password.errors[0]}}");</script>
+        {% endif %}
         <dd><input type="button" value="LOGIN" class="m_login_btn" onclick="mainLoginSend(login);" style='cursor:pointer;' /></dd>
     </dl>
     </form>

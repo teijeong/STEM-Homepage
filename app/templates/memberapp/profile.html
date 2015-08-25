@@ -16,8 +16,41 @@
 <section class="content">
 
 <div class="row">
-    <div class="col-md-12">
-        <div class="box">
+  <div class="col-xs-12 col-md-4" style="height:340px;">
+    <style>
+    .card-photo {height: 200px;max-width: 423px;overflow: hidden;position: relative;margin:30px auto;}
+    .card-photo img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      height: auto;
+      width: auto;
+      -webkit-transform: translate(-50%,-50%);
+          -ms-transform: translate(-50%,-50%);
+              transform: translate(-50%,-50%);}
+    .profile-photo {height: 140px;width: 140px;border-radius: 140px;overflow: hidden;border: 3px solid #CCC;
+      position: relative;margin:10px auto;top:-90px;background-color:#fff}
+    .profile-photo img {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      height: 100%;
+      width: auto;
+      -webkit-transform: translate(-50%,-50%);
+          -ms-transform: translate(-50%,-50%);
+              transform: translate(-50%,-50%);
+    }
+    </style>
+    <div class="card-photo">
+      <img src="/static/upload/{{ profile_member.cover or 'cover/cover_default.gif'}}">
+    </div>
+    <div class="profile-photo">
+      <img src="/static/upload/{{ profile_member.img or 'profile/default.png'}}">
+    </div>
+  </div>
+  <div class="col-xs-12 col-md-8">
+    <div class="box">
+
 <div class="box-header with-border">
   <h3 class="box-title">프로필
   </h3>
@@ -42,8 +75,12 @@
   {#
   {{ elements.tag_list() }}
   #}
+  {% if profile_member.birthday %}
   <i class="fa fa-birthday-cake"></i> {{profile_member.birthday.strftime("%Y.%m.%d")}}<br>
+  {% endif %}
+  {% if profile_member.social %}
   <i class="fa fa-facebook-square"></i> <a href="{{profile_member.social}}">{{profile_member.social.split('://')[1]}}</a><br>
+  {% endif %}
   <i class="fa fa-envelope"></i> <a href="mailto:{{profile_member.user.email}}">{{profile_member.user.email}}</a><br>
   <i class="fa fa-phone"></i> {{profile_member.phone}}
 </div><!-- box-footer -->
