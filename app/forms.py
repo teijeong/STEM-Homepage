@@ -1,21 +1,26 @@
 #-*- coding: utf-8 -*-
-
 import os
-from flask.ext.wtf import Form
-from wtforms import IntegerField, TextField, PasswordField, HiddenField, validators
-from flask_wtf.file import FileField, FileAllowed
-from app import app, models, db, notification
+
+import datetime import datetime
+from flask import redirect, url_for, request
 from flask.ext.login import current_user
-from datetime import datetime
+from flask.ext.wtf import Form
+from flask_wtf.file import FileField, FileAllowed
+
+from wtforms import IntegerField, TextField, PasswordField, HiddenField, \
+    validators
 from werkzeug import secure_filename
 from urllib.parse import urlparse, urljoin
-from flask import redirect, url_for, request
+
+from app import app, models, db, notification
+
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
-    return test_url.scheme in ('http', 'https') and \
-           ref_url.netloc == test_url.netloc
+    return (test_url.scheme in ('http', 'https') and
+            ref_url.netloc == test_url.netloc)
+
 
 def get_redirect_target():
     for target in request.values.get('next'), request.referrer:
@@ -24,11 +29,13 @@ def get_redirect_target():
         if is_safe_url(target):
             return target
 
+
 def redirect_back(endpoint, **values):
     target = request.form['next']
     if not target or not is_safe_url(target):
         target = url_for(endpoint, **values)
     return redirect(target)
+
 
 class RedirectForm(Form):
     next = HiddenField()
@@ -43,6 +50,7 @@ class RedirectForm(Form):
             return redirect(self.next.data)
         target = get_redirect_target()
         return redirect(target or url_for(endpoint, **values))
+
 
 class LoginForm(RedirectForm):
     userid = TextField('ID')
@@ -68,6 +76,7 @@ class LoginForm(RedirectForm):
         self.user = user
         return True
 
+
 class RegisterForm(RedirectForm):
     name = TextField('Name')
     userid = TextField('ID')
@@ -92,8 +101,8 @@ class RegisterForm(RedirectForm):
 
         member = None
         user = models.User.query.filter_by(email=self.email.data).first()
-        if (user and user.username[0:11] == 'stem_member' and \
-            user.member and user.nickname==self.name.data):
+        if user and user.username[0: 11] == 'stem_member' and \
+           user.member and user.nickname == self.name.data:
             member = user.member
             user.member = None
             db.session.delete(user)
@@ -101,18 +110,18 @@ class RegisterForm(RedirectForm):
         elif user:
             self.userid.errors.append('Duplicate')
             return False
-        
+
         user = models.User(self.userid.data, self.passwd.data,
-            self.name.data, self.email.data)
+                           self.name.data, self.email.data)
         if member:
             user.member = member
-
 
         db.session.add(user)
         db.session.commit()
 
         self.user = user
         return True
+
 
 class ModifyForm(RedirectForm):
     passwd = PasswordField('PW')
@@ -144,9 +153,11 @@ class ModifyMemberForm(ModifyForm):
     cycle = IntegerField('Cycle')
     addr = TextField('Address')
     photo = FileField('Photo',
-        validators=[FileAllowed(['png', 'jpg', 'gif'], 'PNG/JPG/GIF file only')])
+                      validators=[FileAllowed(['png', 'jpg', 'gif'],
+                                              'PNG/JPG/GIF file only')])
     cover = FileField('Cover',
-        validators=[FileAllowed(['png', 'jpg', 'gif'], 'PNG/JPG/GIF file only')])
+                      validators=[FileAllowed(['png', 'jpg', 'gif'],
+                                              'PNG/JPG/GIF file only')])
     department = IntegerField('Department')
     stem_department = IntegerField('STEM_Department')
     cv = TextField('CV')
@@ -161,17 +172,18 @@ class ModifyMemberForm(ModifyForm):
         if self.cell.data != '':
             self.user.member.phone = self.cell.data
         if self.birthday.data != '':
-            self.user.member.birthday = datetime.strptime(self.birthday.data, '%Y-%m-%d').date()
+            self.user.member.birthday = datetime.strptime(self.birthday.data,
+                                                          '%Y-%m-%d').date()
 
         if self.photo.data.filename != '':
-            ext = self.photo.data.filename.rsplit('.',1)[1]
+            ext = self.photo.data.filename.rsplit('.', 1)[1]
             filename = 'profile/%d.' % self.user.id + ext
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             self.photo.data.save(file_path)
             self.user.member.img = filename
 
         if self.cover.data.filename != '':
-            ext = self.cover.data.filename.rsplit('.',1)[1]
+            ext = self.cover.data.filename.rsplit('.', 1)[1]
             filename = 'cover/%d.' % self.user.id + ext
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             self.cover.data.save(file_path)
@@ -196,6 +208,6 @@ class ModifyMemberForm(ModifyForm):
         db.session.commit()
 
         notification.Push(self.user.member, models.Member.query.all(),
-            self.user.member, models.NotificationAction.update)
+                          self.user.member, models.NotificationAction.update)
 
         return True

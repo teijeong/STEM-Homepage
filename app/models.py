@@ -1,15 +1,22 @@
 #-*-coding: utf-8 -*-
 from app import db
+
 import datetime
+import uuid
+import math
+import pytz
+import re
+
+from enum import IntEnum
+
 from sqlalchemy_utils import PasswordType, ChoiceType
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.exc import IntegrityError
-import uuid, math, pytz
-from enum import IntEnum
-import re
+
 
 timezone = pytz.timezone('Asia/Seoul')
 utc = pytz.utc
+
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,7 +27,8 @@ class User(db.Model):
     email = db.Column(db.String(120), index=True, unique=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     comments = db.relationship('Comment', backref='author', lazy='dynamic')
-    member = db.relationship('Member', uselist=False, backref='user', lazy='joined')
+    member = db.relationship('Member', uselist=False, backref='user',
+                             lazy='joined')
 
     def __init__(self, username='', password='123456', nickname='', email=''):
         self.username = username
@@ -28,7 +36,6 @@ class User(db.Model):
         self.nickname = nickname
         self.member = None
         self.email = email
-
 
     def __repr__(self):
         return '<User %r>' % self.nickname
@@ -48,10 +55,13 @@ class User(db.Model):
         except NameError:
             return str(self.id)
 
+
 member_tag_table = db.Table('member_tags',
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-)
+                            db.Column('member_id', db.Integer,
+                                      db.ForeignKey('member.id')),
+                            db.Column('tag_id', db.Integer,
+                                      db.ForeignKey('tag.id')))
+
 
 class Member(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -68,20 +78,24 @@ class Member(db.Model):
     addr = db.Column(db.Unicode(512))
     social = db.Column(db.Unicode(256))
     owned_task = db.relationship('Task', backref='creator', lazy='dynamic')
-    task_comments = db.relationship('TaskComment', backref='member',lazy='joined')
+    task_comments = \
+        db.relationship('TaskComment', backref='member', lazy='joined')
+    sent_notifications = \
+        db.relationship('Notification', backref='sender', lazy='dynamic',
+                        primaryjoin='Notification.sender_id==Member.id')
+    received_notifications = \
+        db.relationship('Notification', backref='receiver', lazy='dynamic',
+                        primaryjoin='Notification.receiver_id==Member.id')
 
-    sent_notifications = db.relationship('Notification', backref='sender', lazy='dynamic',
-        primaryjoin='Notification.sender_id==Member.id')
-    received_notifications = db.relationship('Notification', backref='receiver', lazy='dynamic',
-        primaryjoin='Notification.receiver_id==Member.id')
-
-    profile_comments = db.relationship('MemberComment', backref='member', lazy='dynamic',
-        primaryjoin='MemberComment.member_id==Member.id')
-    member_comments = db.relationship('MemberComment', backref='author', lazy='dynamic',
-        primaryjoin='MemberComment.author_id==Member.id')
+    profile_comments = \
+        db.relationship('MemberComment', backref='member', lazy='dynamic',
+                        primaryjoin='MemberComment.member_id==Member.id')
+    member_comments = \
+        db.relationship('MemberComment', backref='author', lazy='dynamic',
+                        primaryjoin='MemberComment.author_id==Member.id')
 
     tags = db.relationship('Tag', secondary=member_tag_table,
-        backref=db.backref('members', lazy='joined'))
+                           backref=db.backref('members', lazy='joined'))
 
     def __repr__(self):
         return '<Member %d>' % self.id
@@ -106,6 +120,7 @@ class Member(db.Model):
         else:
             return False
 
+
 class MemberComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     body = db.Column(db.Unicode(1024))
@@ -122,27 +137,32 @@ class MemberComment(db.Model):
     def __repr__(self):
         return '<Comment %r of Member %r>' % (self.id, self.member_id)
 
+
 class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(100))
     shortName = db.Column(db.Unicode(10))
-    members =  db.relationship('Member', backref='department', lazy='dynamic')
+    members = db.relationship('Member', backref='department', lazy='dynamic')
 
     def __repr__(self):
         return '<D %r>' % self.name
 
+
 class StemDepartment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(40))
-    members =  db.relationship('Member', backref='stem_department', lazy='dynamic')
+    members = db.relationship('Member', backref='stem_department',
+                              lazy='dynamic')
 
     def __repr__(self):
         return '<SD %r>' % self.name
 
-post_tag_table = db.Table('post_tags',
+
+post_tag_table = db.Table(
+    'post_tags',
     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-)
+    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')))
+
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -158,7 +178,7 @@ class Post(db.Model):
     comments = db.relationship('Comment', backref='post', lazy='joined')
 
     tags = db.relationship('Tag', secondary=post_tag_table,
-        backref=db.backref('posts', lazy='joined'))
+                           backref=db.backref('posts', lazy='joined'))
 
     def __init__(self, level=0, title='', body='', userid=0, boardid=0):
         self.level = level
@@ -176,7 +196,7 @@ class Post(db.Model):
         return '<Post %r>' % self.title
 
     @classmethod
-    def historyPost(self, title, startDate, endDate = None):
+    def historyPost(self, title, startDate, endDate=None):
         post = Post(0, title, '', None, 3)
         timezero = datetime.time(tzinfo=utc)
         post.timestamp = datetime.datetime.combine(startDate, timezero)
@@ -213,6 +233,7 @@ class Comment(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
 class Board(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Unicode(80), unique=True)
@@ -225,6 +246,7 @@ class Board(db.Model):
 
     def __repr__(self):
         return '<Board %r>' % self.name
+
 
 class File(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -244,6 +266,7 @@ class File(db.Model):
         elif post.__class__ == TaskComment:
             self.comment = post
 
+
 class Banner(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     src = db.Column(db.Unicode(512))
@@ -260,18 +283,24 @@ class Banner(db.Model):
 
 
 task_task_table = db.Table('task_task_table',
-    db.Column('parent_id', db.Integer, db.ForeignKey('task.id')),
-    db.Column('child_id', db.Integer, db.ForeignKey('task.id'))
-)
+                           db.Column('parent_id', db.Integer,
+                                     db.ForeignKey('task.id')),
+                           db.Column('child_id', db.Integer,
+                                     db.ForeignKey('task.id')))
+
 
 task_member_table = db.Table('task_users',
-    db.Column('task_id', db.Integer, db.ForeignKey('task.id')),
-    db.Column('member_id', db.Integer, db.ForeignKey('member.id'))
-)
+                             db.Column('task_id', db.Integer,
+                                       db.ForeignKey('task.id')),
+                             db.Column('member_id', db.Integer,
+                                       db.ForeignKey('member.id')))
+
+
 task_tag_table = db.Table('task_tags',
-    db.Column('task_id', db.Integer, db.ForeignKey('task.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-)
+                          db.Column('task_id', db.Integer,
+                                    db.ForeignKey('task.id')),
+                          db.Column('tag_id', db.Integer,
+                                    db.ForeignKey('tag.id')))
 
 
 class Task(db.Model):
@@ -282,32 +311,35 @@ class Task(db.Model):
     description = db.Column(db.Unicode(2048))
 
     progress = db.Column(db.Integer)
+
     # 0:trivial, 1:normal, 2:important, 3:blocker
     priority = db.Column(db.Integer)
     secret = db.Column(db.Boolean)
+
     # 0:opened, 1:closed, 2:archived, 3:inactive(not shown in main)
     status = db.Column(db.Integer)
 
     # 0:milestone, 1:issue, 2:subtask
     level = db.Column(db.Integer)
-    children = db.relationship('Task', secondary=task_task_table,
-        primaryjoin=id==task_task_table.c.parent_id,
-        secondaryjoin=id==task_task_table.c.child_id,
-        backref="parents")
+    children = \
+        db.relationship('Task', secondary=task_task_table,
+                        primaryjoin=(id == task_task_table.c.parent_id),
+                        secondaryjoin=(id == task_task_table.c.child_id),
+                        backref="parents")
 
     timestamp = db.Column(db.DateTime)
     deadline = db.Column(db.DateTime)
 
     comments = db.relationship('TaskComment', backref='task', lazy='dynamic')
     tags = db.relationship('Tag', secondary=task_tag_table,
-        backref=db.backref('tasks', lazy='joined'))
+                           backref=db.backref('tasks', lazy='joined'))
     contributors = db.relationship('Member', secondary=task_member_table,
-        backref=db.backref('tasks', lazy='dynamic'))
+                                   backref=db.backref('tasks', lazy='dynamic'))
     creator_id = db.Column(db.Integer, db.ForeignKey('member.id'))
 
-    def __init__(self, level = 0, name='', description='',
-        creator = None, priority = 2, secret = False,
-        deadline = None, parent = None, children = [], status = 0):
+    def __init__(self, level=0, name='', description='',
+                 creator=None, priority=2, secret=False,
+                 deadline=None, parent=None, children=[], status=0):
 
         self.level = level
         self.name = name
@@ -324,14 +356,14 @@ class Task(db.Model):
         self.status = status
 
         if self.level == 0 or self.level == 1:
-            recent_task = Task.query.filter_by(level=level). \
-                order_by(Task.local_id.desc()).first()
+            recent_task = Task.query.filter_by(level=level) \
+                                    .order_by(Task.local_id.desc()).first()
             self.local_id = (recent_task.local_id or 0) + 1
 
         if self.level == 2:
             if parent:
                 subtasks = sorted(parent.children,
-                    key=lambda task: task.local_id, reverse=True)
+                                  key=lambda task: task.local_id, reverse=True)
                 print(subtasks)
                 if len(subtasks) > 0:
                     self.local_id = subtasks[0].local_id + 1
@@ -339,7 +371,7 @@ class Task(db.Model):
                     self.local_id = 1
 
         if parent:
-            self.level = parent.level + 1;
+            self.level = parent.level + 1
             self.parents.append(parent)
 
     def add_parent(self, parent):
@@ -365,13 +397,14 @@ class Task(db.Model):
             if self.level < child.level:
                 child.cascade_down(func, *args, **kwargs)
 
-    def update_progress(self, initial=False):    
+    def update_progress(self, initial=False):
         if not initial:
             if not self.children:
                 self.progress = 0
                 return
 
-            sum = 0;
+            sum = 0
+
             for child_task in self.children:
                 sum += child_task.progress
             self.progress = math.ceil(sum / len(self.children))
@@ -386,9 +419,10 @@ class Task(db.Model):
             return '<#%r %r>' % (self.local_id, self.name)
         elif self.level == 2:
             if self.parents != []:
-                return '<#%r-%r %r>' % (self.parents[0].local_id, self.local_id, self.name)
+                return '<#%r-%r %r>' % (self.parents[0].local_id,
+                                        self.local_id, self.name)
             else:
-                return '<#?-%r %r>' % ( self.local_id, self.name)
+                return '<#?-%r %r>' % (self.local_id, self.name)
         else:
             return '<?#%r %r>' % (self.id, self.name)
 
@@ -411,10 +445,13 @@ class Task(db.Model):
     def all_contributors(self):
         return list(set(self.contributors) | {self.creator})
 
+
 comment_tag_table = db.Table('comment_tags',
-    db.Column('comment_id', db.Integer, db.ForeignKey('task_comment.id')),
-    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'))
-)
+                             db.Column('comment_id', db.Integer,
+                                       db.ForeignKey('task_comment.id')),
+                             db.Column('tag_id', db.Integer,
+                                       db.ForeignKey('tag.id')))
+
 
 class TaskComment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -424,13 +461,13 @@ class TaskComment(db.Model):
     comment_type = db.Column(db.Integer)
     files = db.relationship('File', backref='comment', lazy='joined')
     tags = db.relationship('Tag', secondary=comment_tag_table,
-        backref='task_comments', lazy='dynamic')
+                           backref='task_comments', lazy='dynamic')
 
     member_id = db.Column(db.Integer, db.ForeignKey('member.id'))
     task_id = db.Column(db.Integer, db.ForeignKey('task.id'))
 
     def __init__(self, title='', body='', comment_type=0,
-        member=None, task=None):
+                 member=None, task=None):
 
         self.title = title
         self.body = body
@@ -441,6 +478,7 @@ class TaskComment(db.Model):
 
     def __repr__(self):
         return '<Comment %r for Task #%r>' % (self.id, self.task_id)
+
 
 class Tag(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -454,6 +492,7 @@ class Tag(db.Model):
     def __repr__(self):
         return '<Tag %r>' % self.title
 
+
 class ObjectType(IntEnum):
     User = 1
     Member = 2
@@ -464,10 +503,12 @@ class ObjectType(IntEnum):
     TaskComment = 7
     Tag = 8
 
+
 class NotificationAction(IntEnum):
     create = 1
     update = 2
     delete = 3
+
 
 class Notification(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -501,7 +542,9 @@ class Notification(db.Model):
         self.message = message
 
     def __repr__(self):
-        target = globals()[ObjectType(self.object_type).name].query.get(self.object_id)
+        global_type = globals()[ObjectType(self.object_type).name]
+        target = global_type.query.get(self.object_id)
 
         return "Notification for %r, about %r-%s, sent by %r" % \
-            (self.receiver.user, target, NotificationAction(self.verb).name, self.sender.user)
+            (self.receiver.user, target, NotificationAction(self.verb).name,
+             self.sender.user)

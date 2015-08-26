@@ -2,7 +2,9 @@ from app import app
 import re
 from jinja2 import evalcontextfilter, Markup, escape
 
+
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
+
 
 @app.template_filter('nl2br')
 @evalcontextfilter

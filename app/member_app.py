@@ -1,22 +1,27 @@
-from flask import Blueprint, render_template, abort, current_app, redirect, request
+import os
+import pytz
+import uuid
+
+from flask import Blueprint, render_template, abort, current_app, redirect, \
+    request
 from jinja2 import TemplateNotFound
-from flask.ext.login import login_user, logout_user, current_user, login_required
+from flask.ext.login import login_user, logout_user, current_user, \
+    login_required
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal_with
 from functools import wraps
 
-
 from werkzeug import secure_filename
-import uuid, os
 
 from sqlalchemy import or_, and_, not_
 from datetime import datetime, timedelta
-import pytz
 
 from app import db, models, app, helper, notification
 
+
 member_app = Blueprint('member_app', __name__,
-                        template_folder='templates/memberapp')
+                       template_folder='templates/memberapp')
 api = Api(member_app)
+
 
 def member_required(func):
     @wraps(func)
@@ -31,37 +36,39 @@ def member_required(func):
 @member_app.route('/')
 @member_required
 def main():
-
     member = current_user.member
 
-    task_levels = [0,1,2]
+    task_levels = [0, 1, 2]
     task_lists = []
 
     for level in task_levels:
         task_lists.append(
-            models.Task.query.filter(
-                or_(
-                    models.Task.contributors.contains(member),
-                    models.Task.creator == member)). \
-            filter(models.Task.status != 3).filter_by(level=level).all())
+            models.Task.query
+            .filter(or_(models.Task.contributors.contains(member),
+                        models.Task.creator == member))
+            .filter(models.Task.status != 3)
+            .filter_by(level=level).all())
     task_lists[2] = [t for t in task_lists[2] if t.parents]
 
     try:
-        return render_template('dashboard.html', member=current_user.member,
-            task_lists=task_lists,nav_id=1,
+        return render_template(
+            'dashboard.html', member=current_user.member,
+            task_lists=task_lists, nav_id=1,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/people')
 @member_required
 def showPeople():
     try:
-        return render_template('memberapp/people.html', member=current_user.member,
-            nav_id=2,
+        return render_template(
+            'memberapp/people.html', member=current_user.member, nav_id=2,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/people/<int:id>')
 @member_required
@@ -70,12 +77,13 @@ def showMember(id):
         mem = models.Member.query.get(id)
         if not mem:
             abort(404)
-        return render_template('memberapp/profile.html', member=current_user.member,
-            profile_member=mem,
-            nav_id=2,
+        return render_template(
+            'memberapp/profile.html', member=current_user.member,
+            profile_member=mem, nav_id=2,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/task/<int:id>')
 @member_required
@@ -85,22 +93,23 @@ def showTask(id):
         if not task:
             abort(404)
         if task.level == 0:
-            return render_template('milestone.html',
-                member=current_user.member,
-                milestone=task,task=task,nav_id=4,
+            return render_template(
+                'milestone.html', member=current_user.member,
+                milestone=task, task=task, nav_id=4,
                 notifications=notification.Generate(current_user.member))
         if task.level == 1:
-            return render_template('issue.html',
-                member=current_user.member,
-                issue=issue,task=issue,nav_id=5,
+            return render_template(
+                'issue.html', member=current_user.member,
+                issue=issue, task=issue, nav_id=5,
                 notifications=notification.Generate(current_user.member))
         if task.level == 2:
-            return render_template('subtask.html',
-                member=current_user.member,
-                task=task,nav_id=5,
+            return render_template(
+                'subtask.html', member=current_user.member,
+                task=task, nav_id=5,
                 notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/milestone/<int:id>')
 @member_required
@@ -108,14 +117,16 @@ def showMilestone(id):
     try:
         milestone = models.Task.query.get(id)
         if milestone and milestone.level == 0:
-            return render_template('milestone.html',
+            return render_template(
+                'milestone.html',
                 member=current_user.member,
-                milestone=milestone,task=milestone,nav_id=4,
+                milestone=milestone, task=milestone, nav_id=4,
                 notifications=notification.Generate(current_user.member))
         else:
             abort(404)
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/issue/<int:id>')
 @member_required
@@ -123,13 +134,15 @@ def showIssue(id):
     try:
         issue = models.Task.query.get(id)
         if issue and issue.level == 1:
-            return render_template('issue.html', member=current_user.member,
-                issue=issue,task=issue,nav_id=5,
+            return render_template(
+                'issue.html', member=current_user.member,
+                issue=issue, task=issue, nav_id=5,
                 notifications=notification.Generate(current_user.member))
         else:
             abort(404)
     except TemplateNotFound:
             abort(404)
+
 
 @member_app.route('/subtask/<int:id>')
 @member_required
@@ -137,68 +150,78 @@ def showSubtask(id):
     try:
         task = models.Task.query.get(id)
         if task and task.level == 2:
-            return render_template('subtask.html', member=current_user.member,
-                task=task,nav_id=5,
+            return render_template(
+                'subtask.html', member=current_user.member,
+                task=task, nav_id=5,
                 notifications=notification.Generate(current_user.member))
         else:
             abort(404)
     except TemplateNotFound:
             abort(404)
 
+
 @member_app.route('/issue')
 @member_required
 def showIssues():
     try:
         issues = models.Task.query.filter_by(level=1).all()
-        return render_template('issue_list.html', member=current_user.member,
-            issues=issues,nav_id=5,
+        return render_template(
+            'issue_list.html', member=current_user.member,
+            issues=issues, nav_id=5,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/milestone')
 @member_required
 def showMilestones():
     try:
         milestones = models.Task.query.filter_by(level=0).all()
-        return render_template('milestone_list.html', member=current_user.member,
-            milestones=milestones,nav_id=4,
-            notifications=notification.Generate(current_user.member))
+        return render_template('milestone_list.html',
+                               member=current_user.member,
+                               milestones=milestones, nav_id=4,
+                               notifications=notification.Generate(
+                                   current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/suggestion')
 @member_required
 def showSuggestion():
     try:
-        return render_template('suggestion.html',
+        return render_template(
+            'suggestion.html',
             milestone=models.Task.query.get(0),
-            member=current_user.member,nav_id=3,
+            member=current_user.member, nav_id=3,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/calendar')
 @member_required
 def showCalendar():
     try:
-        return render_template('calendar.html',
-            member=current_user.member,nav_id=6,
+        return render_template(
+            'calendar.html', member=current_user.member, nav_id=6,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/tag')
 @member_required
 def showTagList():
     try:
         tags = models.Tag.query.all()
-        return render_template('tag_list.html',
-            member=current_user.member,nav_id=7,
-            tags=tags,
+        return render_template(
+            'tag_list.html', member=current_user.member, nav_id=7, tags=tags,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/tag/<int:id>')
 @member_required
@@ -208,21 +231,21 @@ def showTag(id):
         if not tag:
             abort(404)
 
-        return render_template('tag.html',
-            member=current_user.member,nav_id=7,
-            tag=tag,
+        return render_template(
+            'tag.html', member=current_user.member, nav_id=7, tag=tag,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/board')
 @member_required
 def showBoardList():
     try:
         tags = models.Tag.query.filter_by(special=1).all()
-        return render_template('board_list.html',
-            member=current_user.member,nav_id=8,
-            tags=tags,
+        return render_template(
+            'board_list.html',
+            member=current_user.member, nav_id=8, tags=tags,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
@@ -238,12 +261,13 @@ def showBoard(tag_id):
 
         posts = tag.posts
 
-        return render_template('post_list.html',
-            member=current_user.member, nav_id=8,
+        return render_template(
+            'post_list.html', member=current_user.member, nav_id=8,
             tag=tag, posts=posts,
             notifications=notification.Generate(current_user.member))
     except TemplateNotFound:
         abort(404)
+
 
 @member_app.route('/board/<int:tag_id>/write')
 @member_required
@@ -253,12 +277,14 @@ def writePost(tag_id):
         if not tag:
             abort(404)
 
-        return render_template('post_write.html',
-            member=current_user.member, nav_id=8,
-            tag=tag,
+        return render_template(
+            'post_write.html',
+            member=current_user.member, nav_id=8, tag=tag,
             notifications=notification.Generate(current_user.member))
+
     except TemplateNotFound:
         abort(404)
+
 
 simple_task_fields = {
     'id': fields.Integer,
@@ -273,11 +299,11 @@ simple_task_fields = {
     'timestamp': fields.DateTime
 }
 
-class Task(Resource):
 
+class Task(Resource):
     taskParser = reqparse.RequestParser()
     taskParser.add_argument('name', type=str, required=True,
-        help='Name is required')
+                            help='Name is required')
     taskParser.add_argument('description', type=str, default='')
     taskParser.add_argument('level', type=int, default=1)
     taskParser.add_argument('priority', type=int, default=1)
@@ -285,11 +311,11 @@ class Task(Resource):
     taskParser.add_argument('contributor_auto', type=bool, default=False)
     taskParser.add_argument('deadline', type=int, default=0)
     taskParser.add_argument('parents[]', type=int, default=[],
-        action='append', dest='parents')
+                            action='append', dest='parents')
     taskParser.add_argument('children[]', type=int, default=[],
-            action='append', dest='children')
+                            action='append', dest='children')
     taskParser.add_argument('contributors[]', type=int, default=[],
-            action='append', dest='contributors')
+                            action='append', dest='contributors')
 
     @member_required
     @marshal_with(simple_task_fields)
@@ -300,13 +326,14 @@ class Task(Resource):
         args['contributors'] = \
             list(set(args['contributors']) - {current_user.member.id})
         parent = None
-        if len(args['parents']) > 0 :
+
+        if len(args['parents']) > 0:
             parent = models.Task.query.get(args['parents'][0])
 
         deadline = datetime.fromtimestamp(args['deadline'])
         task = models.Task(args['level'], args['name'], args['description'],
-            current_user.member, args['priority'], False, deadline,
-            parent, None, args['status'])
+                           current_user.member, args['priority'], False,
+                           deadline, parent, None, args['status'])
 
         comment_text = '%r<br>' % task
 
@@ -324,17 +351,18 @@ class Task(Resource):
                 task.tags.append(tag_data)
                 db.session.add(tag_data)
 
-        priority_text = ['[시간날 때]','[보통]','[중요함]','[급함]']
+        priority_text = ['[시간날 때]', '[보통]', '[중요함]', '[급함]']
         comment_text += '중요도: %s, ' % priority_text[task.priority]
 
         status_text = ['[진행 중]', '[완료]', '[보관됨]', '[제외됨]']
         comment_text += '상태: %s<br>' % status_text[task.status]
 
-        comment_text += '마감일: %s<br>' % task.deadline.strftime('%Y.%m.%d %H:%M')
-
+        comment_text += '마감일: %s<br>' % \
+                        task.deadline.strftime('%Y.%m.%d %H:%M')
 
         if args['parents'] != []:
-            new_tasks = ['#%d %s'%(task.parents[0].local_id, task.parents[0].name)]
+            new_tasks = ['#%d %s' % (task.parents[0].local_id,
+                                     task.parents[0].name)]
 
             for parent_id in args['parents'][1:]:
                 parent = models.Task.query. \
@@ -344,7 +372,7 @@ class Task(Resource):
                 if parent:
                     task.parents.append(parent)
                     parent.update_progress(True)
-                    new_tasks.append('#%d %s'%(parent.local_id, parent.name))
+                    new_tasks.append('#%d %s' % (parent.local_id, parent.name))
 
             if new_tasks != []:
                 if task.level == 1:
@@ -360,23 +388,22 @@ class Task(Resource):
 
                 if child:
                     task.children.append(child)
-                    new_tasks.append('#%d %s'%(child.local_id, child.name))
+                    new_tasks.append('#%d %s' % (child.local_id, child.name))
 
             if new_tasks != []:
                 comment_text += '하위 업무:<br>%s<br>' % (', '.join(new_tasks))
 
-
         if args['contributors'] != []:
-
             new_contributors = [task.creator.user.nickname]
             for memberID in args['contributors']:
                 member = models.Member.query.get(memberID)
                 if member:
                     task.contributors.append(member)
-                    new_contributors.append('%s'%member.user.nickname)
+                    new_contributors.append('%s' % member.user.nickname)
 
             if new_contributors != []:
-                comment_text += '참여자:<br>%s<br>' % (', '.join(new_contributors))
+                comment_text += '참여자:<br>%s<br>' % \
+                                (', '.join(new_contributors))
 
         if args['contributor_auto']:
             members = set()
@@ -393,15 +420,17 @@ class Task(Resource):
                 member = models.Member.query.get(memberID)
                 if member:
                     task.contributors.append(member)
-                    new_contributors.append('%s'%member.user.nickname)
+                    new_contributors.append('%s' % member.user.nickname)
 
             if new_contributors != []:
-                comment_text += '자동 추가된 참여자:<br>%s<br>' % (', '.join(new_contributors))
+                comment_text += '자동 추가된 참여자:<br>%s<br>' % \
+                                (', '.join(new_contributors))
 
         if comment_text != '':
             comment_text = '<blockquote>%s</blockquote>' % comment_text
             modify_comment = models.TaskComment('새 업무가 생성되었습니다.',
-                comment_text, 1, current_user.member, task)
+                                                comment_text, 1,
+                                                current_user.member, task)
             db.session.add(modify_comment)
         db.session.commit()
         return task
@@ -415,16 +444,15 @@ class Task(Resource):
     taskModifyParser.add_argument('progress', type=int, default=-1)
     taskModifyParser.add_argument('deadline', type=int, default=0)
     taskModifyParser.add_argument('parents[]', type=int, default=[-1],
-            action='append', dest='parents')
+                                  action='append', dest='parents')
     taskModifyParser.add_argument('children[]', type=int, default=[-1],
-            action='append', dest='children')
+                                  action='append', dest='children')
     taskModifyParser.add_argument('contributor[]', type=int, default=[-1],
-            action='append', dest='contributor')
-
+                                  action='append', dest='contributor')
 
     @member_required
     @marshal_with(simple_task_fields)
-    def put(self, taskID, args = None):
+    def put(self, taskID, args=None):
         task = models.Task.query.get(taskID)
         if not task:
             return None, 404
@@ -433,10 +461,10 @@ class Task(Resource):
 
         # For non-request updates...
         if not args:
-            if current_user.member != task.creator and not current_user.member in task.contributors:
+            if current_user.member != task.creator and \
+               not current_user.member in task.contributors:
                 return None, 403
             args = self.taskModifyParser.parse_args()
-
 
         if args['name'] != '':
             task.name = args['name']
@@ -467,28 +495,38 @@ class Task(Resource):
 
         if args['priority'] != -1 and args['priority'] != task.priority:
             task.priority = args['priority']
-            priority_text = ['[시간날 때]로','[보통]으로','[중요함]으로','[급함]으로']
+            priority_text = ['[시간날 때]로',
+                             '[보통]으로',
+                             '[중요함]으로',
+                             '[급함]으로']
             comment_text += '중요도가 %s 변경되었습니다.' % priority_text[task.priority]
 
         if args['status'] != -1 and args['status'] != task.status:
-            status_text = ['[진행 중]으로', '[완료]로', '[보관됨]으로', '[제외됨]으로']
+            status_text = ['[진행 중]으로',
+                           '[완료]로',
+                           '[보관됨]으로',
+                           '[제외됨]으로']
             task.status = args['status']
-            comment_text += '상태가 %s 변경되었습니다.' % status_text[task.status]
+            comment_text += '상태가 %s 변경되었습니다.' % \
+                            status_text[task.status]
 
-        if args['deadline'] !=  0:
+        if args['deadline'] != 0:
             if args['deadline'] != int(task.deadline.timestamp()):
                 task.deadline = datetime.fromtimestamp(args['deadline'])
-                comment_text += '마감일이 변경되었습니다: %s' % task.deadline.strftime('%Y.%m.%d %H:%M')
+                comment_text += '마감일이 변경되었습니다: %s' % \
+                                task.deadline.strftime('%Y.%m.%d %H:%M')
 
         if args['parents'] != [-1]:
             original_list = [task.id for task in task.parents]
             add, sub = helper.list_diff(original_list, args['parents'])
-            deleted_tasks = ['#%d %s'%(task.local_id, task.name)
-                for task in task.parents if task.id in sub]
-            task.parents = [task for task in task.parents if not task.id in sub]
+            deleted_tasks = ['#%d %s' % (task.local_id, task.name)
+                             for task in task.parents if task.id in sub]
+            task.parents = [task for task in task.parents
+                            if not task.id in sub]
 
             if deleted_tasks != []:
-                comment_text += '제외된 상위 업무:<br>%s<br>' % (', '.join(deleted_tasks))
+                comment_text += '제외된 상위 업무:<br>%s<br>' % \
+                                (', '.join(deleted_tasks))
 
             new_tasks = []
             for taskID in add:
@@ -496,7 +534,7 @@ class Task(Resource):
                 if parent:
                     task.parents.append(parent)
                     parent.update_progress(True)
-                    new_tasks.append('#%d %s'%(parent.local_id, parent.name))
+                    new_tasks.append('#%d %s' % (parent.local_id, parent.name))
 
             if new_tasks != []:
                 comment_text += '추가된 상위 업무:<br>%s<br>' % (', '.join(new_tasks))
@@ -504,12 +542,14 @@ class Task(Resource):
         if args['children'] != [-1]:
             original_list = [task.id for task in task.children]
             add, sub = helper.list_diff(original_list, args['children'])
-            deleted_tasks = ['#%d %s'%(task.local_id, task.name)
-                for task in task.children if task.id in sub]
-            task.children = [task for task in task.children if not task.id in sub]
+            deleted_tasks = ['#%d %s' % (task.local_id, task.name)
+                             for task in task.children if task.id in sub]
+            task.children = [task for task in task.children
+                             if not task.id in sub]
 
             if deleted_tasks != []:
-                comment_text += '제거된 하위 업무:<br>%s<br>' % (', '.join(deleted_tasks))
+                comment_text += '제거된 하위 업무:<br>%s<br>' % \
+                                (', '.join(deleted_tasks))
 
             if task.level == 1:
                 for taskID in sub:
@@ -523,43 +563,48 @@ class Task(Resource):
                 child = models.Task.query.get(taskID)
                 if child:
                     task.children.append(child)
-                    new_tasks.append('#%d %s'%(child.local_id, child.name))
+                    new_tasks.append('#%d %s' % (child.local_id, child.name))
 
             if new_tasks != []:
                 comment_text += '새 하위 업무:<br>%s<br>' % (', '.join(new_tasks))
-
 
         if args['contributor'] != [-1]:
             original_list = [member.id for member in task.contributors]
             original_list.append(task.creator.id)
             add, sub = helper.list_diff(original_list, args['contributor'])
-            print ((original_list,args['contributor']))
+            print ((original_list, args['contributor']))
             print ((add, sub))
-            deleted_contributors = ['%s'%member.user.nickname
-                for member in task.contributors if member.id in sub]
-            task.contributors = [member for member in task.contributors if not member.id in sub]
+            deleted_contributors = ['%s' % member.user.nickname
+                                    for member in task.contributors
+                                    if member.id in sub]
+            task.contributors = [member for member in task.contributors
+                                 if not member.id in sub]
 
             if deleted_contributors != []:
-                comment_text += '제외된 참여자:<br>%s<br>' % (', '.join(deleted_contributors))
+                comment_text += '제외된 참여자:<br>%s<br>' % \
+                                (', '.join(deleted_contributors))
 
             new_contributors = []
             for memberID in add:
                 member = models.Member.query.get(memberID)
                 if member:
                     task.contributors.append(member)
-                    new_contributors.append('%s'%member.user.nickname)
+                    new_contributors.append('%s' % member.user.nickname)
 
             if new_contributors != []:
-                comment_text += '새 참여자:<br>%s<br>' % (', '.join(new_contributors))
+                comment_text += '새 참여자:<br>%s<br>' % \
+                                (', '.join(new_contributors))
 
         if comment_text != '':
             comment_text = '<blockquote>%s</blockquote>' % comment_text
-            modify_comment = models.TaskComment('내용이 변경되었습니다.', comment_text, 1, current_user.member, task)
+            modify_comment = models.TaskComment('내용이 변경되었습니다.',
+                                                _text, 1, current_user.member,
+                                                task)
             db.session.add(modify_comment)
         db.session.commit()
 
         notification.Push(current_user.member, task.all_contributors(), task,
-            models.NotificationAction.update)
+                          models.NotificationAction.update)
         return task
 
     @member_required
@@ -580,7 +625,9 @@ class Issue(Resource):
         issues = models.Task.query.filter_by(level=1).all()
         return issues
 
+
 api.add_resource(Issue, '/api/issue')
+
 
 class Milestone(Resource):
     @member_required
@@ -593,13 +640,14 @@ class Milestone(Resource):
     def post(self):
         return None, 501
 
+
 api.add_resource(Milestone, '/api/milestone')
 
-class TaskComment(Resource):
 
+class TaskComment(Resource):
     commentParser = reqparse.RequestParser()
     commentParser.add_argument('title', type=str, required=True,
-        help='Title is required')
+                               help='Title is required')
     commentParser.add_argument('body', type=str, default='')
     commentParser.add_argument('task_id', type=int, default=-1)
     commentParser.add_argument('redirect', type=str, default='')
@@ -611,7 +659,7 @@ class TaskComment(Resource):
         if not task:
             abort(404)
         task_comment = models.TaskComment(args['title'], args['body'],
-            0, current_user.member, task)
+                                          0, current_user.member, task)
         db.session.add(task_comment)
 
         tags = helper.get_tags(task_comment.body)
@@ -624,7 +672,6 @@ class TaskComment(Resource):
                 tag_data = models.Tag(tag)
                 task_comment.tags.append(tag_data)
                 db.session.add(tag_data)
-
 
         files = request.files.getlist("files")
 
@@ -642,7 +689,7 @@ class TaskComment(Resource):
             return redirect(args['redirect'])
 
         notification.Push(current_user.member, task.all_contributors(),
-            task_comment, models.NotificationAction.create)
+                          task_comment, models.NotificationAction.create)
         return str(task_comment)
 
     @member_required
@@ -652,14 +699,17 @@ class TaskComment(Resource):
             return str(task_comment)
         return {}
 
+
 api.add_resource(TaskComment, '/api/task_comment',
-    '/api/task_comment/<int:commentID>')
+                 '/api/task_comment/<int:commentID>')
+
 
 user_fields = {
     'nickname': fields.String,
     'username': fields.String,
     'email': fields.String
 }
+
 
 member_fields = {
     'id': fields.Integer,
@@ -674,8 +724,9 @@ member_fields = {
     'phone': fields.String,
     'birthday': fields.String,
     'user': fields.Nested(user_fields),
-    'social' :fields.String
+    'social': fields.String
 }
+
 
 class Member(Resource):
     @member_required
@@ -686,6 +737,7 @@ class Member(Resource):
             return None, 404
 
         return member
+
 
 api.add_resource(Member, '/api/member/<int:memberID>')
 
@@ -714,24 +766,25 @@ class Event(Resource):
         args = self.dateParser.parse_args()
         if args['start'] == '':
             return models.Task.query.all()
-        start = datetime.strptime(args['start'],'%Y-%m-%d')
-        end = datetime.strptime(args['end'],'%Y-%m-%d')
+        start = datetime.strptime(args['start'], '%Y-%m-%d')
+        end = datetime.strptime(args['end'], '%Y-%m-%d')
 
         events = models.Task.query.filter(
             and_(models.Task.deadline >= start,
-                models.Task.deadline < end)).filter(
-            not_ (and_ (models.Task.level == 2,
-                ~models.Task.parents.any()))).filter_by(status=0)
+                 models.Task.deadline < end)).filter(
+            not_(and_(models.Task.level == 2,
+                      ~models.Task.parents.any()))).filter_by(status=0)
         if args['level'] >= 0:
             events = events.filter_by(level=args['level'])
         events = events.all()
-        task_type = ['milestone','issue','subtask']
-        task_color = ['#00c0ef','#00a65a','#f39c12','#dd4b39']
+        task_type = ['milestone', 'issue', 'subtask']
+        task_color = ['#00c0ef', '#00a65a', '#f39c12', '#dd4b39']
         for event in events:
-            event.url = "/stem/%s/%d"%(task_type[event.level], event.id)
+            event.url = "/stem/%s/%d" % (task_type[event.level], event.id)
             event.color = task_color[event.priority]
             event.name = "[%s] %s" % (event.repr_id(), event.name)
 
         return events
+
 
 api.add_resource(Event, '/api/deadlines')
