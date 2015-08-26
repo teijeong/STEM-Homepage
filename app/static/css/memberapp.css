@@ -46,6 +46,8 @@ select.command-elem {color: #fff;}
 
 #dtpicker {width:0;height:0;overflow:hidden;}
 
-.dataTable a{color:#000;}
-.dataTable a:hover{color:#888;}
+.board a{color:#444;}
+.board a:hover{color:#ccc;}
+.dataTable a{color:#444;}
+.dataTable a:hover{color:#ccc;}
 .dataTable .sorting_disabled{padding:8px;}

@@ -1,0 +1,78 @@
+{% extends "memberapp/base.html" %}
+{% import "task_elements.html" as elements with context %}
+{% block content %}
+ <section class="content-header">
+  <h1>
+  글쓰기
+    <small></small>
+  </h1>
+  <ol class="breadcrumb">
+    <li><a href="/stem"><i class="fa fa-list-ul"></i> Home</a></li>
+    <li><a href="/stem/board">Board</a></li>
+    <li class="active"><a href="/stem/board/{{tag.id}}">{{tag.title}}</a></li>
+  </ol>
+</section>
+
+<!-- Main content -->
+<section class="content">
+  <div class="row">
+    <div class="col-xs-12">
+      <div class="box">
+        <div class="box-body">
+          <form enctype="multipart/form-data" role="form" action="/stem/api/post" method="POST">
+            <input name="tag_id" type="hidden" value="{{tag.id}}" />
+            <input name="redirect" type="hidden" value="/stem/board/{{tag.id}}" />
+            <div class="form-group">
+              <label>제목</label>
+              <input name="title" class="form-control" type="text" placeholder="Title" id="title" />
+            </div>
+            <div class="form-group">
+              <label>내용</label>
+              <textarea name="body" class="form-control" rows="3" id="body"></textarea>
+            </div>
+            <div class="form-group">
+              <label for="comment-files">첨부 파일</label>
+              <input name="files" id="files" type="file" multiple="true">
+            </div>
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary pull-right">쓰기</button>
+            </div>
+          </form>
+        </div>
+        <div class="box-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+</section><!-- /.content -->
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block styles %}
+  <link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block scripts %}
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+var editor = CKEDITOR.replace('body',
+  {toolbarGroups:[
+    { name: 'clipboard',   groups: ['undo' ] },
+    { name: 'links' },
+    { name: 'insert' },
+    { name: 'forms' },
+    { name: 'tools' },
+    { name: 'others' },
+    '/',
+    { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+    { name: 'paragraph',   groups: [ 'list', 'indent', 'blocks', 'align' ] },
+    { name: 'styles' },
+    { name: 'colors' }]
+  });
+</script>
+{% endblock %}

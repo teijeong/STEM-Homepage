@@ -54,7 +54,8 @@ def main():
         return render_template(
             'dashboard.html', member=current_user.member,
             task_lists=task_lists, nav_id=1,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -65,7 +66,8 @@ def showPeople():
     try:
         return render_template(
             'memberapp/people.html', member=current_user.member, nav_id=2,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -80,7 +82,8 @@ def showMember(id):
         return render_template(
             'memberapp/profile.html', member=current_user.member,
             profile_member=mem, nav_id=2,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -96,17 +99,20 @@ def showTask(id):
             return render_template(
                 'milestone.html', member=current_user.member,
                 milestone=task, task=task, nav_id=4,
-                notifications=notification.Generate(current_user.member))
+                notifications=notification.Generate(current_user.member),
+                boards=models.Tag.query.filter_by(special=1).all())
         if task.level == 1:
             return render_template(
                 'issue.html', member=current_user.member,
                 issue=issue, task=issue, nav_id=5,
-                notifications=notification.Generate(current_user.member))
+                notifications=notification.Generate(current_user.member),
+                boards=models.Tag.query.filter_by(special=1).all())
         if task.level == 2:
             return render_template(
                 'subtask.html', member=current_user.member,
                 task=task, nav_id=5,
-                notifications=notification.Generate(current_user.member))
+                notifications=notification.Generate(current_user.member),
+                boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -121,7 +127,8 @@ def showMilestone(id):
                 'milestone.html',
                 member=current_user.member,
                 milestone=milestone, task=milestone, nav_id=4,
-                notifications=notification.Generate(current_user.member))
+                notifications=notification.Generate(current_user.member),
+                boards=models.Tag.query.filter_by(special=1).all())
         else:
             abort(404)
     except TemplateNotFound:
@@ -137,7 +144,8 @@ def showIssue(id):
             return render_template(
                 'issue.html', member=current_user.member,
                 issue=issue, task=issue, nav_id=5,
-                notifications=notification.Generate(current_user.member))
+                notifications=notification.Generate(current_user.member),
+                boards=models.Tag.query.filter_by(special=1).all())
         else:
             abort(404)
     except TemplateNotFound:
@@ -153,7 +161,8 @@ def showSubtask(id):
             return render_template(
                 'subtask.html', member=current_user.member,
                 task=task, nav_id=5,
-                notifications=notification.Generate(current_user.member))
+                notifications=notification.Generate(current_user.member),
+                boards=models.Tag.query.filter_by(special=1).all())
         else:
             abort(404)
     except TemplateNotFound:
@@ -168,7 +177,8 @@ def showIssues():
         return render_template(
             'issue_list.html', member=current_user.member,
             issues=issues, nav_id=5,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -179,10 +189,12 @@ def showMilestones():
     try:
         milestones = models.Task.query.filter_by(level=0).all()
         return render_template('milestone_list.html',
-                               member=current_user.member,
-                               milestones=milestones, nav_id=4,
-                               notifications=notification.Generate(
-                                   current_user.member))
+                                member=current_user.member,
+                                milestones=milestones, nav_id=4,
+                                notifications=notification.Generate(
+                                   current_user.member),
+                                boards=models.Tag.query
+                                    .filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -195,7 +207,8 @@ def showSuggestion():
             'suggestion.html',
             milestone=models.Task.query.get(0),
             member=current_user.member, nav_id=3,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -206,7 +219,8 @@ def showCalendar():
     try:
         return render_template(
             'calendar.html', member=current_user.member, nav_id=6,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -218,7 +232,8 @@ def showTagList():
         tags = models.Tag.query.all()
         return render_template(
             'tag_list.html', member=current_user.member, nav_id=7, tags=tags,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -233,7 +248,8 @@ def showTag(id):
 
         return render_template(
             'tag.html', member=current_user.member, nav_id=7, tag=tag,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -246,7 +262,8 @@ def showBoardList():
         return render_template(
             'board_list.html',
             member=current_user.member, nav_id=8, tags=tags,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -264,7 +281,26 @@ def showBoard(tag_id):
         return render_template(
             'post_list.html', member=current_user.member, nav_id=8,
             tag=tag, posts=posts,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
+    except TemplateNotFound:
+        abort(404)
+
+
+@member_app.route('/board/<int:tag_id>/<int:post_id>')
+@member_required
+def showPost(tag_id, post_id):
+    try:
+        tag = models.Tag.query.get(tag_id)
+        post = models.Post.query.get(post_id)
+        if not (tag and post):
+            abort(404)
+
+        return render_template(
+            'post_view.html', member=current_user.member, nav_id=8,
+            tag=tag, post=post,
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
     except TemplateNotFound:
         abort(404)
 
@@ -280,10 +316,71 @@ def writePost(tag_id):
         return render_template(
             'post_write.html',
             member=current_user.member, nav_id=8, tag=tag,
-            notifications=notification.Generate(current_user.member))
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
 
     except TemplateNotFound:
         abort(404)
+
+
+class Post(Resource):
+    postParser = reqparse.RequestParser()
+    postParser.add_argument('title', type=str, required=True,
+                               help='Title is required')
+    postParser.add_argument('body', type=str, default='')
+    postParser.add_argument('tag_id', type=int, default=-1)
+    postParser.add_argument('redirect', type=str, default='')
+
+    @member_required
+    def post(self):
+        args = self.postParser.parse_args()
+        tag = models.Tag.query.get(args['tag_id'])
+        if not tag:
+            abort(404)
+        post = models.Post(0, args['title'], args['body'],
+                            current_user.id)
+        db.session.add(post)
+
+        tags = helper.get_tags(post.body)
+        post.tags.append(tag)
+
+        for tag in tags:
+            tag_data = models.Tag.query.filter_by(title=tag).first()
+            if tag_data:
+                post.tags.append(tag_data)
+            else:
+                tag_data = models.Tag(tag)
+                post.tags.append(tag_data)
+                db.session.add(tag_data)
+
+        files = request.files.getlist("files")
+
+        file_uploaded = False
+
+        for file in files:
+            if helper.process_file(file, post):
+                file_uploaded = True
+
+        db.session.commit()
+        if (args['redirect']):
+            notification.Push(current_user.member, models.Member.query.all(),
+                            post, models.NotificationAction.create)
+            return redirect(args['redirect'])
+
+        notification.Push(current_user.member, models.Member.query.all(),
+                        post, models.NotificationAction.create)
+        return str(post)
+
+    @member_required
+    def get(self, post_id):
+        post = models.Post.query.get(post_id)
+        if post:
+            return str(post)
+        return {}
+
+
+api.add_resource(Post, '/api/post',
+                 '/api/post/<int:post_id>')
 
 
 simple_task_fields = {
@@ -686,6 +783,8 @@ class TaskComment(Resource):
 
         db.session.commit()
         if (args['redirect']):
+            notification.Push(current_user.member, task.all_contributors(),
+                              task_comment, models.NotificationAction.create)
             return redirect(args['redirect'])
 
         notification.Push(current_user.member, task.all_contributors(),

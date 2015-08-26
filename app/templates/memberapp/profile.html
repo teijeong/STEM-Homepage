@@ -61,13 +61,16 @@
   </div>
 
   <div style="margin:5px;min-height:80px;position:relative;">
-    <div id="member-comment">
-      {{profile_member.comment | nl2br}}
-    </div>
-    <hr>
     <div id="member-cv">
       {{profile_member.cv | nl2br }}
     </div>
+    <hr>
+    <div id="member-comment">
+      {{profile_member.comment | nl2br}}
+    </div>
+    {% if profile_member == current_user.member %}
+    <a class="btn btn-primary pull-right" href="/member/modify">수정하기</a>
+    {% endif %}
   </div>
 </div><!-- /.box-body -->
 

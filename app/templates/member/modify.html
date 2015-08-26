@@ -144,11 +144,11 @@ STEM에게 하고 싶은 말
         <td style="padding:5px 0 5px 10px;"><input name="social" type="text" class="input" size="50" value="{{current_user.member.social or ''}}"></td>
     </tr>
     <tr>
-        <th scope="row">프로필 사진<br>(140x140px)</th>
+        <th scope="row">프로필 사진<br>(140x140px, png/jpg/gif)</th>
         <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="input">{% if current_user.member.img %} (프로필 사진 있음){% endif %}</td>
     </tr>
     <tr>
-        <th scope="row">커버 사진<br>(423x200px)</th>
+        <th scope="row">커버 사진<br>(423x200px, png/jpg/gif)</th>
         <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="input">{% if current_user.member.cover %} (커버 사진 있음){% endif %}</td>
     </tr>
     <tr>

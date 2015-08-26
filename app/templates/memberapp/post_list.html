@@ -8,7 +8,8 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="/stem"><i class="fa fa-list-ul"></i> Home</a></li>
-    <li class="active">Board</li>
+    <li><a href="/stem/board">Board</a></li>
+    <li class="active">{{tag.title}}</li>
   </ol>
 </section>
 
@@ -18,7 +19,7 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-body">
-                <table id="posts" class="table table-bordered">
+                <table id="posts" class="table table-bordered board">
                     <thead>
                         <tr>
                         <th style="width:40px;">#</th>
@@ -29,16 +30,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for post in posts %}
+                        {% for post in posts[::-1] %}
                         <tr>
                             <td>{{post.id}}</td>
-                            <td>{{post.title}}
+                            <td><a href="{{tag.id}}/{{post.id}}">{{post.title}}
                                 {% if post.files %}
                                 <i class="fa fa-paperclip"></i>
                                 {% endif %}
                                 {% if post.commentCount > 0 %}
                                 <span class="comment-count">[{{post.commentCount}}]</span>
-                                {% endif %}
+                                {% endif %}</a>
                             </td>
                             <td>{{post.author.nickname}}</td>
                             <td class="date" data-time-format="YY-MM-DD" data-timestamp="{{post.timestamp.timestamp()}}"></td>

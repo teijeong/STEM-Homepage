@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 import os
 
-import datetime import datetime
+from datetime import datetime
 from flask import redirect, url_for, request
 from flask.ext.login import current_user
 from flask.ext.wtf import Form

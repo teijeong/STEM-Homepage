@@ -80,7 +80,7 @@ def Generate(member):
         descriptions.append(
             NotificationDescription(message, task_time[k], link,
                                     'fa-comments'))
-    return sorted(descriptions, key=lambda noti: noti.timestamp)
+    return sorted(descriptions, key=lambda noti: -noti.timestamp)
 
 
 class NotificationDescription:
