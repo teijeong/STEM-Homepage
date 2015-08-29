@@ -25,6 +25,19 @@
                 {% for tag in post.tags %}
                     <span class="tag-badge label bg-orange">#{{tag.title}}</span>
                 {% endfor %}
+                {% if post.files | length > 0 %}
+                <div>
+                    <h5>첨부 파일</h5>
+                    <ul>
+                    {% for file in post.files %}
+                        <li><a href="/static/upload/{{file.link}}" download="{{file.name}}">{{file.name}}</a></li>
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% if post.author == current_user %}
+                <a href='/stem/board/{{tag.id}}/{{post.id}}/modify' class='btn btn-primary pull-right'>수정</a> 
+                {% endif %}
                 </div>
             </div>
         </div>

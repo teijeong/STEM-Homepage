@@ -252,7 +252,7 @@
             <li><a href="/stem/issue"><i class='fa fa-list-ul'></i> <span>일거리</span></a></li>
             <li><a href="/stem/calendar"><i class='fa fa-calendar'></i> <span>달력</span></a></li>
             <li><a href="/stem/tag"><i class='fa fa-tag'></i> <span>태그검색</span></a></li>
-            <li class="treeview">
+            <li class="treeview" id="boards">
               <a href="/stem/board"><i class='fa fa-list-ul'></i> <span>게시판</span> <i class="fa fa-angle-left pull-right"></i></a>
               <ul class="treeview-menu">
                 <li><a href="/stem/board">게시판 목록</a></li>
@@ -387,7 +387,10 @@
 <script src="{{url_for('static', filename='js/polyfill.js')}}" type="text/javascript"></script>
 <script>
 
-$(".sidebar-menu li:nth-child({{(nav_id or 0)+1}})").addClass("active");
+$(".sidebar-menu>li:nth-child({{(nav_id or 0)+1}})").addClass("active");
+{% if tag %}
+$("#boards li").each(function() {if ($(this).text() === "{{tag.title}}") $(this).addClass("active");});
+{% endif %}
 
 $(".date").each(function() {
     var timestamp = moment.utc($(this).attr('data-timestamp')*1000);

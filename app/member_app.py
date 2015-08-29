@@ -304,6 +304,24 @@ def showPost(tag_id, post_id):
     except TemplateNotFound:
         abort(404)
 
+@member_app.route('/board/<int:tag_id>/<int:post_id>/modify')
+@member_required
+def modifyPost(tag_id, post_id):
+    try:
+        tag = models.Tag.query.get(tag_id)
+        post = models.Post.query.get(post_id)
+        if not (tag and post):
+            abort(404)
+        if post.author != current_user:
+            abort(403)
+
+        return render_template(
+            'post_modify.html', member=current_user.member, nav_id=8,
+            tag=tag, post=post,
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all())
+    except TemplateNotFound:
+        abort(404)
 
 @member_app.route('/board/<int:tag_id>/write')
 @member_required
@@ -369,6 +387,42 @@ class Post(Resource):
 
         notification.Push(current_user.member, models.Member.query.all(),
                         post, models.NotificationAction.create)
+        return str(post)
+
+    @member_required
+    def put(self, post_id):
+        args = self.postParser.parse_args()
+        tag = models.Tag.query.get(args['tag_id'])
+        post = models.Post.query.get(post_id)
+        if not (tag and post):
+            abort(404)
+
+        tags = helper.get_tags(post.body)
+        post.title = args['title']
+        post.body = args['body']
+
+        for tag in tags:
+            tag_data = models.Tag.query.filter_by(title=tag).first()
+            if not tag_data:
+                tag_data = models.Tag(tag)
+                db.session.add(tag_data)
+            if not tag_data in post.tags:
+                post.tags.append(tag_data)
+
+        files = request.files.getlist("files")
+
+        file_uploaded = False
+
+        for file in files:
+            if helper.process_file(file, post):
+                file_uploaded = True
+
+        db.session.commit()
+        notification.Push(current_user.member, models.Member.query.all(),
+                        post, models.NotificationAction.update)
+        if (args['redirect']):
+            return redirect(args['redirect'])
+
         return str(post)
 
     @member_required
@@ -572,16 +626,14 @@ class Task(Resource):
             comment_text += '설명이 변경되었습니다:<p>%s</p>' % task.description
 
             tags = helper.get_tags(task.description)
-            task.tags = []
 
             for tag in tags:
                 tag_data = models.Tag.query.filter_by(title=tag).first()
-                if tag_data:
-                    task.tags.append(tag_data)
-                else:
+                if not tag_data:
                     tag_data = models.Tag(tag)
-                    task.tags.append(tag_data)
                     db.session.add(tag_data)
+                if not tag_data in task.tags:
+                    task.tags.append(tag_data)
 
         if args['level'] != -1:
             pass
