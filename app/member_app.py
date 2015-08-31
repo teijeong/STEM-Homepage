@@ -104,7 +104,7 @@ def showTask(id):
         if task.level == 1:
             return render_template(
                 'issue.html', member=current_user.member,
-                issue=issue, task=issue, nav_id=5,
+                issue=task, task=task, nav_id=5,
                 notifications=notification.Generate(current_user.member),
                 boards=models.Tag.query.filter_by(special=1).all())
         if task.level == 2:
@@ -747,7 +747,7 @@ class Task(Resource):
         if comment_text != '':
             comment_text = '<blockquote>%s</blockquote>' % comment_text
             modify_comment = models.TaskComment('내용이 변경되었습니다.',
-                                                _text, 1, current_user.member,
+                                                comment_text, 1, current_user.member,
                                                 task)
             db.session.add(modify_comment)
         db.session.commit()
