@@ -67,20 +67,19 @@
 {% endblock %}
 
 {% block styles %}
-    <link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
+<link href="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.css')}}" rel="stylesheet" type="text/css">
 {% endblock %}
 
 {% block scripts %}
-    <script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
-    <script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
-    <script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
-    <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/jquery.dataTables.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
 
 <script type="text/javascript">
-{{ elements.task_form_script(0) }}
+
 $("#add-task").easyModal();
 $(".modal-dialog").css("display","default");
-
 
 function showModal() {
     $("#add-task").trigger("openModal");
@@ -89,6 +88,8 @@ function showModal() {
 function closeModal() {
     $("#add-task").trigger("closeModal");
 }
+
+{{ elements.task_form_script(0) }}
 
 </script>
 {% endblock %}

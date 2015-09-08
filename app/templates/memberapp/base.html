@@ -393,6 +393,7 @@ $("#boards li").each(function() {if ($(this).text() === "{{tag.title}}") $(this)
 {% endif %}
 
 $(".date").each(function() {
+    if(!$(this).attr('data-timestamp')) return true;
     var timestamp = moment.utc($(this).attr('data-timestamp')*1000);
     $(this).text(timestamp.local().format($(this).attr('data-time-format')));
 });
