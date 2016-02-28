@@ -1,5 +1,15 @@
 <!--#include virtual = common/dbcon.asp-->
 {% extends "base.html" %}
+{#
+{% if mode == "view" and post %}
+{% block meta %}
+<meta property="og:url" content="http://aws.stemsnu.com/post/{{ post.id }}/view" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="{{ post.title }}" />
+<meta property="og:description" content="{{ post.body[:100] }}" />
+{% endblock %}
+{% endif %}
+#}
 {% block container %}
     <!--container-->
     <div id="container">

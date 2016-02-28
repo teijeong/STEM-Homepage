@@ -17,8 +17,8 @@
             <div class="t_panel_{{ index }}">
         {% endif %}
         <div class="t_panel_{{ index }}-wrapper">
-        {% if banner.href %}
-            <a href="{{ banner.href }}"></a><img src="{{ url_for('static', filename=('upload/mainbanner/' + banner.src)) }}" width="{{ width }}" height="{{ height }}" border="0" alt="{{banner.description}}"></a>
+        {% if banner.href and banner.href != '#' %}
+            <a href="{{ banner.href }}"><img src="{{ url_for('static', filename=('upload/mainbanner/' + banner.src)) }}" width="{{ width }}" height="{{ height }}" border="0" alt="{{banner.description}}"></a>
         {% else %}
             <img src="../static/upload/mainbanner/{{ banner.src }}" width="{{ width }}" height="{{ height }}" border="0" alt="{{banner.description}}">
         {% endif %}

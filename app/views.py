@@ -233,7 +233,7 @@ def forbidden(e):
 
 
 @app.errorhandler(404)
-def unauthorized(e):
+def not_found(e):
     return render_template('404.html', form=LoginForm()), 404
 
 
@@ -338,6 +338,12 @@ class ModifyPost(Resource):
 
         post.title = args['title']
         post.body = args['body']
+
+        files = request.files.getlist("files")
+
+        for file in files:
+            process_file(file, post)
+
         db.session.commit()
 
         return Response(
