@@ -60,6 +60,13 @@ def main():
                            form=LoginForm())
 
 
+@app.route('/apply')
+def stemApply():
+    fout = open('apply_log.log', 'a+')
+    fout.write('Page viewed on ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+    fout.close()
+    return render_template('apply.html', form=LoginForm())
+
 @app.route('/sub/<string:sub>')
 def showSub(sub):
     mNum = sub[0]
