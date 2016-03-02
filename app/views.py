@@ -64,8 +64,12 @@ def main():
 def stemApply():
     fout = open('apply_log.log', 'a+')
     fout.write('Page viewed on ' + datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '\n')
+    if datetime.datetime.now() < datetime.datetime(2016,3,10):
+        display = 1
+    else:
+        display = 2
     fout.close()
-    return render_template('apply.html', form=LoginForm())
+    return render_template('apply.html', form=LoginForm(), display=display)
 
 @app.route('/sub/<string:sub>')
 def showSub(sub):

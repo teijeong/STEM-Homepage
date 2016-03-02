@@ -5,7 +5,11 @@
 <meta property="og:image" content="http://aws.stemsnu.com/static/upload/9f68ecf4576a43e39ab3c8024e5119bf.png" />
 <meta property="og:type" content="article" />
 <meta property="og:title" content="공우(STEM) 7기 모집!" />
-<meta property="og:description" content="접수는 3.16까지. 공우와 함께할 짱짱 공학도들의 많은 참여 바랍니다!" />
+{% if display == 1 %}
+<meta property="og:description" content="3월 8, 9일 리크루팅 설명회 개최!" />
+{% else %}
+<meta property="og:description" content="접수는 3.16까지. 짱짱 공학도들의 많은 참여 바랍니다!" />
+{% endif %}
 {% endblock %}
 
 {% block container %}
