@@ -26,7 +26,7 @@ def load_user(id):
 
 @app.route('/')
 def main():
-    bannerRec = db.session.query(models.Banner).all()
+    bannerRec = db.session.query(models.Banner).order_by(models.Banner.id.desc()).all()
 
     board_ids = [1, 2, 4]
 
