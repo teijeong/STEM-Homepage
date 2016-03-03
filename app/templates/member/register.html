@@ -79,7 +79,7 @@ function sendit(){
 <p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
 
 <form action="{{ url_for('register')}}" method="POST" name="Join" enctype="multipart/form-data">
-{{ form.hidden_tag() }}
+{{ registerform.hidden_tag() }}
 <input type=hidden value="{{ next or '' }}" name=next>
 <table cellspacing="0" class="tbl_join" summary="개인회원정보입력">
 <caption>개인회원정보입력</caption>

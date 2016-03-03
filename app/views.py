@@ -193,12 +193,14 @@ def login():
 
 @app.route('/member/register', methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        login_user(form.user)
+    registerform = RegisterForm()
+    form = LoginForm()
+    if registerform.validate_on_submit():
+        login_user(registerform.user)
         return redirect('/')
     else:
-        return render_template('member/register.html', form=form)
+        return render_template('member/register.html', registerform=form,
+            form=form)
 
 
 @app.route('/member/modify', methods=['GET', 'POST'])
