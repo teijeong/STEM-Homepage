@@ -13,6 +13,8 @@ for dept in departments:
 
 cnt = 0
 for person in lst:
+    if len(person) < 2:
+        break
     cnt += 1
     user = models.User.query.filter_by(nickname=person[1])
     if user.count() > 0:
