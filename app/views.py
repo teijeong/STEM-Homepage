@@ -141,6 +141,7 @@ def showHistory(sub, page):
                            years=yearRec, page=page, history=allRec)
 
 
+@app.route('/post/<int:id>')
 @app.route('/post/<int:id>/view')
 def viewPost(id):
     post = models.Post.query.get(id)
@@ -162,7 +163,8 @@ def viewPost(id):
                            mode='view', post=post, board=board, prev=prev,
                            next=next, form=LoginForm())
 
-
+#Not implemented: block for security reason
+"""
 @app.route('/post/<int:id>/reply')
 def replyPost(id):
     board = {}
@@ -174,7 +176,7 @@ def replyPost(id):
     return render_template('sub5.html', mNum=5, sNum=post.board_id,
                            board=board, mode='reply', post=post,
                            form=LoginForm())
-
+"""
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -249,6 +251,9 @@ def forbidden(e):
 def not_found(e):
     return render_template('404.html', form=LoginForm()), 404
 
+@app.route('/notfound')
+def not_found2():
+    return render_template('404.html', form=LoginForm()), 404
 
 class WritePost(Resource):
     @login_required
@@ -313,6 +318,10 @@ class ModifyPost(Resource):
 
         if current_user.id != post.user_id:
             return Response(
+                render_template('404.html', form=LoginForm()),
+                mimetype='text/html', status=404)
+
+            return Response(
                 render_template('sub5.html', mNum=5, sNum=post.board_id,
                                 mode='view', post=post,
                                 board=models.Board.query.get(post.board_id),
@@ -325,6 +334,7 @@ class ModifyPost(Resource):
                             board=models.Board.query.get(post.board_id),
                             form=LoginForm()),
             mimetype='text/html')
+
 
     @login_required
     def post(self, id):

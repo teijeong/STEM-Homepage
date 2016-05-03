@@ -40,7 +40,7 @@ db = SQLAlchemy(app)
 api = restful.Api(app)
 lm = LoginManager()
 lm.init_app(app)
-admin = Admin(url='/admin', template_mode='bootstrap3')
+admin = Admin(url='/admin_stemware', template_mode='bootstrap3')
 
 
 from app.member_app import member_app

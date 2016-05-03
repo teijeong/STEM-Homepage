@@ -1,2 +1,3 @@
-User-agent: *
-Disallow: /admin/
+User-Agent: *
+Disallow: /admin
+Disallow: /member
