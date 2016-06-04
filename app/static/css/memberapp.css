@@ -1,7 +1,7 @@
 .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a {white-space: normal;}
 
 textarea {resize:none;}
-
+img {image-orientation: from-image;}
 .editor {
     background-color: #ccc;
     min-height: 100px;
