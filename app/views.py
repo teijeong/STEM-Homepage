@@ -59,7 +59,7 @@ def main():
                            boards=boards,
                            form=LoginForm())
 
-@app.route('/vm_apply')
+@app.route('/vm_confirm')
 def vmConfirm():
     key = request.args.get('key')
     if not key:
