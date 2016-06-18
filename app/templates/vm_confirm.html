@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block container %}
+<style>
+#info {
+  margin: 100px auto;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  padding: 20px 0;
+}
+#info h1 {
+  font-weight: 400;
+  font-size: 4.2rem;
+  line-height: 110%;
+  margin: 2.1rem 0 1.68rem 0;
+}
+#info h2 {
+  font-weight: 400;
+  font-size: 3.56rem;
+  line-height: 110%;
+  margin: 1.78rem 0 1.424rem 0;
+}
+#info h3 {
+  font-weight: 400;
+  font-size: 2.92rem;
+  line-height: 110%;
+  margin: 1.46rem 0 1.168rem 0;
+}
+#info h4 {
+  font-weight: 400;
+  font-size: 2.28rem;
+  line-height: 110%;
+  margin: 1.14rem 0 0.912rem 0;
+}
+#info h5 {
+  font-weight: 400;
+  font-size: 1.64rem;
+  line-height: 110%;
+  margin: 0.82rem 0 0.656rem 0;
+}
+#info h6 {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 110%;
+  margin: 0.5rem 0 0.4rem 0;
+}
+#info button {
+  border: none;
+  border-radius: 2px;
+  display: inline-block;
+  height: 36px;
+  line-height: 36px;
+  outline: 0;
+  padding: 0 2rem;
+  text-transform: uppercase;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+
+  text-decoration: none;
+  color: #fff;
+  background-color: #26a69a;
+  text-align: center;
+  letter-spacing: .5px;
+  transition: .2s ease-out;
+  cursor: pointer;
+
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+  z-index: 1;
+  will-change: opacity, transform;
+  transition: all .3s ease-out;
+}
+#info button.hover {
+  background-color: #2bbbad;
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+}
+
+#info .confirmed {
+  background-color: #2196F3 !important;
+}
+
+#info div {
+  padding: 10px 0;
+}
+</style>
+<div id="container" class="vm" style="text-align: center;">
+  <div id="info">
+    <h5>공우(STEM)</h5>
+    <h4>제 6회 비전멘토링</h4>
+    <h1 id="load"><i class='fa fa-spin fa-spinner'></i></h1>
+    <div id="student" style="display:none;">
+      <h3 id="name"></h3>
+      <h5 id="school-info"></h5>
+      <h6 id="phone"></h6>
+      <h6 id="email"></h6>
+    </div>
+    <div id="guardian" style="display:none;">
+      <h5>보호자 정보</h5>
+      <h6 id="g-info"></h6>
+    </div>
+    <button style="display:none;"></button>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyBjUKPKUc6yWFFhrYr91iYcFVago4CQUpM",
+    authDomain: "stem-mentoring.firebaseapp.com",
+    databaseURL: "https://stem-mentoring.firebaseio.com",
+    storageBucket: "stem-mentoring.appspot.com",
+  };
+  firebase.initializeApp(config);
+
+  function confirmParticipant () {
+    firebase.database().ref('/confirm/{{key}}').set({
+      time: moment().format(),
+      confirm: true
+    });
+  }
+
+  firebase.database().ref('/students/{{key}}').on('value', function (snapshot) {
+    var data = snapshot.val();
+    $('#name').text(data.name);
+    var school = data.school.value + ' ';
+    if (data.grade < 4) school += data.grade + '학년';
+    else school += '졸업';
+    $('#school-info').text(school);
+    $('#phone').text(data.phone);
+    $('#email').text(data.email);
+    $('#g-info').text(data.guardian_name + ' ' + data.guardian_phone);
+    $("#load").hide();
+    $("#info div").show();
+  });
+  firebase.database().ref('/confirm/{{key}}').on('value', function (snapshot) {
+    var data = snapshot.val();
+    if (data === null || data === false) {
+      $("#info button").html("<i class='fa fa-thumbs-up'></i>참가 확인");
+      $("#info button").click(confirmParticipant);
+    } else {
+      $("#info button").html("<i class='fa fa-check-square-o'></i>참가 확인되었습니다.");
+      $("#info button").addClass('confirmed');
+    }
+    $("#info button").show();
+  });
+  $(window).resize(function () {
+    if ($(window).width() > 980)
+      $("#info").css('margin', '100px auto');
+    else {
+      var w = ($(window).width() - 400) / 2;
+      $("#info").css('margin', '100px ' + w + 'px');
+    }
+  });
+  if ($(window).width() > 980)
+    $("#info").css('margin', '100px auto');
+  else {
+    var w = ($(window).width() - 400) / 2;
+    $("#info").css('margin', '100px ' + w + 'px');
+  }
+</script>
+{% endblock %}

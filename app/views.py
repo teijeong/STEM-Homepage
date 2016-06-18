@@ -59,6 +59,14 @@ def main():
                            boards=boards,
                            form=LoginForm())
 
+@app.route('/vm_apply')
+def vmConfirm():
+    key = request.args.get('key')
+    if not key:
+        abort(404)
+    if not current_user.member:
+        return render_template('vm.html', form=LoginForm())
+    return render_template('vm_confirm.html', form=LoginForm(), key=key)
 
 @app.route('/apply')
 def stemApply():

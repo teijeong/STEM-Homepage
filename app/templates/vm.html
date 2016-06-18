@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+
+
+{% block container %}
+<style>
+#info {
+  margin: 100px auto;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  padding: 20px 0;
+}
+#info h1 {
+  font-weight: 400;
+  font-size: 4.2rem;
+  line-height: 110%;
+  margin: 2.1rem 0 1.68rem 0;
+}
+#info h2 {
+  font-weight: 400;
+  font-size: 3.56rem;
+  line-height: 110%;
+  margin: 1.78rem 0 1.424rem 0;
+}
+#info h3 {
+  font-weight: 400;
+  font-size: 2.92rem;
+  line-height: 110%;
+  margin: 1.46rem 0 1.168rem 0;
+}
+#info h4 {
+  font-weight: 400;
+  font-size: 2.28rem;
+  line-height: 110%;
+  margin: 1.14rem 0 0.912rem 0;
+}
+#info h5 {
+  font-weight: 400;
+  font-size: 1.64rem;
+  line-height: 110%;
+  margin: 0.82rem 0 0.656rem 0;
+}
+#info h6 {
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 110%;
+  margin: 0.5rem 0 0.4rem 0;
+}
+#info button {
+  border: none;
+  border-radius: 2px;
+  display: inline-block;
+  height: 36px;
+  line-height: 36px;
+  outline: 0;
+  padding: 0 2rem;
+  text-transform: uppercase;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+
+  text-decoration: none;
+  color: #fff;
+  background-color: #26a69a;
+  text-align: center;
+  letter-spacing: .5px;
+  transition: .2s ease-out;
+  cursor: pointer;
+
+  position: relative;
+  cursor: pointer;
+  display: inline-block;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  vertical-align: middle;
+  z-index: 1;
+  will-change: opacity, transform;
+  transition: all .3s ease-out;
+}
+#info button.hover {
+  background-color: #2bbbad;
+  box-shadow: 0 5px 11px 0 rgba(0,0,0,0.18),0 4px 15px 0 rgba(0,0,0,0.15);
+}
+
+#info .confirmed {
+  background-color: #2196F3 !important;
+}
+
+#info div {
+  padding: 10px 0;
+}
+</style>
+<div id="container" class="vm" style="text-align: center;">
+  <div id="info">
+    <h5>접수증을 비전멘토링 당일 스태프에게 보여주고 참가 확인을 받으세요!</h5>
+    <h6>7월 9일에 만나요~</h6>
+    
+    <button style="display:none;"></button>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://www.gstatic.com/firebasejs/live/3.0/firebase.js"></script>
+<script>
+
+{% endblock %}
