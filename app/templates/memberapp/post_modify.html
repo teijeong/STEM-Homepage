@@ -85,6 +85,11 @@ var editor = CKEDITOR.replace('body',
   });
 
 function sendPost() {
+  if (jQuery("#title").val() == '') {
+    alert("제목을 비워둘 수 없습니다.");
+    jQuery("#title").focus();
+    return;
+  }
   var data = new FormData();
   data.set('tag_id',{{tag.id}});
   data.set('title',$('#title').val());
@@ -99,7 +104,7 @@ function sendPost() {
     data: data,
     processData: false,
     contentType: false,
-    success: function() {location.href = '/stem/board/{{tag.id}}';},
+    success: function() {location.href = '/stem/board/{{tag.id}}/{{post.id}}';},
     error: function() {alert('게시글 수정 중 오류가 발생했습니다.');}
   });
 }

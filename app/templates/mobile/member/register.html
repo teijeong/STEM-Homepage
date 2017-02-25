@@ -1,0 +1,159 @@
+{% extends "mobile/base.html" %}
+
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: Welcome To Website ::</h5><hr>
+                    <h2 class="section-heading" style="margin:0 0 10px 0;"><b>STEM Web Membership</b></h2>                    
+                </div>
+                <div class="col-md-12 text-center">
+                    <p class="text-muted text-center">
+                        공우(STEM) 홈페이지를 방문하여 주셔서 감사합니다. STEM Web Membership을 발급받으시면, 다음의 서비스를 받으실 수 있습니다.<br>
+                        <ul class="stem-orange list-unstyled">
+                        <li>
+                        <span><small>게시판 (Q&amp;A, 자유게시판 등) 게시물 등록</small></span><br></li>
+                        <li>
+                        <span><small>게시물 댓글 기능 사용 가능</small></span></li>
+                        </ul>
+                    </p>
+                </div><hr>
+
+                <div class="row">
+                        <p class="col-md-12 text-center"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+
+<form action="{{ url_for('register')}}" method="POST" name="Join" enctype="multipart/form-data">
+{{ registerform.hidden_tag() }}
+<input type=hidden value="{{ next or '' }}" name=next>
+<table id="mobilejoin" cellspacing="0" class="table-striped" summary="개인회원정보입력" style="width:100%;">
+<tbody>
+    <tr>
+        <th scope="row" height='20' class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 이름</th>
+        <td style="padding:5px 0 5px 10px;"><input name="name" maxlength='10' type="text" class="form-control"></td>
+    </tr>
+
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 아이디</th>
+        <td style="padding:5px 0 5px 10px; text-align:center;">
+            <input name="userid" type="text" class="form-control" maxlength='15' onBlur="ID_chk()">
+            <span id='idMsg'><span style="color:red;">
+            <small>6~15자를 권장드립니다.</small></span></span>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 비밀번호</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="form-control" size="15" maxlength='15' onBlur="PW_chk()"></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 비밀번호<br>확인</th>
+        <td style="padding:5px 0 5px 10px;"><input name="confirm" type="password" class="form-control" size="15" maxlength='15' onBlur="PW_chk()"><small><span id='pwMsg'>비밀번호를 재입력해 주세요.</span></small>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> E-mail</th>
+        <td style="padding:5px 0 5px 10px; text-align:center;">
+            <input name="email" type="text" class="form-control" value="">
+            <b><small>* 아이디/비밀번호 분실시 필수.</small></b>
+        </td>
+    </tr>
+
+</tbody>
+</table>
+<p style="margin:10px 0 10px 0; text-align:center;">
+    <input type="button" title="" value="확인" class="btn btn-default" style='cursor:pointer;' onClick="sendit()">
+    <input type="button" title="" value="취소" class="btn btn-default" style='cursor:pointer;' onClick="history.back()">
+</p>
+</form>
+    </div>
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+
+function ID_chk() {
+    var ID = eval(Join.userid);
+
+    if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
+        document.getElementById("idMsg").innerHTML="<span style='color:red;'><small>6~15자를 권장드립니다.</small></span>"
+        return;
+    } 
+    else {
+        strID=ID.value;
+        new Ajax.Updater('actDiv','/member/register/idcheck', {
+            method:'POST',
+            evalScripts:true,
+            parameters: {userid: strID},
+            encoding : 'utf-8',
+            onComplete: function(request){
+                json=JSON.parse(request.responseText)
+
+                if(!json.duplicate) {
+                    document.getElementById("idMsg").innerHTML="<span style='color:blue;'><small>사용가능한 ID입니다.</small></span>"
+                    f.email_check.value="true";
+                } else {
+                    document.getElementById("idMsg").innerHTML="<span style='color:red;'><small>이미 사용중인 ID입니다.</small></span>"
+                    f.email_check.value="";
+                }
+            }
+        });
+    }
+}
+
+function PW_chk() {
+    var Join=document.Join;
+    if (Join.confirm.value.length==0) {
+        document.getElementById("pwMsg").innerHTML="<span>&nbsp;비밀번호를 재입력해 주세요.</span>";
+        return;}
+    else if (Join.confirm.value!=Join.passwd.value){
+        document.getElementById("pwMsg").innerHTML="<span style='color:red;'>비밀번호가 일치하지 않습니다.</span>"
+        return;
+    } else { 
+        document.getElementById("pwMsg").innerHTML="<span style='color:blue;'>비밀번호가 일치합니다.</span>"
+        return;
+    }
+
+}
+
+
+function sendit(){
+    var Join=document.Join;
+
+    if(Join.name.value==""){
+        alert("이름을 입력하세요.");
+        Join.name.focus();
+        return;
+    }
+    if (Join.userid.value==""){
+        alert("ID 를 입력하여 주십시요.");
+        Join.userid.focus();
+        return;
+    }
+    if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
+        alert("ID는 4~64자리입니다.");
+        Join.userid.focus();
+        return;
+    }
+    if (Join.passwd.value==""){
+        alert("비밀번호를 입력하여 주십시요.");
+        Join.passwd.focus();
+        return;
+    }
+    if (Join.confirm.value!=Join.passwd.value){
+        alert("비밀번호가 제대로 확인되지 않았습니다.");
+        Join.confirm.focus();
+        return;
+    }
+    if(Join.email.value==""){
+        alert("이메일을 입력하세요");
+        Join.email.focus();
+        return;
+    }
+    Join.submit();
+}
+
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.3.0/prototype.js"></script>
+
+{% endblock %}

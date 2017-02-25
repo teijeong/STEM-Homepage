@@ -1,0 +1,35 @@
+﻿{% extends "mobile/base.html" %}
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: People ::</h5><hr>
+                    <h2 class="section-heading" style="margin:0 0 10px 0;"><b>STEM Members</b></h2>
+                </div>
+
+                <div class="col-md-12 text-center">
+                    <p class="text-muted text-center">
+                        공우의 회원들을 소개드립니다.
+                    </p>
+                </div><hr>
+
+                <div class="row">
+                        {% include "mobile/people.html" %}
+                </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block meta %}
+
+<meta name="robots" content="noindex">
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+$('#memberlist').css('visibility','visible');
+});
+</script>
+{% endblock %}

@@ -8,8 +8,9 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="/stem"><i class="fa fa-list-ul"></i> Home</a></li>
-    <li><a href="/stem/board">Board</a></li>
-    <li class="active"><a href="/stem/board/{{tag.id}}">{{tag.title}}</a></li>
+    <li><a href="/stem/board">Boards</a></li>
+    <li><a href="/stem/board/{{tag.id}}">{{tag.title}}</a></li>
+    <li class="active">{{post.title}}</a></li>
   </ol>
 </section>
 
@@ -36,7 +37,8 @@
                 </div>
                 {% endif %}
                 {% if post.author == current_user %}
-                <a href='/stem/board/{{tag.id}}/{{post.id}}/modify' class='btn btn-primary pull-right'>수정</a> 
+                <a href='/stem/board/{{tag.id}}/{{post.id}}/modify' class='btn btn-primary pull-right'>수정</a>
+                <a href='/stem/board/{{tag.id}}/{{post.id}}/delete' class='btn btn-primary pull-right'>삭제</a>
                 {% endif %}
                 </div>
             </div>

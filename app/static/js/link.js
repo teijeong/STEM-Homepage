@@ -27,10 +27,10 @@ function go_menu(tar){
         location.href = "/member/out.asp", "_self";
     /* 아이디찾기 */
     if(tar=='id_seek')
-        { var w=400; var h=240; var top=(screen.availHeight-h)/2; var left=(screen.availWidth-w)/2; window.open("/member/id_seek.asp", "theWindow", "toolbar=0, resizable=no, status=1, scrollbars=no, copyhistory=0, width=" + w + ", height=" + h + ", top=" + top + ", left=" + left); }
+        { var w=500; var h=215; var top=(screen.availHeight-h)/2; var left=(screen.availWidth-w)/2; window.open("/findID", "theWindow", "toolbar=0, resizable=no, status=1, scrollbars=no, copyhistory=0, width=" + w + ", height=" + h + ", top=" + top + ", left=" + left); }
     /* 비번찾기 */
     if(tar=='pw_seek')
-        { var w=400; var h=260; var top=(screen.availHeight-h)/2; var left=(screen.availWidth-w)/2; window.open("/member/pw_seek.asp", "theWindow", "toolbar=0, resizable=no, status=1, scrollbars=no, copyhistory=0, width=" + w + ", height=" + h + ", top=" + top + ", left=" + left); }
+        { var w=500; var h=275; var top=(screen.availHeight-h)/2; var left=(screen.availWidth-w)/2; window.open("/reset", "theWindow", "toolbar=0, resizable=no, status=1, scrollbars=no, copyhistory=0, width=" + w + ", height=" + h + ", top=" + top + ", left=" + left); }
     /* 아이디중복확인 */
     if(tar=='id_check')
         { var w=360; var h=240; var top=(screen.availHeight-h)/2; var left=(screen.availWidth-w)/2; window.open("/member/id_check.asp", "theWindow", "toolbar=0, resizable=no, status=1, scrollbars=no, copyhistory=0, width=" + w + ", height=" + h + ", top=" + top + ", left=" + left); }

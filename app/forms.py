@@ -6,14 +6,15 @@ from flask import redirect, url_for, request
 from flask.ext.login import current_user
 from flask.ext.wtf import Form
 from flask_wtf.file import FileField, FileAllowed
-
+from wtforms.validators import DataRequired, Email
 from wtforms import IntegerField, TextField, PasswordField, HiddenField, \
     validators
 from werkzeug import secure_filename
 from urllib.parse import urlparse, urljoin
-
+from itsdangerous import URLSafeTimedSerializer
 from app import app, models, db, notification
 
+ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
 def is_safe_url(target):
     ref_url = urlparse(request.host_url)
@@ -28,14 +29,6 @@ def get_redirect_target():
             continue
         if is_safe_url(target):
             return target
-
-
-def redirect_back(endpoint, **values):
-    target = request.form['next']
-    if not target or not is_safe_url(target):
-        target = url_for(endpoint, **values)
-    return redirect(target)
-
 
 class RedirectForm(Form):
     next = HiddenField()
@@ -81,8 +74,9 @@ class RegisterForm(RedirectForm):
     name = TextField('Name')
     userid = TextField('ID')
     passwd = PasswordField('PW')
-    email = TextField('E-mail')
+    email = TextField('E-mail', validators=[DataRequired(), Email()])
     user = None
+
 
     def validate(self):
         rv = Form.validate(self)
@@ -98,6 +92,7 @@ class RegisterForm(RedirectForm):
         self.name.data = self.name.data.strip()
         self.passwd.data = self.passwd.data.strip()
         self.email.data = self.email.data.strip()
+
 
         member = None
         user = models.User.query.filter_by(email=self.email.data).first()
@@ -126,7 +121,7 @@ class RegisterForm(RedirectForm):
 class ModifyForm(RedirectForm):
     passwd = PasswordField('PW')
     passwd_original = PasswordField('PW-original')
-    email = TextField('E-mail')
+    email = TextField('E-mail', validators=[DataRequired(), Email()])
     user = current_user
     errors = []
 
@@ -139,13 +134,17 @@ class ModifyForm(RedirectForm):
             self.errors.append("비밀번호가 맞지 않습니다.")
             return False
 
+        users = models.User.query.filter_by(email=self.email.data).first()
+        if users and (users.email != current_user.email) :
+            self.errors.append("이미 사용 중인 이메일입니다. 다른 이메일을 입력하세요.")
+            return False
+
         if self.passwd.data != '':
             self.user.password = self.passwd.data
         if self.email.data != '':
             self.user.email = self.email.data
         db.session.commit()
         return True
-
 
 class ModifyMemberForm(ModifyForm):
     cell = TextField('Cell Phone')
@@ -211,3 +210,23 @@ class ModifyMemberForm(ModifyForm):
                           self.user.member, models.NotificationAction.update)
 
         return True
+
+class ResetForm(Form):
+    nickname = TextField('Name', validators=[DataRequired()])
+    username = TextField('ID', validators=[DataRequired()])
+    email = TextField('E-mail', validators=[DataRequired(), Email()])
+
+class FindIDForm(Form):
+    nickname = TextField('Name', validators=[DataRequired()])
+    email = TextField('E-mail', validators=[DataRequired(), Email()])
+
+class ResetPassword(Form):
+    password = PasswordField('PW', validators=[DataRequired()])
+
+class SearchForm(Form):
+    search = TextField('Search')
+    searchstr = TextField('String')
+
+class ModifyStemDeptOnly(Form):
+    memberid = IntegerField('MemberID', validators=[DataRequired()])
+    stem_department = IntegerField('STEM_Department', validators=[DataRequired()])

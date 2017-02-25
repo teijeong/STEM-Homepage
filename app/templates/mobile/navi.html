@@ -1,0 +1,54 @@
+<a id="page-top" class="index" style="display:hidden;"></a>
+<!-- Navigation -->
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header moveto">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <a class="navbar-brand moveto" href="/"><img id="logo" src="{{ url_for('static', filename='images/gongwoo_logo_kor.png') }}" style="height:44px"></a> 
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="hidden">
+                    <a href="/"></a>
+                </li>
+                <li>
+                    <a class="moveto" href="/sub/1-1">About Us</a>
+                </li>
+                <li>
+                    <a class="moveto" href="/sub/2-1">Activities</a>
+                </li>
+                <li>
+                    <a class="moveto" href="/sub/3-1">People</a>
+                </li>
+                <li>
+                    {% if current_user.member %}
+                    <a class="moveto" href="/stem">Member Page</a>
+                    {% else %}
+                    <a class="moveto" href="/sub/4-1">Join Us</a>
+                    {% endif %}
+                </li>
+                <li>
+                    <a class="moveto" href="/sub/5-1">Board</a>
+                </li>
+                <li>
+                    {% if current_user.is_authenticated() %}
+                    <a class="moveto" href="/member/modify" style="width:50%; display:inline-block;">Mypage</a><a class="moveto" href="/logout" style="width:50%; display:inline-block;">Logout</a>
+                    {% else %}
+                    <a class="moveto" href="/member/register" style="width:50%; display:inline-block;">Register</a><a class="moveto" href="/m_login" style="width:50%; display:inline-block;">Login</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container-fluid -->
+</nav>

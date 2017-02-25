@@ -1,0 +1,34 @@
+{% extends "mobile/base.html" %}
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: Join Us ::</h5>
+                    {% include "mobile/subnavi.html" %}
+                    <h2 class="section-heading" style="margin:0;"><b>Cooperation</b></h2>
+                </div><hr>
+                <div class="row text-muted">
+                    <div class="col-sm-6 col-md-6">
+                        <a href="http://eng.snu.ac.kr/" target="_blank"><img class="coop img-responsive center-block" src="{{ url_for('static', filename='images/a1.gif') }}"></a>
+                        <p class="text-center"><b>서울대학교 공과대학</b><br>- 활동 전반 지원<br>- 교내 의전 및 홍보 활동</p>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <a href="http://gwanak.go.kr/" target="_blank"><img class="coop img-responsive center-block"  src="{{ url_for('static', filename='images/a2.gif') }}"></a>
+                        <p class="text-center"><b>관악구청</b><br>- 지역사회공헌 활동<br>- 관악구 비전멘토링</p>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <a href="http://cns.snu.ac.kr/kor/sub/?idx=279&m=2" target="_blank"><img class="coop img-responsive center-block"  src="{{ url_for('static', filename='images/a4.gif') }}"></a>
+                        <p class="text-center"><b>서울대학교 자연과학대학 GLEAP</b><br>- 학술 및 인적 교류<br>- STEM-GLEAP 정기 교류</p>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <a href="http://www.studentroundtable.org/" target="_blank"><img class="coop img-responsive center-block"  src="{{ url_for('static', filename='images/a5.gif') }}"></a>
+                        <p class="text-center"><b>Northeast Asia Student Round Table</b><br>- 국제교류 활동<br>- SRT 2016 in Taipei</p>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <a href="/sub/1-2" target="_blank"><img class="coop img-responsive center-block"  src="{{ url_for('static', filename='images/a_whoisnext.gif') }}"></a>
+                        <p class="text-center">저희와 비전을 공유할 단체, 동아리를 기다립니다!</p>
+                    </div>
+                </div>
+    </div><br>
+</section>
+{% endblock %}

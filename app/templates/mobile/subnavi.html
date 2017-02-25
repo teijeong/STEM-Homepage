@@ -1,0 +1,28 @@
+<div class="text-center" style="text-align:center;">
+  <div class="subnavi" style="display:inline-block; font-size:12px;">
+    {% if mNum == 1 %}
+    <div><a {% if sNum == 1 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/1-1">Greetings</a></div>
+    <div><a {% if sNum == 2 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/1-2">Vision</a></div>
+    <div><a {% if sNum == 3 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/1-3">Organization</a></div>
+    <div><a {% if sNum == 4 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/1-4">Map</a></div>
+    <div><a {% if sNum == 5 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/1-5">Contact</a></div>
+    {% elif mNum == 2 %}
+    <div><a {% if sNum == 1 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/2-1">Academic Activity</a></div>
+    <div><a {% if sNum == 2 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/2-2">Voluntary Service</a></div>
+    <div><a {% if sNum == 3 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/2-3">Public Relation</a></div>
+    <div><a {% if sNum == 4 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/2-4">Leadership</a></div>
+    <div><a {% if sNum == 5 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/2-5">History</a></div>
+    {% elif mNum == 4 %}
+    <div><a {% if sNum == 1 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/4-1">Recruitment</a></div>
+    <div><a {% if sNum == 2 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/4-2">Cooperation</a></div>
+    <div><a {% if sNum == 3 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/4-3">Sponsors</a></div>
+	{% elif mNum == 5 %}
+    <div><a {% if sNum == 1 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/5-1">Notice</a></div>
+    <div><a {% if sNum == 2 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/5-2">Q &amp; A</a></div>
+    <div><a {% if sNum == 4 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/5-4">자유게시판</a></div>
+    {% if current_user.member %}
+    <div><a {% if sNum == 5 %} class="btn btn-primary" {% else %} class="btn btn-default" {% endif %} style="padding:5px;" href="/sub/5-5">회원게시판</a></div>
+    {% endif %}
+    {% endif %}
+</div><hr>
+</div>

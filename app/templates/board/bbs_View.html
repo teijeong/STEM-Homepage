@@ -42,6 +42,7 @@
             <div><div id="HKeditorContent" name="HKeditorContent">{{ post.body | safe}}</div></div>
         </td>
     </tr>
+    {% if not current_user.is_anonymous() %}
     <tr class="comment-write">
         <th>
             Comment
@@ -53,14 +54,16 @@
             <button onclick="submitComment()">Post</button>
         </td>
     </tr>
+    {% endif %}
+    <tr><td colspan="6" style="border:hidden; padding-top:10px; padding-bottom:0;"><b>댓글</b> &nbsp; <span id="commentCount" style="color:#f19000; font-size:1.3rem;">{{post.commentCount}}</span></td></tr>
     <tr>
         <td colspan="6">
             <ul id="comments">
                 {% for comment in post.comments %}
                 <li data-comment-id="{{comment.id}}">
-                    <h3>{{comment.author.nickname}}<small>{{comment.timestamp.strftime('%Y-%m-%d %H:%M')}}</small>
+                    <h5>{{comment.author.nickname}}&nbsp;<small>{{comment.timestamp.strftime('%Y-%m-%d %H:%M')}}</small>
                         {% if comment.author == current_user %} <i onclick="deleteComment({{comment.id}})" class="fa fa-times command-elem"></i>{% endif %}
-                    </h3>
+                    </h5>
                     <div class="comment-body">
                     {{comment.body | nl2br}}
                     </div>
@@ -136,6 +139,7 @@ function deleteComment(commentID) {
             type: "DELETE",
             success: function() {
                 $("li[data-comment-id="+commentID+"]").remove();
+                document.getElementById("commentCount").innerHTML=eval($("#commentCount").text())-1;
             }
         });
     })(jQuery);
@@ -143,7 +147,8 @@ function deleteComment(commentID) {
 
 function submitComment() {
     (function ($) {
-        if($("#comment-text").val() === "") return;
+        if($("#comment-text").val() == ""){alert("빈 댓글입니다."); return;}
+
         $.ajax({
             url: "/post/comment",
             type: "POST",
@@ -155,14 +160,15 @@ function submitComment() {
             success: function(data) {
                 data.body.replace("\n","<br>");
                 var time = moment(data.timestamp).utcOffset(0);
-                var text = "<li data-comment-id=" + data.id + "><h3>" +
-                    data.author.nickname + "<small>" + time.format('YYYY-MM-DD HH:mm') +
+                var text = "<li data-comment-id=" + data.id + "><h5>" +
+                    data.author.nickname + "&nbsp;" + "<small>" + time.format('YYYY-MM-DD HH:mm') +
                     "</small> <i onclick='deleteComment(" + data.id + ")'" +
-                    "class='fa fa-times command-elem'></i></h3>" +
+                    "class='fa fa-times command-elem'></i></h5>" +
                     "<div class='comment-body'>" + data.body.replace(/\n/g,'<br>') + "</div></li>";
 
                     $("#comments").append(text);
                     $("comment-text").val("");
+                document.getElementById("commentCount").innerHTML=eval($("#commentCount").text())+1;
             }
         });
         $("#comment-text").val("");

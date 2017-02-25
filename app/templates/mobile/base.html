@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% block meta %}{% endblock %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1 user-scalable=0">
+
+    <meta name="naver-site-verification" content="bef8740d68d1a8c507bb562f6d32c6bb03f8d46c"/>
+    <meta name="description" content="공학적 소양을 기반으로 입체적인 시각을 갖추고 사회와 소통하는 리더로 성장하는 공우(STEM)입니다.">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SNU Tomorrow's Edge Membership (STEM)">
+    <meta property="og:description" content="공학적 소양을 기반으로 입체적인 시각을 갖추고 사회와 소통하는 리더로 성장하는 공우(STEM)입니다.">
+    <meta property="og:image" content="https://gongwoo.snu.ac.kr/static/images/gongwoo_logo_kor.png">
+    <meta property="og:url" content="https://gongwoo.snu.ac.kr">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="SNU Tomorrow's Edge Membership (STEM)">
+    <meta name="twitter:description" content="공학적 소양을 기반으로 입체적인 시각을 갖추고 사회와 소통하는 리더로 성장하는 공우(STEM)입니다.">
+    <meta name="twitter:image" content="https://gongwoo.snu.ac.kr/static/images/gongwoo_logo_kor.png">
+    <meta name="twitter:domain" content="https://gongwoo.snu.ac.kr">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-194x194.png') }}" sizes="194x194">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}" sizes="192x192">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" sizes="16x16">
+
+    <title>:: 우수학생센터 공우 ::</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/m_default.css') }}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom Fonts -->
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    
+
+    <link href="{{ url_for('static', filename='css/editorContent.css') }}" rel=stylesheet type="text/css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/link.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/board.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/navi.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='library/functions.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='library/boardControl.js') }}"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    {% include "mobile/navi.html" %}
+
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="intro-text">
+                <div class="intro-lead-in"></div>
+                <div class="intro-heading"></div>
+                <div class="intro-heading"></div>
+                <div class="intro-heading"></div>
+            </div>
+        </div>
+    </header>
+
+    {% block section %}{% endblock %}
+
+
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center" style="font-size:1rem;">
+                                    <span class="tel">전화 -  02-880-2277 / </span>
+                                    <span class="fax">팩스 - 02-877-0914<br>(공과대학 행정실)</span><br>
+                                    <span class="email">이메일 - <a href="mailto:stemsnu@gmail.com">stemsnu@gmail.com</a><br>(공우 공식이메일)</span><br><br>
+                                    <span class="copyright">Copyright &copy; 2015 - 2017 <b>공우(STEM)</b>. all rights reserved.</span>
+                </div>
+                <div class="col-md-12 foot_familysite" style="margin-top:50px;">
+                    <select name="" class="form-control" onChange="navChange3(this); return true;">
+                    <option value='' selected>Family Site</option>
+                    <option value='http://www.snu.ac.kr' >서울대학교</option>
+                    <option value='http://eng.snu.ac.kr' >서울대학교 공과대학</option>
+                    <option value='http://stementor.tistory.com' >공우 STEMentor 블로그</option>
+                    <option value='https://www.facebook.com/stem.honorsociety/' >공우 페이스북 페이지</option>
+                    </select>
+                    <script language="javascript">
+                    function navChange3(popup) {
+                      if (popup.options[popup.selectedIndex].value != "")
+                      {
+                        window.open(popup.options[popup.selectedIndex].value, '_blank');
+                        popup.selectedIndex=0;
+                      }
+                    }
+                    </script>
+                <br>
+
+                <div id="google_translate_element" style="float:right; padding-right:0;"></div><script type="text/javascript">
+                function googleTranslateElementInit() {
+                  new google.translate.TranslateElement({pageLanguage: 'ko', includedLanguages: 'en,ja,mn,ru,zh-CN,zh-TW', layout: google.translate.TranslateElement.InlineLayout.SIMPLE, gaTrack: true, gaId: 'UA-63924272-1'}, 'google_translate_element');
+                }
+                </script><script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+                </div>
+    </footer>
+
+    <!-- jQuery -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+    <!-- Plugin JavaScript -->
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.easing.min.js' ) }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cycle2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.cycle2.swipe.min.js' ) }}"></script>
+    {% block scripts %}{% endblock %}
+    <script type="text/javascript">
+    var $j = jQuery.noConflict();
+          $j(document).ready(function(){
+            if ($j(window).width() < 768) {
+                $j('.navbar-brand').css('margin-left', ($j(window).width()-$j('#logo').width())/2);
+            } else {
+                 $j('.navbar-brand').removeAttr('style');
+            }
+            $j('.navbar-brand').css('visibility','visible');
+          });
+
+          $j(window).resize(function(){
+            if ($j(window).width() < 768) {
+                $j('.navbar-brand').css('margin-left', ($j(window).width()-$j('#logo').width())/2);
+            } else {
+                 $j('.navbar-brand').removeAttr('style');
+            }
+            $j('.navbar-brand').css('visibility','visible');
+          }).resize();     
+    </script> 
+</body>
+
+</html>

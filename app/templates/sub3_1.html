@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% block container %}
     <!--container-->
@@ -11,10 +10,24 @@
             <div class="con">
                 <ul class="nostyle">
                     <li class="nostyle stit"><div class="title-img"><span>People</span></div></li>
-                </ul>
-                {% include "people.html" %}
+                    {% include "people.html" %}
+               </ul>
             </div>
         </div>
     </div>
     <!--//container-->
+{% endblock %}
+
+{% block meta%}
+
+<meta name="robots" content="noindex">
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+$('#memberlist').css('visibility','visible');
+});
+</script>
 {% endblock %}

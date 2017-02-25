@@ -1,0 +1,24 @@
+﻿{% extends "mobile/base.html" %}
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: Join Us ::</h5>
+                    {% include "mobile/subnavi.html" %}
+                    <h2 class="section-heading" style="margin:0;"><b>Sponsors</b></h2>
+                </div><hr>
+
+                <div class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 stem-orange">
+                    <h4 class="text-center">서울대학교 공과대학</h4>
+                    <a href="http://eng.snu.ac.kr/" target="_blank"><img class="img-responsive center-block" src="{{ url_for('static', filename='images/s1.gif') }}"></a><br>
+                    <p class="text-muted">대한민국 최초의 국립대학교인 서울대학교와 함께 서울대학교 공과대학은 “글로벌 산업과 사회의 지도자 육성”을 목표로 끊임없이 달려왔습니다. 서울대 공대에서는 세계적 수준의 국내외 교수들이 열정적으로 교육과 연구에 임하고 있고, 서울대 공대를 졸업한 동문들은 대기업의 CEO, 벤처기업 창업자, 세계적인 공학자 등으로 사회 각계 각층의 지도적 위치에서 대한민국의 기술 개발을 선도함과 동시에 국가발전의 견인차 역할을 해 오고 있습니다.</p>
+                </div><hr>
+
+                <div class="col-sm-8 col-sm-offset-2 col-md-8 col-md-offset-2 stem-orange">
+                    <h4 class="text-center">동부 문화재단</h4>
+                    <a href="https://www.dongbufoundation.or.kr/" target="_blank"><img class="img-responsive center-block" src="{{ url_for('static', filename='images/s2.gif') }}"></a><br>
+                    <p class="text-muted">동부 문화재단은 동부의 창업 이후 한결같이 추구하여 온 '좋은 기업'의 실현과, 어려운 여건 속에서도 꿈을 키워가는 유능한 인재를 지속적으로 발굴 및 육성하여 사회 발전에 기여하고자 하는 김준기 동부그룹 회장의 뜻에 따라 지난 1988년 설립되었습니다. 설립 당시 15억 원의 기본 자산으로 출발한 동부 문화재단은 이후에도 인재 육성과 학술, 교육의 발전에 남다른 관심과 의지를 가진 김준기 동부그룹 회장의 대규모 사재 출연과, 각 계열사의 추가 참여로 현재 자산규모 5,000억 원의 견실한 재단으로 성장하여 공익사업을 펼치고 있습니다.</p>
+                </div>
+    </div><br>
+</section>
+{% endblock %}

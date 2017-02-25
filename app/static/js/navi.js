@@ -21,6 +21,7 @@ function onTopNavi(viewNum, num){
         }
     }
 }
+
 /* gnb load and 'header' mouse leave function - keep current menu selection */
 function gnbLoadOpt() {
     jQuery('#gnb .on').removeClass('on').find('.on2').removeClass('on2');

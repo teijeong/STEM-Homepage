@@ -1,0 +1,187 @@
+<script language="javascript" id="resultProc"></script>
+<div class="row">
+<table class="table" id="mobilepost" border="0" summary="글 내용을 표시" style="margin:10px auto;">
+
+<thead>
+    <tr style="background-color:rgb(242,242,242)">
+        <th scope="row"> 제목 </th>
+        <td>{{ post.title }}</td>
+    </tr>
+    <tr>
+        <th scope="row">작성자</th>
+        <td>{{ post.author.nickname }}</td>
+    </tr>
+    <tr style="background-color:rgb(242,242,242)">
+        <th scope="row">작성일</th>
+        <td class="date" data-timestamp='{{ post.timestamp.timestamp() }}' data-time-format='YYYY-MM-DD HH:mm:ss'></td>
+    </tr>
+    <tr>
+        <th scope="row">조회수</th>
+        <td class="num">{{ post.hitCount }}</td>
+    </tr>
+</thead>
+<tbody class="text-muted">
+    <tr>
+        <td colspan="6" style="padding:30px 0;">
+            {% if post.files %}
+            <div class=attachedFile><dl><dt>
+                <i class="fa fa-archive"></i>
+                <button type="button" class="fileToggle" onclick="changeFileArea()" style="color: #3383AE;">첨부파일보기 ({{ post.files | length }})</button></dt>
+                <dd>
+                    <ul class="nostyle files" style="display:none;" id="fileArea" name="fileArea">
+                        {% for file in post.files %}
+                            <li class="nostyle"><a href="/static/upload/{{ file.link }}" download="{{file.name}}"><i class="fa fa-file"></i> {{ file.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </dd></dl>
+            </div>
+            {% endif %}
+
+            <div><div id="HKeditorContent" name="HKeditorContent">{{ post.body | safe}}</div></div>
+        </td>
+    </tr>
+    {% if not current_user.is_anonymous() %}
+    <tr class="comment-write">
+        <th style="vertical-align:middle;">
+            Comment
+        </th>
+        <td>
+            <textarea class="form-control" rows="3" id="comment-text"></textarea>
+        </td>
+    </tr>
+    <tr>
+        <th></th>
+        <td>
+            <button class="btn btn-default pull-right" onclick="submitComment()">댓글 달기</button>
+        </td>
+    </tr>
+    {% endif %}
+    <tr><td colspan="6" style="border:hidden; padding-top:10px; padding-bottom:0;"><b>댓글</b> &nbsp; <span id="commentCount" style="color:#f19000; font-size:1.3em;">{{post.commentCount}}</span></td></tr>
+    <tr>
+        <td colspan="6">
+            <ul id="comments" class="list-unstyled">
+                {% for comment in post.comments %}
+                <li data-comment-id="{{comment.id}}">
+                    <h5>{{comment.author.nickname}}&nbsp;<small>{{comment.timestamp.strftime('%Y-%m-%d %H:%M')}}</small>
+                        {% if comment.author == current_user %} <i onclick="deleteComment({{comment.id}})" class="fa fa-times command-elem"></i>{% endif %}
+                    </h5>
+                    <div class="comment-body">
+                    {{comment.body | nl2br}}
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </td>
+    </tr>
+</tbody>
+</table>
+
+</div>
+
+<div style="float:left; padding: 10px 0;">
+    {% if next %}
+        <a href="/post/{{next.id}}/view"><i class="fa fa-caret-up"></i> {{next.title}}
+        {% if next.files %}
+            <i class="fa fa-paperclip"></i>
+        {% endif %}
+        {% if next.commentCount > 0 %}
+            <span class="comment-count">[{{next.commentCount}}]</span>
+        {% endif %}</a><br>
+    {% endif %}
+    {% if prev %}
+        <a href="/post/{{prev.id}}/view"><i class="fa fa-caret-down"></i> {{prev.title}}
+        {% if prev.files %}
+            <i class="fa fa-paperclip"></i>
+        {% endif %}
+        {% if prev.commentCount > 0 %}
+            <span class="comment-count">[{{prev.commentCount}}]</span>
+        {% endif %}</a><br>
+    {% endif %}
+</div>
+
+<div style="float:right; padding: 10px 0;">
+    {% if post.board.reply %}
+        <button class="btn btn-default" onclick="javaScript:writeReply({{ post.id }})">답변</button>
+    {% endif %}
+
+    {% if (not current_user.is_authenticated() and post.board.isPublic) or (current_user.is_authenticated() and post.author.id == current_user.id) %}
+        <button class="btn btn-default" onclick="location.href='modify'">수정</button>
+        <button class="btn btn-default" onclick="deletePost({{ post.id }}, {{post.board.id}})">삭제</button>
+    {% elif post.board.isPublic %}
+        <button class="btn btn-default" onclick="javascript:modifyPostPwd({{ post.id }})">수정</button>
+        <button class="btn btn-default" onclick="javascript:deletePostPwd({{ post.id }}, {{post.board.id}})">삭제</button>
+    {% endif %}
+
+    <button class="btn btn-default" onClick="location.href='/sub/5-{{post.board.id }}'" style="cursor:pointer">목록</button>
+</div>
+
+<div style="height:50px;"></div>
+
+<script type="text/javascript">
+function deletePost(id, bid) {
+    var r = confirm("정말로 삭제하시겠습니까?");
+    if (r) {
+        jQuery.ajax({
+            url: "/post/" + id + "/delete",
+            type: "POST",
+            success: function(data) {
+                location.href="/sub/5-" + bid;
+            }
+        });
+    }
+}
+function deleteComment(commentID) {
+    (function($) {
+        var r = confirm("정말로 삭제하시겠습니까?");
+        if(!r) return;
+        $.ajax({
+            url: "/post/comment/" + commentID,
+            type: "DELETE",
+            success: function() {
+                $("li[data-comment-id="+commentID+"]").remove();
+                document.getElementById("commentCount").innerHTML=eval($("#commentCount").text())-1;
+
+            }
+        });
+    })(jQuery);
+}
+
+function submitComment() {
+    (function ($) {
+        if($("#comment-text").val() == ""){alert("빈 댓글입니다."); return;}
+
+        $.ajax({
+            url: "/post/comment",
+            type: "POST",
+            data: {
+                body: $("#comment-text").val(),
+                postID: {{post.id}},
+                userID: {{current_user.id}}
+            },
+            success: function(data) {
+                data.body.replace("\n","<br>");
+                var time = moment(data.timestamp).utcOffset(0);
+                var text = "<li data-comment-id=" + data.id + "><h5>" +
+                    data.author.nickname + "&nbsp;" + "<small>" + time.format('YYYY-MM-DD HH:mm') +
+                    "</small> <i onclick='deleteComment(" + data.id + ")'" +
+                    "class='fa fa-times command-elem'></i></h5>" +
+                    "<div class='comment-body'>" + data.body.replace(/\n/g,'<br>') + "</div></li>";
+
+                    $("#comments").append(text);
+                    $("comment-text").val("");
+                    document.getElementById("commentCount").innerHTML=eval($("#commentCount").text())+1;
+
+            }
+        });
+
+        $("#comment-text").val("");
+    })(jQuery);
+}
+</script>
+
+<style type="text/css">
+    
+#comments li {border-bottom:1px dotted #c0c0c0;}
+.comment-body {padding-bottom:10px;}
+
+</style>

@@ -1,3 +1,5 @@
+<script type="text/javascript" src="{{ url_for('static', filename='library/boardControl.js') }}"></script>
+
 {#
     TopSortListTag            : 
     BBsSelectField            : category selection
@@ -23,18 +25,27 @@
     SelCheck(v1,v2)            : 
 #}
 
+{% set admin_users=['wwee3631', 'stem_admin'] %}
+
 <div class="board_search">
-    <form name='searchfrm' method='get' style='margin:0' onsubmit="searchGo();event.returnValue= false;">
-        <input type='hidden' name='storeidx' value='<%=storeidx%>'>
+    <form name="searchform" method='post' action="{{ url_for('showBoard', sub = mNum|string + '-' + sNum|string , page = 1) }}" style='margin:0' onsubmit='searchGo()'>
         <select name="search" class="input">
-            <option value="title" selected="selected">제목</option>
-            <option value="writer">글쓴이</option>
-            <option value="content">글내용</option>
+        {% with select = searchform.search.data %}
+            <option value="title" {% if select=="title" %} selected="selected"{% endif %}>제목</option>
+            <option value="writer" {% if select=='writer' %} selected="selected"{% endif %}>글쓴이</option>
+            <option value="content" {% if select=='content' %} selected="selected"{% endif %}>글내용</option>
+        {% endwith %}
         </select>
-        <input name="searchstr" type="text" style="width:150px;" class="input">
-        <input type='button' value='검색' class='button1' onclick='searchGo();' style='cursor:pointer'>
+        <input name="searchstr" type="text" style="width:150px;" class="input" value="{{ searchform.searchstr.data if searchform.searchstr.data is not none }}">
+        <input type='button' value='검색' class='button1' onclick="searchGo()" style='cursor:pointer'>
         {% if current_user.is_authenticated() %}
+        	{% if sNum == 1 %}
+        	{% if current_user.username in admin_users %}
             <input type='button' value='쓰기' class='button1' onclick="location.href='/post/write?board={{ sNum }}'" style='cursor:pointer'>
+        	{% endif %}
+        	{% else %}
+            <input type='button' value='쓰기' class='button1' onclick="location.href='/post/write?board={{ sNum }}'" style='cursor:pointer'>
+        	{% endif %}
         {% endif %}
     </form>
 </div>
@@ -64,10 +75,10 @@
             #}
             <tr {{ trBg }}>
                 <td class="num" style="text-align:center">{{ post.id }}</td>
-                <td class="title" style="text-align:left;padding:5px0 5px 0;{{levelView}}">
+                <td class="title" style="text-align:left;padding:5px 0 5px 0;{{levelView}}">
                     <div>
-                        {% if post.isSecret %}<img src="{{ url_for('static', filename='common/memberimg/public.gif') }}" />&nbsp;{% endif %}
                         {#
+                        {% if post.isSecret %}<img src="{{ url_for('static', filename='common/memberimg/public.gif') }}" />&nbsp;{% endif %}
                         {% if post.level > 1 %}<img src="{{ url_for('static', filename='images/ico_reply.gif') }}" />&nbsp;{% endif %}
                         #}
                     <a href="/post/{{ post.id }}/view">{{ post.title}}
@@ -78,7 +89,8 @@
                     <span class="comment-count">[{{post.commentCount}}]</span>
                     {% endif %}
                     </a>&nbsp;
-                        {% if post.isNew %}<img src="{{ url_for('static', filename='images/ico_new.gif') }}" />{% endif %}
+            	        {% if post.level == 2 %}<img src="{{url_for('static', filename='images/ico_lock.gif')}}"  border='0' alt='LOCKED'/>{% endif %}
+                        {% if post.new %}<img src="{{ url_for('static', filename='images/ico_new.gif') }}" border='0' alt='NEW'/>{% endif %}
                     </div>
                 </td>
                 {% if post.author %}
@@ -91,8 +103,11 @@
     </tbody>
 </table>
 
-
 {% include "board/bbs_paging.html" %}
+
+{% if searchform.searchstr.data %}
+<p style="text-align:center;"><a href="/sub/5-{{ sNum }}" style="line-height:3rem; font-size:1rem; font-weight:bold;"> ◀ 검색 마치기</a></p>
+{% endif %}
 
 <form name='boardActfrm' id='boardActfrm' method='get' action='' style='margin:0;'>
     <input type='hidden' name='mode'>
@@ -105,3 +120,4 @@
     <input type='hidden' name='SearchStr' value='<%=SearchStr%>'>
     <input type='hidden' name='storeidx' value='<%=storeidx%>'>
 </form>
+

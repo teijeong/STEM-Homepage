@@ -1,0 +1,32 @@
+﻿{% extends "mobile/base.html" %}
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: About Us ::</h5>
+                    {% include "mobile/subnavi.html" %}
+                    <h2 class="section-heading" style="margin:0;"><b>Organization</b></h2>
+                </div><hr>
+
+                <div class="col-md-8 col-md-offset-2 stem-orange">
+                    <h4 class="text-center" style="margin:20px 0;">로고 및 명칭</h4>
+                    <p class="text-center text-muted">
+                        <img class="img-rounded" src="{{ url_for('static', filename='images/logo_original_kor.png') }}" alt="logo_kor" style="width:100%;background-color:rgb(242,242,242); padding:10px;"/><br>
+                        Korean - <b>공우</b>
+                    </p><br>
+                    <p class="text-center text-muted">
+                        <img class="img-rounded" src="{{ url_for('static', filename='images/logo_original_eng.png') }}" alt="logo_eng" style="width:100%;background-color:rgb(242,242,242); padding:5px;"/><br>
+                        English - <b>STEM</b>
+                    </p>
+                    <p class="text-muted">공우(STEM)는 우수한 공학적 소양을 갖춘 여러 가지 공학 분야의 학부생으로 구성된 동아리 성격의 학생 단체이자, 서울대학교 공과대학의 Honor Society를 지향합니다.</p>
+
+                    <p class="text-muted">정식 명칭은 <b>서울대학교 공과대학 우수학생센터(SNU Tomorrow's Edge Membership)</b>이며, 공학을 전공하는 오늘의 공학도로부터 공학은 물론이거니와 교육, 의학, 법, 경영, 예술 등 사회의 여러 분야에서 활약할 수 있는 <b>내일의 리더</b>로 성장하고자 하는 단체의 지향성을 담아내고 있습니다.</p><hr>
+                </div>
+                <div class="col-md-8 col-md-offset-2 stem-orange">
+                    <h4 class="text-center" style="margin:20px 0;">조직도</h4>
+                    <p class="text-center text-muted">
+                    <img src="{{ url_for('static', filename='images/sub1_3_mobile.png') }}" alt="organization" style="width:100%;"/></p>
+                </div><br>
+    </div>
+</section>
+{% endblock %}

@@ -251,6 +251,10 @@ function _init() {
         $(".content-wrapper, .right-side").css('min-height', window_height - $('.main-footer').outerHeight());
       } else {
         var postSetWidth;
+        if (window_height >= $(".main-sidebar").height()) {
+          $(".content-wrapper, .right-side").css('min-height', $(".main-sidebar").height());
+          postSetWidth = $(".main-sidebar").height();
+        }
         if (window_height >= sidebar_height) {
           $(".content-wrapper, .right-side").css('min-height', window_height - neg);
           postSetWidth = window_height - neg;

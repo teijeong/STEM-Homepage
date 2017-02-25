@@ -1,25 +1,27 @@
 {%extends "admin/base.html"%}
 {%block title%}STEM - History{%endblock%}
 {%block body%}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 <form type="POST">
-    <div class="form-inline">
+    <div class="form-horizontal">
         <div class="form-group">
-            <label for="start">Start</label>
-            <input type="date" id="start" name="start" placeholder="2015-04-21">
+            <label for="start" class="col-sm-2 control-label">시작일</label>
+            <input class="col-sm-2" type="date" id="start" name="start" placeholder="2015-04-21">
         </div>
         <div class="form-group">
-            <label for="start">End</label>
-            <input type="date" id="end" name="end" placeholder="2015-04-21">
+            <label for="start" class="col-sm-2 control-label">종료일</label>
+            <input class="col-sm-2" type="date" id="end" name="end" placeholder="2015-04-21">
         </div>
         <div class="checkbox">
+            <span class="col-sm-2"></span>
             <label>
                 <input type="checkbox" id="same-date" onclick="change()">One-day event
             </label>
         </div>
-    </div>
+    </div><br>
     <div class="form-horizontal">
         <div class="form-group">
-            <label for="description" class="col-sm-2 control-label">Description</label>
+            <label for="description" class="col-sm-2 control-label">활동내용</label>
             <input class="col-sm-9" type="text" id="description" name="description">
         </div>
         <button type="submit" class="btn btn-default pull-right">Add</button>
@@ -43,4 +45,6 @@
     {% endfor %}
 </tbody>
 </table>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
 {%endblock%}

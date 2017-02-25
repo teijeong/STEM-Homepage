@@ -1,0 +1,328 @@
+{% extends "memberapp/base.html" %}
+{% block styles %}
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script src="{{url_for('static', filename='adminLTE/dist/js/member_app.js')}}"></script>
+<!--script src="{{url_for('static', filename='js/member_app.js')}}"></script-->
+{% endblock %}
+{% block content %}
+<section class="content-header">
+    <h1>
+        Member Management System <small>회원등록 관리</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/stem"><i class="fa fa-address-card"></i> Home</a></li>
+        <li class="active">STEM Member Management System</li>
+    </ol>
+</section>
+<section class="content">
+<div class="row" id="memberlist" ng-app="stemApp" ng-controller="memberList" style="display:none;">
+  <div class="members col-xs-12" ng-view>
+      <div class="box">
+        <div class="box-header">
+          <h3 class="box-title">Active 회원</h3>
+          <div class="box-tools">
+            <div class="input-group">
+              <input name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="부서, 이름, 학과 입력" type="text" ng-model="activefilter">
+              <div class="input-group-btn">
+                <button class="btn btn-sm btn-default disabled"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="box-body table-responsive no-padding">
+          <table class="table table-hover table-striped text-center activemembers">
+            <tbody>
+            <tr style="background-color:white;">
+              <th>부서</th>
+              <th>이름 (기수)</th>
+              <th>학과</th>
+              <th>비고</th>
+            </tr>
+            <tr ng-repeat="mem in members | filter:diviSion | filter:activefilter | orderBy:['stem_dept','-cycle','user.nickname']">
+              <td style="vertical-align:middle;">{[mem.stem_dept]}</td>
+              <td style="vertical-align:middle;"><a href="/stem/people/{[mem.id]}">{[mem.user.nickname]}</a> ({[mem.cycle]}기)</td>
+              <td style="vertical-align:middle;">{[mem.dept]}</td>
+              <td style="vertical-align:middle;"><div class="btn btn-sm btn-default" ng-click="openCard(mem.id,'1-1')"><i class="fa fa-exchange" aria-hidden="true"></i></div>
+              <div class="btn btn-sm btn-default" ng-click="openCard(mem.id,'1-2')"><i class="fa fa-times" aria-hidden="true"></i></div>
+              </td>
+                <div class="member-card1-1" style="visibility:hidden;">
+                    <div class="card-body box 액티브취소" style="background:white;">
+                      <div class="box-header with-border text-center">
+                        <h3 style="margin:0;"> Active 회원 ― 부서 변경</h3>
+                      </div>
+                      <div class="box-body">
+                        <p class="text-center">이름 : <b>{[members[pIndex].user.nickname]}</b></p>
+                        <p class="text-center">현재 부서 : <b>{[members[pIndex].stem_dept]}</b></p>
+                        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 3)" class="btn btn-primary">대외교류부</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 1)" class="btn btn-primary">봉사부</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 4)" class="btn btn-primary">학술부</button>
+                        </div>
+                      <p class="text-center">변경할 부서를 선택하여 주세요.</p>
+                      </div>
+                    </div>
+                    <a href="javascript:void(0)" onclick="closeModal()">
+                      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+                   </a>
+                 </div>
+                <div class="member-card1-2" style="visibility:hidden;">
+                    <div class="card-body box 액티브취소" style="background:white;">
+                      <div class="box-header with-border text-center">
+                        <h3 style="margin:0;"> Active 회원 ― Inactive 전환</h3>
+                      </div>
+                      <div class="box-body">
+                        <p class="text-center">이름 : <b>{[members[pIndex].user.nickname]}</b></p>
+                        <p class="text-center">현재 부서 : <b>{[members[pIndex].stem_dept]}</b></p>
+                        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 7)" class="btn btn-primary">일반회원</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 8)" class="btn btn-primary">명예회원</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 9)" class="btn btn-primary">우수명예회원</button>
+                        </div>
+                      <p class="text-center">기존 등급으로 전환하여 주세요.</p>
+                      </div>
+                    </div>
+                    <a href="javascript:void(0)" onclick="closeModal()">
+                      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+                   </a>
+                 </div>
+            </tr>
+          </tbody></table>
+            </div>
+        </div>
+  </div>
+  
+
+  <div class="col-xs-12 col-md-6 col-md-offset-3" style="margin-bottom:15px;">
+  <div onClick="javascript:jQuery('.member-card-finishquarter').trigger('openModal')" class="btn btn-danger btn-block btn-lg">Active 회원 초기화</div>
+  </div>
+
+<div class="member-card-finishquarter" style="visibility:hidden">
+    <div class="card-body box 활동수료" style="background:white;">
+      <div class="box-header with-border text-center">
+        <h3 style="margin:0;"> Active 회원 초기화<br><small>신규 분기 Active 회원 신청용</small></h3>
+      </div>
+      <div class="box-body">
+        <p class="text-center" style="color:blue;"><b>반드시 새로운 Active 회원 신청을 받기 직전에만 사용해주세요.</b></p>
+        <p class="text-center">분기 마감 시에 사용되며, 모든 Active 회원이 일괄적으로 일반 회원으로 전환됩니다.
+        <br>(PM의 경우, 별도로 등급 조정을 해주세요.)</p>
+        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+          <button type="submit" form="changeDept" ng-click="changeDept( -1 , 7)" class="btn btn-danger">확인하였으며 진행하겠습니다.</button>
+          <button onClick="closeModal()" class="btn btn-danger">취소</button>
+        </div>
+        <p class="text-center" style="color:red;"><b>이 기능을 사용한 후에는 기존 목록을 되돌릴 수 없습니다.</b></p>
+      </div>
+    </div>
+    <a href="javascript:void(0)" onclick="closeModal()">
+      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+   </a>
+</div>
+
+  <div class="members col-xs-12" ng-view>
+      <div class="box">
+      <div class="box-header">
+          <h3 class="box-title">회장단</h3>
+          <div class="box-tools">
+            <div class="input-group">
+              <input name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="직급, 이름, 학과 입력" type="text" ng-model="presidentfilter">
+              <div class="input-group-btn">
+                <button class="btn btn-sm btn-default disabled"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="box-body table-responsive no-padding inactivemembers">
+          <table class="table table-hover table-striped text-center">
+            <tbody>
+            <tr style="background-color:white;">
+              <th>직급</th>
+              <th>이름 (기수)</th>
+              <th>학과</th>
+              <th>비고</th>
+            </tr>
+            <tr ng-repeat="mem in members | filter:preSident | filter:presidentfilter | orderBy:['-cycle','-stem_dept']">
+              <td style="vertical-align:middle;">{[mem.stem_dept]}</td>
+              <td style="vertical-align:middle;"><a href="/stem/people/{[mem.id]}">{[mem.user.nickname]}</a> ({[mem.cycle]}기)</td>
+              <td style="vertical-align:middle;">{[mem.dept]}</td>
+              <td style="vertical-align:middle;"><button class="btn btn-sm btn-default disabled"><i class="fa fa-exchange" aria-hidden="true"></i></button></td>
+            </tr>
+          </tbody></table>
+            </div>
+        </div>
+  </div>
+
+  <div class="members col-xs-12 col-md-6" ng-view>
+      <div class="box">
+      <div class="box-header">
+          <h3 class="box-title">일반회원</h3>
+          <div class="box-tools">
+            <div class="input-group">
+              <input name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="이름, 학과 입력" type="text" ng-model="generalfilter">
+              <div class="input-group-btn">
+                <button class="btn btn-sm btn-default disabled"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="box-body table-responsive no-padding inactivemembers">
+          <table class="table table-hover table-striped text-center">
+            <tbody>
+            <tr style="background-color:white;">
+              <th>등급</th>
+              <th>이름 (기수)</th>
+              <th>학과</th>
+              <th>비고</th>
+            </tr>
+            <tr ng-repeat="mem in members | filter:{stem_dept: '일반회원'} | filter:generalfilter | orderBy:['-cycle','user.nickname']">
+              <td style="vertical-align:middle;">{[mem.stem_dept]}</td>
+              <td style="vertical-align:middle;"><a href="/stem/people/{[mem.id]}">{[mem.user.nickname]}</a> ({[mem.cycle]}기)</td>
+              <td style="vertical-align:middle;">{[mem.dept]}</td>
+              <td style="vertical-align:middle;"><div class="btn btn-sm btn-default" ng-click="openCard(mem.id,'2-1')"><i class="fa fa-plus" aria-hidden="true"></i></div>
+              <div class="btn btn-sm btn-default" ng-click="openCard(mem.id,'2-2')"><i class="fa fa-graduation-cap" aria-hidden="true"></i></div></td>
+                <div class="member-card2-1" style="visibility:hidden;">
+                    <div class="card-body box 액티브배치" style="background:white;">
+                      <div class="box-header with-border text-center">
+                        <h3 style="margin:0;"> 일반 회원 ― Active 전환</h3>
+                      </div>
+                      <div class="box-body">
+                        <p class="text-center">이름 : <b>{[members[pIndex].user.nickname]}</b></p>
+                        <p class="text-center">현재 부서 : <b>{[members[pIndex].stem_dept]}</b></p>
+                        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 3)" class="btn btn-primary">대외교류부</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 1)" class="btn btn-primary">봉사부</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 4)" class="btn btn-primary">학술부</button>
+                        </div>
+                        <p class="text-center"> Active 전환 시 활동할 부서를 선택하여 주세요.</p>
+                      </div>
+                    </div>
+                    <a href="javascript:void(0)" onclick="closeModal()">
+                      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+                   </a>
+                </div>
+                <div class="member-card2-2" style="visibility:hidden;">
+                    <div class="card-body box 활동수료" style="background:white;">
+                      <div class="box-header with-border text-center">
+                        <h3 style="margin:0;"> Active 회원 ― 활동 수료</h3>
+                      </div>
+                      <div class="box-body">
+                        <p class="text-center">이름 : <b>{[members[pIndex].user.nickname]}</b></p>
+                        <p class="text-center">현재 부서 : <b>{[members[pIndex].stem_dept]}</b></p>
+                        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 8)" class="btn btn-primary">명예회원</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 9)" class="btn btn-primary">우수명예회원</button>
+                        </div>
+                        <p class="text-center">수료 등급을 설정하여 주세요.</p>
+                      </div>
+                    </div>
+                    <a href="javascript:void(0)" onclick="closeModal()">
+                      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+                   </a>
+                </div>
+            </tr>
+          </tbody></table>
+            </div>
+        </div>
+  </div>
+
+  <div class="members col-xs-12 col-md-6" ng-view>
+      <div class="box">
+      <div class="box-header">
+          <h3 class="box-title">명예회원</h3>
+          <div class="box-tools">
+            <div class="input-group">
+              <input name="table_search" class="form-control input-sm pull-right" style="width: 150px;" placeholder="이름, 학과 입력" type="text" ng-model="honorfilter">
+              <div class="input-group-btn">
+                <button class="btn btn-sm btn-default disabled"><i class="fa fa-search"></i></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="box-body table-responsive no-padding inactivemembers">
+          <table class="table table-hover table-striped text-center">
+            <tbody>
+            <tr style="background-color:white;">
+              <th>등급</th>
+              <th>이름 (기수)</th>
+              <th>학과</th>
+              <th>비고</th>
+            </tr>
+            <tr ng-repeat="mem in members | filter:{stem_dept: '명예회원'} | filter:honorfilter | orderBy:['-cycle','user.nickname']">
+              <td style="vertical-align:middle;">{[mem.stem_dept]}</td>
+              <td style="vertical-align:middle;"><a href="/stem/people/{[mem.id]}">{[mem.user.nickname]}</a> ({[mem.cycle]}기)</td>
+              <td style="vertical-align:middle;">{[mem.dept]}</td>
+              <td style="vertical-align:middle;"><div class="btn btn-sm btn-default" ng-click="openCard(mem.id,'3-1')"><i class="fa fa-exchange" aria-hidden="true"></i></div>
+              <div class="btn btn-sm btn-default" ng-click="openCard(mem.id,'3-2')">PM</i></div></td>
+                <div class="member-card3-1" style="visibility:hidden;">
+                    <div class="card-body box 등급전환" style="background:white;">
+                      <div class="box-header with-border text-center">
+                        <h3 style="margin:0;"> 명예 회원 ― 등급 변경</h3>
+                      </div>
+                      <div class="box-body">
+                        <p class="text-center">이름 : <b>{[members[pIndex].user.nickname]}</b></p>
+                        <p class="text-center">현재 부서 : <b>{[members[pIndex].stem_dept]}</b></p>
+                        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 7)" class="btn btn-primary">일반회원</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 8)" class="btn btn-primary">명예회원</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 9)" class="btn btn-primary">우수명예회원</button>
+                        </div>
+                        <p class="text-center">변경할 등급을 선택하여 주세요.</p>
+                      </div>
+                    </div>
+                    <a href="javascript:void(0)" onclick="closeModal()">
+                      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+                   </a>
+                </div>
+                <div class="member-card3-2" style="visibility:hidden;">
+                    <div class="card-body box PM활동" style="background:white;">
+                      <div class="box-header with-border text-center">
+                        <h3 style="margin:0;"> 명예 회원 ― PM 추가 활동</h3>
+                      </div>
+                      <div class="box-body">
+                        <p class="text-center">이름 : <b>{[members[pIndex].user.nickname]}</b></p>
+                        <p class="text-center">현재 부서 : <b>{[members[pIndex].stem_dept]}</b></p>
+                        <div class="nav nav-pills nav-justified text-center" style="padding:0 0 10px 0;">
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 3)" class="btn btn-primary">대외교류부</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 1)" class="btn btn-primary">봉사부</button>
+                          <button type="submit" form="changeDept" ng-click="changeDept( members[pIndex].id , 4)" class="btn btn-primary">학술부</button>
+                        </div>
+                        <p class="text-center"> PM으로 추가 활동 시 활동할 부서를 선택하여 주세요.</p>
+                      </div>
+                    </div>
+                    <a href="javascript:void(0)" onclick="closeModal()">
+                      <i class="modal-close fa fa-remove pull-right" style="position:absolute; top:5px; right:5px;"></i>
+                   </a>
+                </div>
+            </tr>
+          </tbody></table>
+            </div>
+        </div>
+  </div>
+</div>
+
+</section>
+
+<form action="{{ url_for('.MgmtActiveRegistration') }}" method="POST" id="changeDept">
+<input type="hidden" name="memberid" value="1">
+<input type="hidden" name="stem_department" value="1">
+</form>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+$('#memberlist').css('display','block');
+$('.inactivemembers').css('height','200px');
+$('.inactivemembers').css('overflow-y','scroll');
+$("[class^=member-card]").css('visibility', 'visible');
+if($(window).width()>=768) { $("[class^=member-card]").css('width', $(window).width()*0.5)
+} else {$("[class^=member-card]").css('width', $(window).width()*0.9)};
+});
+$(window).resize(function () {
+if($(window).width()>=768) { $("[class^=member-card]").css('width', $(window).width()*0.5)
+} else {$("[class^=member-card]").css('width', $(window).width()*0.9)};
+});
+</script>
+
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="{{url_for('static', filename='adminLTE/dist/js/member.js')}}"></script>
+{% endblock %}

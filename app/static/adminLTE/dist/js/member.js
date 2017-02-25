@@ -1,7 +1,7 @@
-jQuery(".member-card").easyModal({
+jQuery("[class^=member-card]").easyModal({
 	overlay:0.2
 });
 
 function closeModal() {
-	jQuery(".member-card").trigger("closeModal");
+	jQuery("[class^=member-card]").trigger("closeModal");
 }

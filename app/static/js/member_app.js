@@ -22,6 +22,12 @@ stemApp.controller('memberList', function($scope, $timeout) {
     $scope.members = [];
     $scope.pIndex = 0;
     $scope.openCard = function(id) {openCard($scope, id);};
+    $scope.diviSion = function(mem){
+        return mem.stem_dept === '봉사부' || mem.stem_dept === '학술부' || mem.stem_dept === '대외교류부';
+    };
+    $scope.preSident = function(mem){
+        return mem.stem_dept === '회장' || mem.stem_dept === '총무';
+    };
     jQuery.ajax({
         url: "/people",
         type: "GET",

@@ -36,12 +36,14 @@ class UserView(AuthModelView):
 
 
 class MemberView(AuthModelView):
+    column_list = ('user', 'cycle', 'phone', 'stem_department')
     column_exclude_list = ('task_comments','sent_notifications',
-                        'received_notifications','prrofile_comments',
+                        'received_notifications','profile_comments',
                         'member_comments')
     form_excluded_columns = ('task_comments','sent_notifications',
-                        'received_notifications','prrofile_comments',
+                        'received_notifications','profile_comments',
                         'member_comments')
+
     def __init__(self, session, **kwargs):
         super(MemberView, self).__init__(models.Member, session, **kwargs)
 
@@ -60,6 +62,7 @@ class MemberView(AuthModelView):
 
 
 class PostView(AuthModelView):
+    column_list = ('board','tags','author','title','timestamp')
     form_excluded_columns = ('posts')
     def __init__(self, session, **kwargs):
         super(PostView, self).__init__(models.Post, session, **kwargs)
@@ -93,7 +96,7 @@ class HistoryForm(Form):
 
 class HistoryView(AuthModelView):
     form = HistoryForm
-
+    column_list = ('title','timestamp')
     def __init__(self, session, **kwargs):
         super(HistoryView, self).__init__(models.Post, session, **kwargs)
 

@@ -1,0 +1,77 @@
+<script type="text/javascript" src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+<div class="row">
+<form name="boardfrm" id="boardfrm" action="/post/write" method="post" enctype="multipart/form-data" style="margin:0;">
+<input type="hidden" name="boardID" value="{{board.id}}">
+<table class="table" id="mobilepost" border="0" summary="글 내용을 작성" style="margin:10px auto;">
+
+    <thead>
+        {% if board.id == 2 %}
+        <tr>
+            <th scope="row">잠금설정</th>
+            <td colspan="3">
+                <input name="level" type="radio" value="1" checked style="border:none;">
+                공개글
+                <input name="level" type="radio" value="2" style="border:none;">
+                비공개글
+            </td>
+        </tr>
+        {% else %}
+        <input type="hidden" name="level" value="1">
+        {% endif %}
+        <tr style="background-color:rgb(242,242,242)">
+            <th scope="row">작성자</th>
+            <td>{{ current_user.nickname }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Email</th>
+            <td>{{ current_user.email }}</td>
+        </tr>
+        <tr style="background-color:rgb(242,242,242)">
+            <th scope="row">제목</th>
+            <td><input id="title" name="title" type="text" class="form-control"></td>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td colspan="4" class="cont" style="padding:10px 0 5px 0;"><div id="textareaDIV"><textarea name="body" id="content" style="width:100%; word-break:break-all;" rows="15" class="ckeditor"></textarea></div></td>
+        </tr>
+        <tr>
+        <th scope="row" style="text-align:center; vertical-align:middle;">첨부</th>
+            <td>
+                <table cellpadding="0" cellspacing="0" width="100%" id="inRow">
+                    <tr>
+                        <td style="padding:1px 0; border:0px solid #ffffff">
+                            <input type="file" name="files" id="files" class="form-control" multiple="true" style="font-size:12px;">
+                            <input type="hidden" id="filedel_idx" value="0">
+                            <!--<a href="#jLink" onclick="addRow()"><span style="color: #D90000">필드추가</span></a>-->
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<div style="padding:10px; text-align:center;">
+    <input type="button" value="확인" class="btn btn-default" onclick="writeit();">
+    <!--
+    <input type="button" value="확인" class="button2" onclick="javascript:writePost({{ current_user.id}}, {{ board.id }});" style="cursor:pointer">
+    -->
+    <input type="button" value="취소" class="btn btn-default" onclick="history.back();" style="cursor:pointer">
+</div>
+</form>
+</div><br>
+
+<script type="text/javascript">
+CKEDITOR.replace( "content", { customConfig: "config_mobile.js" } );
+
+function writeit(){
+	var article=document.boardfrm;
+	if(article.title.value==""){
+        alert("제목을 입력하세요.");
+        article.title.focus();
+        return;
+    }
+    article.submit();
+}
+</script>

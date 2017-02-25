@@ -19,7 +19,7 @@
     <div class="col-xs-12">
       <div class="box">
         <div class="box-body">
-          <form enctype="multipart/form-data" role="form" action="/stem/api/post" method="POST">
+          <form id="writePost" enctype="multipart/form-data" role="form" action="/stem/api/post" method="POST">
             <input name="tag_id" type="hidden" value="{{tag.id}}" />
             <input name="redirect" type="hidden" value="/stem/board/{{tag.id}}" />
             <div class="form-group">
@@ -35,7 +35,7 @@
               <input name="files" id="files" type="file" multiple="true">
             </div>
             <div class="form-group">
-              <button type="submit" class="btn btn-primary pull-right">쓰기</button>
+              <div onClick="writePost()" class="btn btn-primary pull-right">쓰기</div>
             </div>
           </form>
         </div>
@@ -74,5 +74,14 @@ var editor = CKEDITOR.replace('body',
     { name: 'styles' },
     { name: 'colors' }]
   });
+
+function writePost() {
+  if (jQuery("#title").val() == '') {
+    alert("제목을 비워둘 수 없습니다.");
+    jQuery("#title").focus();
+    return;
+  }
+  jQuery("#writePost").submit();
+}
 </script>
 {% endblock %}

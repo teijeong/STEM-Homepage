@@ -1,0 +1,9 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}" />
+{% block body %}
+<div style="width:100%; height:100%; display:table;">
+<div style="display:table-cell; vertical-align:middle;">
+<p style="text-align:center; font-size:2rem">Complete!</p><br>
+<p style="text-align:center;"><input type="button" value="Return" onClick="javascript:window.close();location.href='/';"></p>
+</div></div>
+{% endblock %}

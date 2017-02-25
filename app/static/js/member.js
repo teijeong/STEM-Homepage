@@ -1,10 +1,11 @@
-jQuery(".member-card").easyModal({
-	top: 200,
+jQuery(function() {
+	jQuery(".member-card").easyModal({
 	overlay:0.2,
-    overlayParent: jQuery(".wrapper"),
+    overlayParent: jQuery("#memberlist"),
 	zIndex: function () { console.log("AaAAAH"); return 100;},
-    opOpen: function(modal) {
+    onOpen: function(modal) {
     }
+})
 });
 
 function closeModal() {

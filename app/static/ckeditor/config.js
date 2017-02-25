@@ -1,57 +1,21 @@
-﻿/*
-Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
-For licensing, see LICENSE.html or http://ckeditor.com/license
-*/
-
 CKEDITOR.editorConfig = function( config ) {
-    // Define changes to default configuration here. For example:
-    config.language = 'ko';
-    config.height=300;
-    config.enterMode=CKEDITOR.ENTER_BR;
-    config.shiftEnterMode=CKEDITOR.ENTER_BR;
-    //config.uiColor='#000000'
+	config.language = 'ko';
+	config.toolbarGroups = [
+		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+		{ name: 'forms', groups: [ 'forms' ] },
+		'/',
+		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+		{ name: 'styles', groups: [ 'styles' ] },
+		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+		{ name: 'links', groups: [ 'links' ] },
+		{ name: 'insert', groups: [ 'insert' ] },
+		{ name: 'colors', groups: [ 'colors' ] },
+		{ name: 'tools', groups: [ 'tools' ] },
+		{ name: 'others', groups: [ 'others' ] },
+		{ name: 'about', groups: [ 'about' ] }
+	];
 
-    config.toolbar = [
-
-         ['Source','NewPage','Maximize'],
-         ['Cut','Copy','Paste','PasteText','PasteFromWord'],
-         ['Undo','Redo','-','Find','Replace'],
-         ['Link','Unlink','Anchor'],
-         ['Image','Flash','Table','HorizontalRule','Smiley'],
-         '/',
-         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript','-','RemoveFormat'],
-         ['Font','FontSize'],
-         ['TextColor','BGColor'],
-         ['NumberedList','BulletedList'],
-         ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-         ['About'],
-         '/'
-    ];
-
-    config.filebrowserBrowseUrl = '/ckeditor/fileupload.asp';
-    config.filebrowserImageBrowseUrl = '/ckeditor/fileupload.asp?type=Images';
-    config.filebrowserFlashBrowseUrl = '/ckeditor/fileupload.asp?type=Flash';
-    //config.filebrowserUploadUrl = '/ckeditor/ckfinder/core/connector/asp/connector.asp?command=QuickUpload&type=Files';
-    //config.filebrowserImageUploadUrl = '/ckeditor/ckfinder/core/connector/asp/connector.asp?command=QuickUpload&type=Images';
-    //config.filebrowserFlashUploadUrl = '/ckeditor/ckfinder/core/connector/asp/connector.asp?command=QuickUpload&type=Flash';
-    config.filebrowserWindowWidth = '800';
-     config.filebrowserWindowHeight = '700';
-
+	config.removeButtons = 'Save,NewPage,Preview,Print,Templates,Cut,Copy,Paste,PasteText,PasteFromWord,Undo,Redo,Replace,Find,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField,CreateDiv,Blockquote,Language,BidiRtl,BidiLtr,HorizontalRule,Iframe,PageBreak,SpecialChar,Smiley,CopyFormatting,RemoveFormat,Anchor,Table,NumberedList,BulletedList,Indent,Outdent,TextColor,BGColor,ShowBlocks,Format,Styles,Source';
 };
-
-/*
-['Source','-','Save','NewPage','Preview','-','Templates'],
-['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print', 'SpellChecker', 'Scayt'],
-['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-['Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField'],
-'/',
-['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
-['NumberedList','BulletedList','-','Outdent','Indent','Blockquote'],
-['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-['Link','Unlink','Anchor'],
-['Image','Flash','Table','HorizontalRule','Smiley','SpecialChar','PageBreak'],
-'/',
-['Styles','Format','Font','FontSize'],
-['TextColor','BGColor'],
-['Maximize', 'ShowBlocks','-','About']
-*/

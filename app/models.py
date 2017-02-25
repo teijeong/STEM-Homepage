@@ -503,6 +503,8 @@ class ObjectType(IntEnum):
     TaskComment = 7
     Tag = 8
 
+class Activeapply(db.Model):
+    is_active = db.Column(db.Integer, primary_key=True)
 
 class NotificationAction(IntEnum):
     create = 1

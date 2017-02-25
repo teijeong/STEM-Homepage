@@ -8,7 +8,7 @@
   </h1>
   <ol class="breadcrumb">
     <li><a href="/stem"><i class="fa fa-list-ul"></i> Home</a></li>
-    <li><a href="/stem/board">Board</a></li>
+    <li><a href="/stem/board">Boards</a></li>
     <li class="active">{{tag.title}}</li>
   </ol>
 </section>
@@ -24,33 +24,35 @@
                         <tr>
                         <th style="width:40px;">#</th>
                         <th>제목</th>
-                        <th style="width:80px;">작성자</th>
+                        <!--<th style="width:80px;">작성자</th>
                         <th style="width:80px;">일시</th>
-                        <th style="width:60px;">조회수</th>
+                        <th style="width:60px;">조회수</th> -->
                         </tr>
                     </thead>
                     <tbody>
                         {% for post in posts[::-1] %}
                         <tr>
-                            <td>{{post.id}}</td>
-                            <td><a href="{{tag.id}}/{{post.id}}">{{post.title}}
+                            <td style="vertical-align:middle;">{{post.id}}</td>
+                            <td style="vertical-align:middle;"><p style="float:left; margin-bottom:0; padding:5px 0;"><a href="{{tag.id}}/{{post.id}}">{{post.title}}
                                 {% if post.files %}
                                 <i class="fa fa-paperclip"></i>
                                 {% endif %}
                                 {% if post.commentCount > 0 %}
                                 <span class="comment-count">[{{post.commentCount}}]</span>
-                                {% endif %}</a>
+                                {% endif %}</a></p><p class="label bg-gray badge-tag" style="float:right; padding:5px; margin-bottom:5px; margin-top:5px;">{{post.author.nickname}}, <span class="date" data-time-format="YY-MM-DD" data-timestamp="{{post.timestamp.timestamp()}}"></span>, 조회수 {{post.hitCount }}</p>
                             </td>
-                            <td>{{post.author.nickname}}</td>
+                            <!--<td>{{post.author.nickname}}</td>
                             <td class="date" data-time-format="YY-MM-DD" data-timestamp="{{post.timestamp.timestamp()}}"></td>
-                            <td>{{post.hitCount}}</td>
+                            <td>{{post.hitCount}}</td> -->
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
                 </div>
                 <div class="box-footer">
+                {% if tag.special == 1 %}
                     <a class="btn btn-primary" href="{{tag.id}}/write">쓰기</a>
+                {% endif %}
                 </div>
             </div>
         </div>
@@ -70,7 +72,4 @@
 <script src="{{url_for('static', filename='adminLTE/plugins/datatables/dataTables.bootstrap.min.js')}}" type="text/javascript"></script>
 <script src="https://cdn.ckeditor.com/4.4.3/standard/ckeditor.js" type="text/javascript"></script>
 
-<script type="text/javascript">
-
-</script>
 {% endblock %}

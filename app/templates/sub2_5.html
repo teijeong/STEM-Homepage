@@ -26,11 +26,12 @@
                 <ul class="nostyle">
                     <li class="nostyle stit"><div class="title-img"><span>History</span></div></li>
                     <li class="nostyle con_img">
-                        <p style="text-align:right">
+                        <p style="text-align:right; padding: 10px 10px 0 0;">
                             <select name="bansort" class="" onchange="location.href='./' + this.value">
                             {{ PT_SelectBox(years) }}
                             </select>
                         </p>
+                        <div style="padding-bottom:10px;">
                         <table cellspacing="0" cellpadding="0" class="history">
                         <colgroup><col width="30%" /><col /></colgroup>
                         <thead>
@@ -43,6 +44,7 @@
                             {{ PT_ItemList(history) }}
                         </tbody>
                         </table>
+                        </div>
                     </li>
                 </ul>
             </div>

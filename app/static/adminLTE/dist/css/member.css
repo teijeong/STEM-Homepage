@@ -9,7 +9,7 @@
 .members h3 {
     border-bottom: 3px solid #f47a35;
     position: absolute;
-    font-size: 11px;
+    font-size: 20px;
     font-weight: bold;
 }
 
@@ -185,10 +185,52 @@
 	color: #555555;
 }
 
+@media (max-width:767px) {
+
+.member-tag {
+	height:auto;
+	width:auto;
+    padding:10px 5px;
+    margin:0;
+    display: inline-block;
+    text-align: center;
+}
+.member-picture-container {
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
+}
+
+
+
+.member-card {
+	background: #FFF none repeat scroll 0% 0%;
+	width: 300px;
+	box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	box-sizing: border-box;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	line-height: 1.42857;
+	color: #333;
+}
+
+.card-photo {
+	height: 141.844px;
+	width: 298px;
+	overflow: hidden;
+	position: relative;
+}
+
+.member-card-prev {visibility:hidden;}
+.member-card-next {visibility:hidden;}
+
+}
+
 .modal-close {
 	position: absolute;
-	top: -12px;
-	right: -12px;
+	top: 5px;
+	right: 5px;
 	color: #FFF;
 	border-radius: 23px;
 	background-color: #555;

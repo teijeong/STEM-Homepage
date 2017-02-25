@@ -21,7 +21,13 @@ stemApp.controller('memberList', function($scope, $timeout) {
     memberListScope = $scope;
     $scope.members = [];
     $scope.pIndex = 0;
-    $scope.openCard = function(id) {openCard($scope, id);};
+    $scope.diviSion = function(mem){
+        return mem.stem_dept === '봉사부' || mem.stem_dept === '학술부' || mem.stem_dept === '대외교류부';
+    };
+    $scope.preSident = function(mem){
+        return mem.stem_dept === '회장' || mem.stem_dept === '총무';
+    };
+    $scope.openCard = function(id, added) {openCard($scope, id, added);};
     jQuery.ajax({
         url: "/people",
         type: "GET",
@@ -49,13 +55,21 @@ stemApp.controller('memberList', function($scope, $timeout) {
     $scope.nextMember = function(){return nextMember($scope);};
     $scope.goNext = function(){goNext($scope);};
     $scope.goPrev = function(){goPrev($scope);};
+
+    $scope.changeDept = function(id, stem_dept){
+        jQuery("input[name=memberid]").val(id);
+        jQuery("input[name=stem_department]").val(stem_dept);
+    }
 });
 
-function openCard($scope, id) {
+function openCard($scope, id, added) {
     for (var i = 0; i < $scope.members.length; i++) {
         if($scope.members[i].id === id) {
             $scope.pIndex = i;
+            if (added === undefined) {
+                added = "";
             jQuery(".member-card").trigger('openModal');
+            } else jQuery(".member-card"+added).trigger('openModal');
             return;
         }
     }

@@ -1,31 +1,42 @@
 #-*-coding: utf-8 -*-
-from app import app, api, db, models, lm
-from flask import render_template, Response, redirect, url_for, request, abort
+from app import app, api, db, models, lm, mail
+from flask import render_template, Response, redirect, url_for, request, abort, flash
 from flask.ext.restful import Resource, reqparse, fields, marshal_with
 from flask.ext.login import login_user, logout_user, current_user, \
     login_required, AnonymousUserMixin
-from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm
+from flask.ext.mobility.decorators import mobile_template, mobilized
+from flask.ext.mail import Mail, Message
+from .forms import LoginForm, RegisterForm, ModifyForm, ModifyMemberForm, \
+    ResetForm, ResetPassword, FindIDForm, SearchForm, ts
 from sqlalchemy import and_
 import datetime
 from app.helper import process_file
 import pytz
 
+admin_users = ['wwee3631', 'stem_admin']
 
 class AnonymousUser(AnonymousUserMixin):
     def __init__(self):
         super().__init__()
         self.member = None
 
-lm.anonymous_user = AnonymousUser
+def send_email(to, subject, template, **kwargs):
+	msg = Message(
+		   subject,
+		    sender=app.config['MAIL_DEFAULT_SENDER'],
+		    recipients=[to])
+	msg.html = template
+	mail.send(msg)
 
+lm.anonymous_user = AnonymousUser
 
 @lm.user_loader
 def load_user(id):
     return models.User.query.get(int(id))
 
-
 @app.route('/')
-def main():
+@mobile_template('/{mobile/}main.html')
+def main(template):
     bannerRec = db.session.query(models.Banner).order_by(models.Banner.id.desc()).all()
 
     board_ids = [1, 2, 4]
@@ -53,11 +64,94 @@ def main():
             if now - post.timestamp < datetime.timedelta(days=3):
                 post.new = True
 
-    return render_template('main.html',
+    return render_template(template,
                            bannerRec=bannerRec,
                            boardRec=boardRec,
                            boards=boards,
                            form=LoginForm())
+
+@app.route('/reset', methods=["GET", "POST"])
+def reset():
+    form = ResetForm()
+    if form.validate_on_submit():
+        user = models.User.query.filter_by(email=form.email.data).first()
+        if user is not None:
+	        if (form.username.data == user.username) and (form.nickname.data == user.nickname):
+		        subject = "Password reset requested"
+
+		        token = ts.dumps(user.email, salt='recover-key')
+
+		        recover_url = url_for(
+		            'reset_with_token',
+		            token=token,
+		            _external=True)
+
+		        html = render_template(
+		            'member/recover.html',
+		            recover_url=recover_url)
+
+		        send_email(user.email, subject, html)
+
+		        return render_template('reset_finish.html')
+	        else:
+	        	flash('해당하는 회원 정보가 존재하지 않습니다.')
+	        	return redirect('/reset')
+        else:
+        	flash('해당하는 회원 정보가 존재하지 않습니다.')
+        	return redirect('/reset')
+    return render_template('reset.html', form=form)
+
+@app.route('/findID', methods=["GET", "POST"])
+def findid():
+    form = FindIDForm()
+    if form.validate_on_submit():
+        user = models.User.query.filter_by(email=form.email.data).first()
+        if user is not None:
+	        if (form.nickname.data == user.nickname):
+		        return render_template('findID_result.html', user=user)
+	        else:
+	        	flash('해당하는 회원 정보가 존재하지 않습니다.')
+	        	return redirect('/findID')
+        else:
+        	flash('해당하는 회원 정보가 존재하지 않습니다.')
+        	return redirect('/findID')    	
+    return render_template('findID.html', form=form)
+
+@app.route('/reset/<token>', methods=["GET", "POST"])
+def reset_with_token(token):
+    try:
+        email = ts.loads(token, salt="recover-key", max_age=3600)
+    except:
+        abort(404)
+
+    form = ResetPassword()
+
+    if form.validate_on_submit():
+        user = models.User.query.filter_by(email=email).first_or_404()
+
+        user.password = form.password.data
+
+        db.session.add(user)
+        db.session.commit()
+
+        return render_template('reset_finish.html')
+
+    return render_template('reset_with_token.html', form=form, token=token)
+
+@app.route('/m_login', methods=['GET', 'POST'])
+def moblogin():
+    form = LoginForm()
+    if form.validate_on_submit():
+        login_user(form.user)
+        if current_user.member:
+            if current_user.member.cycle:
+                return redirect('/stem')
+            else:
+                return redirect('/member/modify')
+        else:
+            return redirect('/')
+
+    return render_template('/member/mlogin.html', form=form)
 
 @app.route('/vm_confirm')
 def vmConfirm():
@@ -84,38 +178,74 @@ def showSub(sub):
     mNum = sub[0]
     sNum = sub[2]
     if mNum == '5':
-        return showBoard(sub, 1)
+        return redirect('/sub/' + sub + '/1') # showBoard(sub, 1)
     elif mNum == '2' and sNum == '5':
         year = datetime.date.today().year
         return redirect('/sub/2-5/%d' % year)
-    return render_template('sub' + mNum + '_' + sNum + '.html',
-                           mNum=int(mNum),
-                           sNum=int(sNum),
-                           form=LoginForm())
+    if request.MOBILE == False:
+        return render_template('sub' + mNum + '_' + sNum + '.html',
+                               mNum=int(mNum),
+                               sNum=int(sNum),
+                               form=LoginForm())
+    else:
+        return render_template('mobile/sub' + mNum + '_' + sNum + '.html',
+                               mNum=int(mNum),
+                               sNum=int(sNum),
+                               form=LoginForm())
 
-
-@app.route('/sub/<string:sub>/<int:page>')
+@app.route('/sub/<string:sub>/<int:page>', methods=['GET', 'POST'])
 def showBoard(sub, page):
     mNum = sub[0]
     sNum = sub[2]
-
+    searchform = SearchForm()
     if mNum == '5':
         # member board
         if sNum == '5' and not current_user.member:
             abort(404)
+
+        if sNum == '3':
+            abort(404)
+
         pagenation = models.Post.query.filter_by(
             board_id=int(sNum)).order_by(models.Post.timestamp.desc()) \
                                .paginate(page, per_page=10)
+
+        if not searchform.searchstr.data == '':
+            if searchform.search.data == 'title':
+                pagenation = models.Post.query.filter(
+                    and_(models.Post.board_id == int(sNum), models.Post.title.contains(searchform.searchstr.data))) \
+                    .order_by(models.Post.timestamp.desc()).paginate(page, per_page=10)
+            if searchform.search.data == 'writer':
+                user_id = models.User.query.filter(models.User.nickname == searchform.searchstr.data).first()
+                if not user_id is None:
+                    user_id = user_id.id
+                else:
+                    user_id = '-1'
+                pagenation = models.Post.query.filter(
+                    and_(models.Post.board_id == int(sNum), models.Post.user_id == user_id)) \
+                    .order_by(models.Post.timestamp.desc()).paginate(page, per_page=10)
+            if searchform.search.data == 'content':
+                pagenation = models.Post.query.filter(
+                    and_(models.Post.board_id == int(sNum), models.Post.body.contains(searchform.searchstr.data))) \
+                    .order_by(models.Post.timestamp.desc()).paginate(page, per_page=10)
+
         board = models.Board.query.get(int(sNum))
 
         if not board:
             abort(404)
 
-        return render_template('sub' + mNum + '.html',
-                               page=page, totalpage=pagenation.pages,
-                               posts=pagenation.items, board=board,
-                               mNum=int(mNum), sNum=int(sNum),
-                               form=LoginForm())
+        if request.MOBILE == False:
+            return render_template('sub' + mNum + '.html',
+                                   page=page, totalpage=pagenation.pages,
+                                   posts=pagenation.items, board=board,
+                                   mNum=int(mNum), sNum=int(sNum),
+                                   form=LoginForm(), searchform=searchform)
+        else:
+            return render_template('/mobile/sub' + mNum + '.html',
+                                   page=page, totalpage=pagenation.pages,
+                                   posts=pagenation.items, board=board,
+                                   mNum=int(mNum), sNum=int(sNum),
+                                   form=LoginForm(), searchform=searchform)
 
     elif mNum == '2' and sNum == '5':
         return showHistory(sub, page)
@@ -144,9 +274,14 @@ def showHistory(sub, page):
             endDate = datetime.datetime.utcfromtimestamp(float(post.body))
             post.period = post.period + ' ~ ' + endDate.strftime('%m.%d')
 
-    return render_template('sub2_5.html',
-                           mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
-                           years=yearRec, page=page, history=allRec)
+    if request.MOBILE == False:
+        return render_template('sub2_5.html',
+                               mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
+                               years=yearRec, page=page, history=allRec)
+    else:
+        return render_template('mobile/sub2_5.html',
+                               mNum=int(mNum), sNum=int(sNum), form=LoginForm(),
+                               years=yearRec, page=page, history=allRec)
 
 
 @app.route('/post/<int:id>')
@@ -157,6 +292,11 @@ def viewPost(id):
         return abort(404)
     if post.board_id == 5 and not current_user.member:
         return abort(404)
+    if post.level == 2:
+        if current_user.is_anonymous():
+            return abort(403)
+        elif not ((current_user.id == post.user_id) or (current_user.username in admin_users)):
+            return abort(403)
     post.hitCount = post.hitCount + 1
     board = models.Board.query.get(post.board_id)
     db.session.commit()
@@ -167,9 +307,14 @@ def viewPost(id):
         and_(models.Post.id > id, models.Post.board_id == post.board_id)). \
         order_by(models.Post.timestamp.asc()).first()
 
-    return render_template('sub5.html', mNum=5, sNum=post.board_id,
-                           mode='view', post=post, board=board, prev=prev,
-                           next=next, form=LoginForm())
+    if request.MOBILE == False:
+        return render_template('sub5.html', mNum=5, sNum=post.board_id,
+                               mode='view', post=post, board=board, prev=prev,
+                               next=next, form=LoginForm())
+    else:
+        return render_template('mobile/sub5.html', mNum=5, sNum=post.board_id,
+                               mode='view', post=post, board=board, prev=prev,
+                               next=next, form=LoginForm())
 
 #Not implemented: block for security reason
 """
@@ -196,53 +341,72 @@ def login():
                 return redirect('/stem')
             else:
                 return redirect('/member/modify')
-        return redirect(form.next.data)
+        return redirect('/')
 
     return render_template('member/login.html', form=form)
 
 
 @app.route('/member/register', methods=['GET', 'POST'])
 def register():
+    if not current_user.is_anonymous():
+        return abort(403)
+
     registerform = RegisterForm()
     form = LoginForm()
     if registerform.validate_on_submit():
         login_user(registerform.user)
         return redirect('/')
     else:
-        return render_template('member/register.html', registerform=form,
-            form=form)
+        if request.MOBILE == False:
+            return render_template('member/register.html', registerform=form,
+                form=form)
+        else:
+            return render_template('mobile/member/register.html', registerform=form,
+                form=form)
 
 
 @app.route('/member/modify', methods=['GET', 'POST'])
+@mobile_template('/{mobile/}member/modify.html')
 @login_required
-def modify():
+def modify(template):
     if current_user.member:
         form = ModifyMemberForm()
         departments = models.Department.query.all()
         stem_departments = models.StemDepartment.query.all()
         if form.validate_on_submit():
             return render_template(
-                'member/modify.html', form=form,
+                template, form=form,
                 departments=departments, stem_departments=stem_departments,
                 message='수정이 완료되었습니다.')
         return render_template(
-            'member/modify.html', form=form,
+            template, form=form,
             departments=departments,
             stem_departments=stem_departments)
     else:
         form = ModifyForm()
         if form.validate_on_submit():
             return render_template(
-                'member/modify.html', form=form,
+                template, form=form,
                 message='수정이 완료되었습니다.')
-        return render_template('member/modify.html', form=form)
+        return render_template(template, form=form)
 
+@app.route('/stem/')
+def stem():
+	pass
 
 @app.route('/logout')
 def logout():
     form = LoginForm()
-    logout_user()
-    return redirect('/')
+    u = request.referrer
+    host = request.host
+    if (u == ('http://' + host + url_for('stem'))) or (u ==('https://' + host + url_for('stem'))):
+        logout_user()
+        return redirect('/m_login')
+    else:
+        logout_user()
+        return redirect('/')
+
+
 
 
 @app.errorhandler(401)
@@ -263,23 +427,34 @@ def not_found(e):
 def not_found2():
     return render_template('404.html', form=LoginForm()), 404
 
+
+
 class WritePost(Resource):
     @login_required
     def get(self):
         boardParser = reqparse.RequestParser()
         boardParser.add_argument('board', type=int, required=True)
-
         args = boardParser.parse_args()
         board = models.Board.query.get(args['board'])
         if not board:
-            return abort(400)
+            return abort(404)
+        if board.id == 1 and not current_user.username in admin_users:
+            return abort(403)
+        if board.id == 3:
+            return abort(403)
         if board.id == 5 and not current_user.member:
-            return abort(400)
+            return abort(403)
 
-        return Response(
-            render_template('sub5.html', mNum=5, sNum=args['board'],
-                            mode='write', board=board, form=LoginForm()),
-            mimetype='text/html')
+        if request.MOBILE == False:
+            return Response(
+                render_template('sub5.html', mNum=5, sNum=args['board'],
+                                mode='write', board=board, form=LoginForm()),
+                mimetype='text/html')
+        else:
+            return Response(
+                render_template('mobile/sub5.html', mNum=5, sNum=args['board'],
+                                mode='write', board=board, form=LoginForm()),
+                mimetype='text/html')
 
     @login_required
     def post(self):
@@ -292,14 +467,14 @@ class WritePost(Resource):
         args = postParser.parse_args()
         board = models.Board.query.get(args['boardID'])
         if not board:
-            return abort(400)
+            return abort(404)
         if board.id == 5 and not current_user.member:
             return abort(403)
 
-        print (args)
+#        print (args)
 
         post = models.Post(
-            args['level'], args['title'], args['body'], current_user.id,
+            args['level'], args['title'], args['body'], current_user.id,#
             args['boardID'])
         db.session.add(post)
 
@@ -326,22 +501,23 @@ class ModifyPost(Resource):
 
         if current_user.id != post.user_id:
             return Response(
-                render_template('404.html', form=LoginForm()),
-                mimetype='text/html', status=404)
+                render_template('403.html', form=LoginForm()),
+                mimetype='text/html', status=403)
 
+        if request.MOBILE == False:
             return Response(
                 render_template('sub5.html', mNum=5, sNum=post.board_id,
-                                mode='view', post=post,
+                                mode='modify', post=post,
                                 board=models.Board.query.get(post.board_id),
                                 form=LoginForm()),
                 mimetype='text/html')
-
-        return Response(
-            render_template('sub5.html', mNum=5, sNum=post.board_id,
-                            mode='modify', post=post,
-                            board=models.Board.query.get(post.board_id),
-                            form=LoginForm()),
-            mimetype='text/html')
+        else:
+            return Response(
+                render_template('mobile/sub5.html', mNum=5, sNum=post.board_id,
+                                mode='modify', post=post,
+                                board=models.Board.query.get(post.board_id),
+                                form=LoginForm()),
+                mimetype='text/html')
 
 
     @login_required
@@ -377,12 +553,20 @@ class ModifyPost(Resource):
 
         db.session.commit()
 
-        return Response(
-            render_template('sub5.html', mNum=5, sNum=post.board_id,
-                            mode='view', post=post,
-                            board=models.Board.query.get(post.board_id),
-                            form=LoginForm()),
-            mimetype='text/html')
+        if request.MOBILE == False:
+            return Response(
+                render_template('sub5.html', mNum=5, sNum=post.board_id,
+                                mode='view', post=post,
+                                board=models.Board.query.get(post.board_id),
+                                form=LoginForm()),
+                mimetype='text/html')
+        else:
+            return Response(
+                render_template('mobile/sub5.html', mNum=5, sNum=post.board_id,
+                                mode='view', post=post,
+                                board=models.Board.query.get(post.board_id),
+                                form=LoginForm()),
+                mimetype='text/html')
 
 
 class DeletePost(Resource):
@@ -464,7 +648,6 @@ class IdCheck(Resource):
             return {'duplicate': True}
         else:
             return {'duplicate': False}
-
 
 member_fields = {
     'id': fields.Integer,

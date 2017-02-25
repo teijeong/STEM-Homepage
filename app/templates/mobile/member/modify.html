@@ -1,0 +1,218 @@
+{% extends "mobile/base.html" %}
+
+{% block section %}
+
+<script>
+function sendit(){
+    var Modify=document.Modify;
+
+    if (Modify.passwd_original.value === "") {
+        alert("맨 아래에 비밀번호를 입력하세요.");
+        Modify.passwd_original.focus();
+        return;
+    }
+
+    if (Modify.passwd.value != "" && Modify.passwd_check.value!=Modify.passwd.value){
+    alert("수정하고자 하는 비밀번호가 제대로 확인되지 않았습니다.");
+    Modify.passwd_check.focus();
+    return;
+    }
+
+    Modify.submit();
+}
+
+function PW_chk() {
+    var Modify=document.Modify;
+    if (Modify.passwd_check.value.length==0) {
+        document.getElementById("pwMsg").innerHTML="<span>&nbsp;비밀번호를 재입력해 주세요.</span>";
+        return;}
+    else if (Modify.passwd_check.value!=Modify.passwd.value){
+        document.getElementById("pwMsg").innerHTML="<span style='color:red;'>&nbsp;비밀번호가 일치하지 않습니다.</span>"
+        return;
+    } else { 
+        document.getElementById("pwMsg").innerHTML="<span style='color:blue;'>&nbsp;비밀번호가 일치합니다.</span>"
+        return;
+    }
+}
+
+function autoGrow (oField) {
+  if (oField.scrollHeight > oField.clientHeight) {
+    oField.style.height = oField.scrollHeight + "px";
+  }
+}
+
+</script>
+
+<section>
+<div class="container">
+<div class="col-md-12 text-center">
+<h5 id="subtitle">:: My Page ::</h5><hr>
+<h2 class="section-heading" style="margin:0 0 10px 0;"><b>회원 정보 수정</b></h2>                    
+</div><hr>
+
+<div class="row">
+                        <h4 class="col-md-12 text-center stem-orange" style="margin-top:0;">웹 회원 정보 수정</h4>
+                        <p class="col-md-12 text-center"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+
+<form name="Modify" method="POST" action="{{ url_for('modify')}}" enctype="multipart/form-data">
+{{ form.hidden_tag() }}
+<input type=hidden value="{{ next or '' }}" name=next>
+<table id="mobilejoin" cellspacing="0" class="table-striped" summary="개인회원정보입력" style="width:100%;">
+<tbody>
+    <tr>
+        <th scope="row" height='20' class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 이름</th>
+        <td style="padding:5px 0 5px 10px; text-align:center;">{{ current_user.nickname }}</td>
+    </tr>
+
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 아이디</th>
+        <td style="padding:5px 0 5px 10px; text-align:center;">{{ current_user.username }}
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 비밀번호</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="form-control" size="15" maxlength='15' onBlur="PW_chk()"><small><span>* 6~15자로 입력해주세요.<br>(수정이 필요하지 않을 시에는 빈 칸으로 두세요.)</span></small>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 비밀번호<br>확인</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd_check" type="password" class="form-control" size="15" maxlength='15' onBlur="PW_chk()"><small><span id='pwMsg'>비밀번호를 재입력해 주세요.</span></small>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> E-mail</th>
+        <td style="padding:5px 0 5px 10px; text-align:center;">
+            <input name="email" type="text" class="form-control" value="{{ current_user.email }}">
+            <b><small>* 아이디/비밀번호 분실시 필수.</small></b>
+        </td>
+    </tr>
+
+</tbody>
+</table>
+{% if current_user.member %}
+<hr>
+<h4 class="col-md-12 text-center stem-orange" style="margin-top:0;">공우 회원 정보 수정</h4>
+<p class="col-md-12 text-center"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+<table id="mobilejoin" cellspacing="0" class="table-striped" summary="공우회원정보입력" style="width:100%;">
+<tbody>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 핸드폰번호</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="cell" type="text" class="form-control" size="20" maxlength="20" onKeyPress='if( event.keyCode !== 45 && (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value="{{current_user.member.phone or ''}}">
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 생년월일</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="birthday" id="birthday" placeholder="YYYY-MM-DD" maxlength="10" type="date" class="form-control" value="{{current_user.member.birthday or ''}}"/>
+        </td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 기수</th>
+        <td style="padding:5px 0 5px 10px;"><select name="cycle" class="form-control" name="cycle" type="text" class="form-control">
+        <option value='7' style="text-align:center;">7기 - 2016년</option>
+        <option value='6' style="text-align:center;">6기 - 2015년</option>
+        <option value='5' style="text-align:center;">5기 - 2014년</option>
+        <option value='4' style="text-align:center;">4기 - 2013년</option>
+        <option value='3' style="text-align:center;">3기 - 2012년</option>
+        <option value='2' style="text-align:center;">2기 - 2011년</option>
+        <option value='1' style="text-align:center;">1기 - 2010년</option>
+        </select></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 소속 학과(부)</th>
+        <td style="padding:5px 0 5px 10px;"><select name="department" class="form-control">
+        {% for dept in departments %}
+        <option value="{{dept.id}}"{% if dept.id == current_user.member.dept_id %} selected {% endif %}>{{dept.name}}</option>
+        {% endfor %}
+        </select></td>
+    </tr>
+    <tr>
+        <th scope="row" class="import"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 부서</th>
+        <td style="padding:5px 0 5px 10px;"><!--select name="stem_department" class="form-control">
+        {% for dept in stem_departments %}
+        <option value="{{dept.id}}" {% if dept.id == current_user.member.stem_dept_id %} selected {% endif %}>{{dept.name}}</option>
+        {% endfor %}
+        </select-->
+        {% for dept in stem_departments %}
+        {% if dept.id == current_user.member.stem_dept_id %}
+        {% set deptnm = dept.name %}{{deptnm}}
+        <input name="stem_department" value="{{current_user.member.stem_dept_id}}" type="hidden">
+        {% endif %}
+        {% endfor %} 
+        </td>
+    </tr>
+    <tr>
+        <th scope="row">자기소개<br>(공개용)</th>
+        <td style="padding:5px 0 5px 10px;"><textarea class="form-control" rows="5" name="cv" onkeyup="autoGrow(this);">{{ current_user.member.cv or ''}}</textarea></td>
+    </tr>
+    <tr>
+        <th scope="row">자기소개<br>(STEM 내부용)</th>
+        <td style="padding:5px 0 5px 10px;"><textarea onkeyup="autoGrow(this);" class="form-control" rows="5" name="comment">{% if current_user.member.comment and current_user.member.comment != '' %}{{ current_user.member.comment }}{% else %}Example)
+        학번
+        주량/술버릇
+        최근의 경력사항
+        장래 희망
+        스트레스 해소법
+        STEM에게 하고 싶은 말
+        좋아하는 음식은?
+        좋아하는 연예인은?
+        자신이 생각하는 자신의 챠밍 포인트는?{% endif %}</textarea></td>
+    </tr>
+    <tr>
+        <th scope="row">SNS</th>
+        <td style="padding:5px 0 5px 10px;"><input name="social" type="text" class="form-control" size="50" value="{{current_user.member.social or ''}}"></td>
+    </tr>
+    <tr>
+        <th scope="row">프로필 사진<br>(140x140px, png/jpg/gif)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="form-control">{% if current_user.member.img %} <small>(프로필 사진 있음)</small>{% endif %}</td>
+    </tr>
+    <tr>
+        <th scope="row">커버 사진<br>(423x200px, png/jpg/gif)</th>
+        <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="form-control">{% if current_user.member.cover %} <small>(커버 사진 있음)</small>{% endif %}</td>
+    </tr>
+    <tr>
+        <th scope="row">사는 곳</th>
+        <td style="padding:5px 0 5px 10px;">
+            <textarea name="addr" type="text" class="form-control" rows="3">{{current_user.member.addr or ''}}</textarea>
+        </td>
+    </tr>
+</tbody>
+</table>
+
+{% endif %}
+<hr>
+<h4 class="col-md-12 text-center stem-orange" style="margin-top:0;">정보 수정 확인</h4>
+<table id="mobilejoin" cellspacing="0" class="table-striped" summary="비밀번호 확인" style="width:100%;">
+<tbody>
+    <tr>
+        <th scope="row" class="import">현재<br>비밀번호</th>
+        <td style="padding:5px 0 5px 10px;">
+            <input name="passwd_original" type="password" class="form-control" size="20" maxlength="20">
+        </td>
+    </tr>
+</tbody>
+</table>
+<p class="text-center text-muted" style="margin:20px; font-weight:bold; font-size:12px;">* 현재 비밀번호가 일치하지 않은 상태로 버튼을 클릭하면 모든 수정상황이 삭제됩니다.</p>
+<p style="margin:20px 0 20px 0; text-align:center;">
+    <input type="button" title="" value="회원정보수정" class="btn btn-default" style='cursor:pointer;' onclick="sendit()">
+    <input type="button" title="" value="취소" class="btn btn-default" style='cursor:pointer;' onclick="history.back()">
+</p>
+</form>
+</div>
+
+</div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+{% if form.errors != [] %}
+alert("{% for err in form.errors %}{{err}}\n{% endfor %}");
+{% endif %}
+{% if message %}
+alert("{{message}}");
+{% endif %}
+</script>
+{% endblock %}

@@ -3,7 +3,8 @@
 {% macro PT_BoardTopList(rec, actpage) -%}
     {% for article in rec %}
         <dd><a class="title" href="post/{{article.id}}/view">{{ article.title }}
-        {% if article.commentCount %} <span class="comment-count">[{{article.commentCount}}]</span>{% endif %}
+        {% if article.commentCount %} <span class="comment-count">[{{article.commentCount}}]</span>{% endif %}&nbsp;
+        {% if article.level == 2 %}<img src="{{url_for('static', filename='images/ico_lock.gif')}}"  border='0' alt='LOCKED'/>{% endif %}
         {% if article.new %}<img src="{{url_for('static', filename='images/ico_new.gif')}}"  border='0' alt='NEW'/>{% endif %}
         </a><span class="date" data-time-format='MM.DD' data-timestamp='{{ article.timestamp.timestamp() }}'></span></dd>
     {% endfor %}
@@ -37,10 +38,10 @@
                 </div>
 
                 <style>
-                .slideshow1{height:450px; overflow:hidden; width:730px; }
-                .t_panel_1{display:none; height:450px; overflow:hidden; width:730px;}
-                .t_panel_1_first{display:block; height:450px; overflow:hidden; width:730px;}
-                .t_panel_1-wrapper{height:450px; margin:0; overflow:hidden; padding:0; position:relative; width:730px;}
+                .slideshow1{overflow:hidden; width:730px; }
+                .t_panel_1{display:none; overflow:hidden; width:730px;}
+                .t_panel_1_first{display:block; overflow:hidden; width:730px;}
+                .t_panel_1-wrapper{ margin:0; overflow:hidden; padding:0; position:relative; width:730px;}
                 #slider_links1{clear:both; position:absolute; left:20px; top:440px; z-index:999;}
                 #slider_links1 a{width:8px; height:8px; float:left; background-color: #D0D0D0; display:block; color: #D0D0D0; display:block; font-weight:bold; font-family:Arial, Helvetica, sans-serif; font-size:1px; line-height:1em; list-style:none; text-align:center; margin-right:3px;}            
                 #slider_links1 a:hover{color: #970000; background: #970000; text-decoration:none;}
@@ -67,8 +68,8 @@
             </div>
             <div class="m_contents">
                 {% include "right_login.html" %}
-                <div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img src="{{ url_for('static', filename='images/m_recruit.gif') }}" /></a></div>
-                <div><a href="javascript:go_menu('sub2_1')"><img src="{{ url_for('static', filename='images/m_activities.gif') }}" /></a></div>
+                <div class="m_recruit"><a href="javascript:go_menu('sub4_1')"><img style="width:220px;" src="{{ url_for('static', filename='images/m_recruit.png') }}" /></a></div>
+                <div><a href="javascript:go_menu('sub2_1')"><img style="width:220px;" src="{{ url_for('static', filename='images/m_activities.png') }}" /></a></div>
             </div>
         </div>
         <div class="m_con2">

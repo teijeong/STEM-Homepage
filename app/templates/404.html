@@ -1,3 +1,5 @@
+{% if request.MOBILE == False %}
+
 {% extends "base.html" %}
 {% block container %}
 <!--#include virtual = "{{ url_for('static', filename='inc/top.asp') }}"-->
@@ -14,9 +16,35 @@
                 </ul>
                 <article style="text-align:center;font-weight:bold;font-size:300%;height:400px;">
                     <span style="line-height:400px;">페이지를 찾을 수 없습니다.</span>
+                    <br/>
+                    <input type="button" value="돌아가기" class="button1" onclick="history.back();" style="cursor:pointer">
                 </article>
             </div>
         </div>
     </div>
     <!--//container-->
 {% endblock %}
+
+{% else %}
+
+{% extends "mobile/base.html" %}
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: Error ::</h5>
+                    <h2 class="section-heading" style="margin:0;"><b>404</b></h2>                    
+                </div><hr>
+
+                <div class="col-md-12 col-sm-12 text-center">
+                페이지를 찾을 수 없습니다.
+                </div>
+                <div class="text-center" style="margin:50px 0 50px 0;">
+                <input type="button" value="돌아가기" class="btn btn-default" onclick="history.back();" style="cursor:pointer">
+                </div>
+
+    </div><br>
+</section>
+{% endblock %}
+
+{% endif %}

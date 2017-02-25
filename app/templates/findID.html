@@ -1,0 +1,34 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}" />
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <script>
+      var messages = {{ messages | safe }};
+      for (var i=0; i<messages.length; i++) {
+        alert(messages[i]);
+      }
+    </script>
+  {% endif %}
+{% endwith %}
+{% block body %}
+<div style="width:100%; height:100%; display:table;">
+<div style="display:table-cell; vertical-align:middle;">
+<p style="text-align:center; padding-top:10px; font-size:1rem;">가입 시 적은 이름, 이메일을 <br><b>올바르게</b> 적어주세요.<br></p>
+<div style="width:300px; height:140px; margin:10px auto; border:1px solid #f19000;">
+<form style="margin:10px;" action="{{ url_for('findid', form=form) }}" method="POST">
+    <div>
+    <p style="font-size:1rem; padding:5px 0; display:inline-block;">이름(Name) :</p> <p style="display:inline-block; float:right; padding:5px 0; ">
+    <input name="nickname" type="text" style="width:150px;" class="input" value=""></p>
+    </div><br>
+    <div>
+    <p style="font-size:1rem; padding:5px 0; display:inline-block;">이메일(E-mail) :</p> <p style="display:inline-block; float:right; padding:5px 0; ">
+    <input name="email" type="text" style="width:150px;" class="input" value="">
+    </p>
+    </div><br>
+    {{ form.csrf_token }}
+    <p style="text-align:center;"><input style="font-weight:bold; width:200px;" type="submit" value="아이디 찾기" /></p>
+</form>
+</div>
+</div>
+</div>
+{% endblock %}

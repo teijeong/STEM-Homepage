@@ -2,7 +2,7 @@
 {% block content %}
  <section class="content-header">
   <h1>
-    게시판 검색
+    게시판 목록
     <small>태그를 클릭하면 해당 게시판의 게시물들이 보입니다.</small>
   </h1>
   <ol class="breadcrumb">
@@ -17,7 +17,7 @@
     <div class="col-sm-12">
       {% for tag in tags %}
       {% if tag.special % 2 == 1 %}
-      <a href="/stem/board/{{tag.id}}"><span class="label bg-orange badge-tag" data-tag-id="{{tag.id}}">#{{tag.title}}</span></a>
+      <a href="/stem/board/{{tag.id}}"><span id="boardtag" style="margin:5px" class="btn btn-primary" data-tag-id="{{tag.id}}">#{{tag.title}}</span></a>
       {% endif %}
       {% endfor %}
     </div>

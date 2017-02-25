@@ -11,7 +11,27 @@ function sendit(){
         return;
     }
 
+    if (Modify.passwd.value != "" && Modify.passwd_check.value!=Modify.passwd.value){
+    alert("수정하고자 하는 비밀번호가 제대로 확인되지 않았습니다.");
+    Modify.confirm.focus();
+    return;
+    }
+
     Modify.submit();
+}
+
+function PW_chk() {
+    var Modify=document.Modify;
+    if (Modify.passwd_check.value.length==0) {
+        document.getElementById("pwMsg").innerHTML="";
+        return;}
+    else if (Modify.passwd_check.value!=Modify.passwd.value){
+        document.getElementById("pwMsg").innerHTML="<span style='color:red;'>&nbsp;비밀번호가 일치하지 않습니다.</span>"
+        return;
+    } else { 
+        document.getElementById("pwMsg").innerHTML="<span style='color:blue;'>&nbsp;비밀번호가 일치합니다.</span>"
+        return;
+    }
 }
 
 function autoGrow (oField) {
@@ -33,10 +53,11 @@ function autoGrow (oField) {
                     <li class="nostyle stit"><div class="title-img"><span>My Page</span></div></li>
                     <li class="nostyle con_img">
 
-<p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+<p style="text-align:right; padding:5px 10px 0 5px;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
 <form name="Modify" method="POST" action="{{ url_for('modify')}}" enctype="multipart/form-data">
 {{ form.hidden_tag() }}
 <input type=hidden value="{{ next or '' }}" name=next>
+<h4 style="padding:5px;">웹 회원 정보 수정</h4>
 <table cellspacing="0" class="tbl_join" summary="개인회원정보수정">
 <caption>개인회원정보수정</caption>
 <colgroup>
@@ -45,11 +66,11 @@ function autoGrow (oField) {
 </colgroup>
 <tbody>
     <tr>
-        <th scope="row" height='20'>이름</th>
+        <th scope="row" height='20' class="import">이름</th>
         <td style="padding:5px 0 5px 10px;">{{ current_user.nickname }}</td>
     </tr>
     <tr>
-        <th scope="row">아이디</th>
+        <th scope="row" class="import">아이디</th>
         <td style="padding:5px 0 5px 10px;">{{ current_user.username }}</td>
     </tr>
     <!--
@@ -63,18 +84,18 @@ function autoGrow (oField) {
     </tr>
     -->
     <tr>
-        <th scope="row">비밀번호</th>
-        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'> * 6~15자로 입력해주세요.</td>
+        <th scope="row" class="import">비밀번호</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'  onBlur="PW_chk()"> &nbsp;* 6~15자로 입력해주세요. (수정이 필요하지 않을 시에는 빈 칸으로 두세요.)</td>
     </tr>
     <tr>
-        <th scope="row">비밀번호 확인</th>
-        <td style="padding:5px 0 5px 10px;"><input name="passwd_check" type="password" class="input" size="15" maxlength='15'></td>
+        <th scope="row" class="import">비밀번호 확인</th>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd_check" type="password" class="input" size="15" maxlength='15' onBlur="PW_chk()">&nbsp;<span id='pwMsg'></span></td>
     </tr>
     <tr>
-        <th scope="row">E-mail</th>
+        <th scope="row" class="import">E-mail</th>
         <td style="padding:5px 0 5px 10px;">
             <input name="email" size="46" maxlength="50" type="text" class="input" value="{{ current_user.email }}">
-             * 아이디/비번 분실시 필수.
+             <b>* 아이디/비번 분실시 필수.</b>
         </td>
     </tr>
 </tbody>
@@ -82,7 +103,7 @@ function autoGrow (oField) {
 
 {% if current_user.member %}
 <br>
-<h4>공우 회원 정보 수정</h4>
+<h4 style="padding:5px;">공우 회원 정보 수정</h4>
 <table cellspacing="0" class="tbl_join tbl_member" summary="공우 회원 정보 수정">
 <caption>공우 회원 정보 수정</caption>
 <colgroup>
@@ -116,11 +137,18 @@ function autoGrow (oField) {
     </tr>
     <tr>
         <th scope="row" class="import">부서</th>
-        <td style="padding:5px 0 5px 10px;"><select name="stem_department" class="input">
+        <td style="padding:5px 0 5px 10px;"><!--<select name="stem_department" class="input">
         {% for dept in stem_departments %}
         <option value="{{dept.id}}" {% if dept.id == current_user.member.stem_dept_id %} selected {% endif %}>{{dept.name}}</option>
         {% endfor %}
-        </select></td>
+        </select>-->
+        {% for dept in stem_departments %}
+        {% if dept.id == current_user.member.stem_dept_id %}
+        {% set deptnm = dept.name %}{{deptnm}}
+        <input name="stem_department" value="{{current_user.member.stem_dept_id}}" type="hidden">
+        {% endif %}
+        {% endfor %} 
+        </td>
     </tr>
     <tr>
         <th scope="row">자기소개<br>(공개용)</th>
@@ -163,7 +191,7 @@ STEM에게 하고 싶은 말
 {% endif %}
 
 <br>
-<h4><strong>정보 수정 확인</strong></h4>
+<h4 style="padding:5px;">정보 수정 확인</h4>
 <table cellspacing="0" class="tbl_join tbl_member" summary="비밀번호 확인">
 <caption>비밀번호 확인</caption>
 <colgroup>
@@ -180,8 +208,10 @@ STEM에게 하고 싶은 말
 </tbody>
 </table>
 </form>
-<iframe name='iframes' frameborder='0' width='0' height='0'></iframe>
+
+<p style="margin:20px 0 0 0; font-weight:bold; text-align:center; font-size:12px;">* 현재 비밀번호가 일치하지 않은 상태로 버튼을 클릭하면 모든 수정상황이 삭제됩니다.</p>
 <p style="padding:15px 0; text-align:center;">
+
     <input type="button" title="" value="회원정보수정" class="button2" style='cursor:pointer;' onclick="sendit()">
     <input type="button" title="" value="취 소" class="button1" style='cursor:pointer;' onclick="history.back()">
 </p>

@@ -1,0 +1,102 @@
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+<script src="{{url_for('static', filename='adminLTE/dist/js/member_app.js')}}"></script>
+<link rel="stylesheet" href="{{url_for('static', filename='css/member.css')}}" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<div id="memberlist" ng-app="stemApp" ng-controller="memberList" style="visibility:hidden;">
+	<div class="members" style="text-align:center;" ng-view>
+	    <div class="form-group" style="text-align:center;">
+        <select name="cycle" class="form-control" ng-init="searchText.cycle = searchText.cycle || '7'" ng-model="searchText.cycle" style="width:130px; display:inline-block;">
+        <option value='7' style="text-align:center;">7기 - 2016년</option>
+        <option value='6' style="text-align:center;">6기 - 2015년</option>
+        <option value='5' style="text-align:center;">5기 - 2014년</option>
+        <option value='4' style="text-align:center;">4기 - 2013년</option>
+        <option value='3' style="text-align:center;">3기 - 2012년</option>
+        <option value='2' style="text-align:center;">2기 - 2011년</option>
+        <option value='1' style="text-align:center;">1기 - 2010년</option>
+   		</select></div>
+		<div ng-repeat="cycle in all_members | filter:searchText">
+			<h3 style="margin-top:0; margin-left:5px;">{[cycle[0].cycle]}기</h3><br><br>
+            <div ng-repeat="mem in cycle" class="member-tag-m" style="padding:10px 5px;" ng-click="openCard(mem.id)" onClick="modalopen()">
+            	<div class="member-picture-m">
+            		<div class="member-picture-container-m">
+            			<img class="member-picture-thumb" src="/static/upload/{[ mem.img || 'profile/default.png']}">
+            		</div>
+            	</div>
+            	<h5>{[mem.user.nickname]}</h5>
+            </div>
+        </div>
+	</div>
+	<div class="member-card">	
+		<div class="card-body">
+			<div class="card-photo">
+				<img class="card-cover" src="/static/upload/{[members[pIndex].cover || 'cover/cover_default.gif']}">
+			</div>
+			<div class="card-desc" style="max-height:300px; overflow-y:scroll;">
+				<h4 class="card-member-name">{[members[pIndex].user.nickname]}</h4>
+				<h6 class="card-member-dept">{[members[pIndex].cycle]}기 {[members[pIndex].stem_dept]}, {[members[pIndex].dept]}</h6>
+				<p class="card-member-description">{[members[pIndex].cv]}</p>
+				<a class="card-member-social-link" href="{[members[pIndex].social]}">{[members[pIndex].social.split('://')[1]]}</a>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+function modalopen(){
+	jQuery(".member-card").css('display','block');
+	jQuery(".member-card").css('zIndex',10000);
+    jQuery(".member-card").css('left',(jQuery(window).width()-jQuery(".member-card").width())/2);
+	jQuery(".member-card").css('top',(jQuery(window).height()-jQuery(".member-card").height())/2);	
+	jQuery(".lean-overlay").css('display','block');
+	jQuery(".lean-overlay").css('zIndex',9999);
+}
+
+jQuery(window).resize(function(){
+    jQuery(".member-card").css('left',(jQuery(window).width()-jQuery(".member-card").width())/2);
+	jQuery(".member-card").css('top',(jQuery(window).height()-jQuery(".member-card").height())/2);	
+}).resize();
+
+</script>
+<style>
+@media (max-width:767px) {
+
+.member-tag {
+	height:auto;
+	width:auto;
+    padding:10px 5px;
+    margin:0;
+    display: inline-block;
+    text-align: center;
+}
+.member-picture-container {
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
+}
+
+
+
+.member-card {
+	background: #FFF none repeat scroll 0% 0%;
+	width: 300px;
+	box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.25);
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	box-sizing: border-box;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+	font-size: 14px;
+	line-height: 1.42857;
+	color: #333;
+}
+
+.card-photo {
+	height: 141.844px;
+	width: 298px;
+	overflow: hidden;
+	position: relative;
+}
+</style>
+<!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
+{% block scripts %}
+<script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
+<script src="{{url_for('static', filename='adminLTE/dist/js/member.js')}}"></script>
+{% endblock %}

@@ -1,15 +1,16 @@
 {% extends "base.html" %}
 {% block container %}
-
+<script src="//ajax.googleapis.com/ajax/libs/prototype/1.7.1.0/prototype.js"></script>
 <script type="text/javascript">
 
 function ID_chk() {
     var ID = eval(Join.userid);
 
     if (Join.userid.value.length < 4 || Join.userid.value.length > 64) {
-        document.getElementById("idMsg").innerHTML="<span style='color:red;'>4~64자로 입력해주세요.</span>"
+        document.getElementById("idMsg").innerHTML="<span style='color:red;'>6~15자로 입력해주시는 것을 권장드립니다.</span>"
         return;
-    } else {
+    } 
+    else {
         strID=ID.value;
         new Ajax.Updater('actDiv','/member/register/idcheck', {
             method:'POST',
@@ -22,7 +23,7 @@ function ID_chk() {
                 if(!json.duplicate) {
                     document.getElementById("idMsg").innerHTML="<span style='color:blue;'>사용가능한 ID입니다.</span>"
                     f.email_check.value="true";
-                }else{
+                } else {
                     document.getElementById("idMsg").innerHTML="<span style='color:red;'>이미 사용중인 ID입니다.</span>"
                     f.email_check.value="";
                 }
@@ -31,6 +32,22 @@ function ID_chk() {
     }
 }
 
+function PW_chk() {
+    var Join=document.Join;
+    if (Join.confirm.value.length==0) {
+		document.getElementById("pwMsg").innerHTML="";
+    	return;}
+    else if (Join.confirm.value!=Join.passwd.value){
+        document.getElementById("pwMsg").innerHTML="<span style='color:red;'>&nbsp;비밀번호가 일치하지 않습니다.</span>"
+        return;
+    } else { 
+    	document.getElementById("pwMsg").innerHTML="<span style='color:blue;'>&nbsp;비밀번호가 일치합니다.</span>"
+    	return;
+    }
+
+
+
+}
 
 function sendit(){
     var Join=document.Join;
@@ -55,6 +72,11 @@ function sendit(){
         Join.passwd.focus();
         return;
     }
+    if (Join.confirm.value!=Join.passwd.value){
+    	alert("비밀번호가 제대로 확인되지 않았습니다.");
+    	Join.confirm.focus();
+    	return;
+    }
     if(Join.email.value==""){
         alert("이메일을 입력하세요");
         Join.email.focus();
@@ -74,9 +96,9 @@ function sendit(){
                 <ul class="nostyle">
                     <li class="nostyle stit"><div class="title-img"><span>Sign Up</span></div></li>
                     <li class="nostyle con_img">
-<p style="text-align:center;"><img src="{{ url_for('static', filename='images/join_info.gif') }}" /></p>
-<p style="text-align:center; margin-bottom:30px;"><img src="{{ url_for('static', filename='images/join_1.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/btn_step.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/join_2_on.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/btn_step.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/join_3.gif') }}" /></p>
-<p style="text-align:right;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
+<p style="text-align:center;"><img src="{{ url_for('static', filename='images/join_info_new.gif') }}" style="padding:10px 0"/></p>
+<!--<p style="text-align:center; margin-bottom:30px;"><img src="{{ url_for('static', filename='images/join_1.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/btn_step.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/join_2_on.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/btn_step.gif') }}" />&nbsp;&nbsp;<img src="{{ url_for('static', filename='images/join_3.gif') }}" /></p>--> <!-- WILL BE ACTIVATED WHEN THE PROVISION FOR WEB REGISTRATION IS COMPLETED... -->
+<p style="text-align:right; padding:0 10px;"><img src="{{url_for('static', filename='images/ico_arrow_orange.png')}}" alt="" title="" /> 필수 입력 사항입니다.</p>
 
 <form action="{{ url_for('register')}}" method="POST" name="Join" enctype="multipart/form-data">
 {{ registerform.hidden_tag() }}
@@ -97,23 +119,24 @@ function sendit(){
         <th scope="row" class="import">아이디</th>
         <td style="padding:5px 0 5px 10px;">
             <input name="userid" type="text" class="input" size="15" maxlength='15' onBlur="ID_chk()">
-            &nbsp;<span id='idMsg'><span style='color:red;'>6~15자로 입력해주세요.</span></span>
+            &nbsp;<span id='idMsg'><span style='color:red;'>6~15자로 입력해주시는 것을 권장드립니다.</span></span>
         </td>
     </tr>
     <tr>
         <th scope="row" class="import">비밀번호</th>
-        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15'></td>
+        <td style="padding:5px 0 5px 10px;"><input name="passwd" type="password" class="input" size="15" maxlength='15' onBlur="PW_chk()"></td>
     </tr>
     <tr>
         <th scope="row" class="import">비밀번호 확인</th>
-        <td style="padding:5px 0 5px 10px;"><input name="confirm" type="password" class="input" size="15" maxlength='15'></td>
+        <td style="padding:5px 0 5px 10px;"><input name="confirm" type="password" class="input" size="15" maxlength='15' onBlur="PW_chk()">&nbsp;<span id='pwMsg'></span>
+        </td>
     </tr>
     <tr>
         <th scope="row" class="import">E-mail</th>
         <td style="padding:5px 0 5px 10px;">
             <input name="email" size="46" maxlength="50" type="text" class="input" value="">
 
-             * 아이디/비번 분실시 필수.
+             <b>* 아이디/비밀번호 분실시 필수.</b>
         </td>
     </tr>
 
@@ -129,4 +152,6 @@ function sendit(){
             </div>
         </div>
     </div>
+
+
 {% endblock %}

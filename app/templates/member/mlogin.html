@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="theme-color" content="#ffffff">
+<title>:: 우수학생센터 공우::</title>
+{% block meta %}{% endblock %}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/default.css') }}" />
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon/favicon.ico') }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}" sizes="32x32">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-194x194.png') }}" sizes="194x194">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/android-chrome-192x192.png') }}" sizes="192x192">
+<link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}" sizes="16x16">
+<link rel="manifest" href="{{ url_for('static', filename='favicon/manifest.json') }}">
+<link rel="mask-icon" href="{{ url_for('static', filename='favicon/safari-pinned-tab.svg') }}" color="#5bbad5">
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+<link href="{{ url_for('static', filename='css/editorContent.css') }}" rel=stylesheet type="text/css">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="{{ url_for('static', filename='js/link.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/script.js') }}"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/board.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/navi.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='library/functions.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='library/boardControl.js') }}"></script>
+</head>
+{% block container %}
+<!-- container -->
+
+<style>
+.login_box {border-top:3px solid #f19000; border-bottom:3px solid #f19000; height:auto;border-radius:20px;width:80%;margin:auto;}
+.login_box > h3 {margin: 20px 0 0 0;}
+h3 {font-size: 30px; line-height: 30px;}
+h4 {font-size: 25px; line-height: 20px;}
+form {
+    padding: 20px;
+    margin: auto;
+    text-align:center;
+}
+form * {
+    margin: 2px;
+}
+form button {
+    border: 1px solid #ccc;
+    border-radius: 10px;
+}
+form .btn_login {
+    height: 132px;
+    width: 140px;
+    margin-left:20px;
+}
+
+form input {
+    width: 300px;
+    height: 58px;
+    font-size: 25pt;
+}
+form button {
+    height: 60px;
+    font-size: 25pt;
+}
+
+.tohp > a {
+    font-size:20pt;
+    color:#ffffff;
+}
+.tohp > a:hover {
+    font-size:20pt;
+    color:#c0c0c0;
+}
+
+.toct > a {
+    font-size:14pt;
+    color:#ffffff;
+}
+.toct > a:hover {
+    font-size:14pt;
+    color:#c0c0c0;
+}
+
+
+</style>
+
+<body style="background-color:#333;">
+
+<div id="centering" style="width:100%; display:table;">
+<div style="display:table-cell; vertical-align:middle;">
+<p style="text-align:center;">
+<img src="{{ url_for('static', filename='images/gongwoo_logo_kor.png') }}" alt="우수학생센터 공우" style="width:30%; padding:20px;"/>
+</p>
+<div>
+            <article>
+                <div class="login_box">
+                {% if current_user.is_authenticated() %}
+                <div style="text-align:center;verticla-align:center; margin:40px 0">
+                    <h3 style="text-align:center; color:white;">{{current_user.nickname}}님,허가되지 않은 접근입니다.</h3>
+                    <h4 style="text-align:center; color:white; margin-top:50px;">401 Forbidden</h4>
+                </div>
+
+                {% else %}
+                <h3 style="text-align:center; line-height:50px; color:white;">SNU Tomorrow's Edge Membership<br>웹멤버십 로그인</h3>
+
+                <form name="login" method="post" action="{{ url_for('moblogin') }}" onSubmit="mainLoginInputSendit(login);event.returnValue = false;">
+                {{ form.hidden_tag() }}
+                <div style="display:inline-block;">
+                    <div style="float:left;">
+                        <input name="userid" placeholder=" ID" maxlength='15' type=text class="memb" tabindex="1" onkeydown="mainLoginInputSendit(login);"><br>
+                        <input name="password" placeholder=" PW" maxlength='50' type="password" class="memb" tabindex="2" onkeydown="mainLoginInputSendIt(login);">
+                    </div>
+                    <div style="float:left">
+                        <button type="submit" class="btn_login" tabindex="3" onclick='mainLoginSend(login);'>로그인</button>
+                        <input type="hidden" value="{{ next or '' }}" name="next">
+                    </div>
+                    {% if form.userid.errors | length > 0 %}
+                    <script>alert("{{form.userid.errors[0]}}");</script>
+                    {% endif %}
+                    {% if form.password.errors | length > 0 %}
+                    <script>alert("{{form.password.errors[0]}}");</script>
+                    {% endif %}
+                </div>
+                <br><br>
+                <div>
+                    <button type="button" class="btn_mid" onclick="location.href='{{ url_for('register') }}'">회원가입</button>
+                    <button type="button" class="btn_mid" onclick="javascript:go_menu('id_seek')">아이디 찾기</button>
+                    <button type="button" class="btn_mid" onclick=javascript:go_menu('pw_seek')>비밀번호 찾기</button>
+                </div>
+                </form>
+                {% endif %}
+                </div>
+                {% if current_user.member %}
+<p class="tohp" style="text-align:center; padding-top:40px; padding-bottom:40px;"><a href= "/stem/">공우 홈페이지로</a></p>
+				{% else %}
+<p class="tohp" style="text-align:center; padding-top:40px; padding-bottom:40px;"><a href= "/">공우 홈페이지로</a></p>
+				{% endif %}
+<p style="text-align:center; color:#ffffff; padding-bottom:10px;"> Copyright © 2015 - 2017 <b>공우 (STEM)</b> all rights reserved.</p>
+<p class="toct" style="text-align:center; color:#ffffff"> Contact : <a href="mailto:stemsnu@gmail.com">stemsnu@gmail.com</a></p>
+
+                </article>
+</div>
+
+</div>
+</div>
+
+</body>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function(){
+$('#centering').css('height',$(window).height());
+});
+</script>
+{% endblock %}

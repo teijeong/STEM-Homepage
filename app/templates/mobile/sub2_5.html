@@ -1,0 +1,58 @@
+﻿{% macro PT_SelectBox(years) -%}
+    {% for year in years %}
+        <option value="{{ year }}" {% if year==page %}selected{% endif %}>{{ year }}년</option>
+    {% endfor %}
+{%- endmacro %}
+
+{% macro PT_ItemList(AllRec) -%}
+    {% for item in AllRec %}
+        <tr>
+            <th class="text-center">{{ item.period }}</th>
+            <td class="text-center"><div>{{ item.title | nl2br}}</div></td>
+        </tr>
+    {% endfor %}
+{%- endmacro %}
+
+{% extends "mobile/base.html" %}
+{% block section %}
+<section>
+    <div class="container">
+                <div class="col-md-12 text-center">
+                    <h5 id="subtitle">:: Activities ::</h5>
+                    {% include "mobile/subnavi.html" %}
+                    <h2 class="section-heading" style="margin:0 0 10px 0;"><b>History</b></h2>
+                </div>
+
+                <div class="col-md-12 text-center">
+                    <p class="text-muted text-center">
+                        공우의 역사를 확인해보세요.
+                    </p>
+                </div><hr>
+
+
+                <div class="col-md-8 col-md-offset-2" style="text-align:center;">
+                <select name="bansort" class="form-control" onchange="location.href='./' + this.value" style="width:100px; display:inline-block;">
+                {{ PT_SelectBox(years) }}
+                </select>
+                </div><br>
+
+                        <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2">
+                        <table cellspacing="0" cellpadding="0" class="history">
+                        <colgroup><col width="20%" /><col /></colgroup>
+                        <thead>
+                            <tr>
+                            <th class="text-center">일 시</th>
+                            <th class="text-center">활동내용</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ PT_ItemList(history) }}
+                        </tbody>
+                        </table>
+                        </div>
+
+
+                </div>
+    </div><br><br>
+</section>
+{% endblock %}

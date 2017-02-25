@@ -11,7 +11,53 @@
             <div class="con">
                 <ul class="nostyle">
                     <li class="nostyle stit"><div class="title-img"><span>Map</span></div></li>
-                    <li class="nostyle con_img"><iframe id="contentFrame" name="contentFrame" src="https://www.snu.ac.kr/campus/Gwanak/subway" marginwidth="0" marginheight="0" frameborder="0" width="718" height="3000" scrolling="no"></iframe></li>
+                    <li class="nostyle con_img"><div style="padding:5px;">
+                    <h1 id="Dongbang_coming""><br><span style="color: #f19000; font-weight: bold; font-size:1.3rem;">공우(STEM) 동아리방 오시는 길</span></h1>
+                        <hr style="display: block; border: solid 1px #f19000;">
+                    <div id="map" style="width: 600px; height:600px; margin: 30px auto 10px auto; border: 1px solid #c0c0c0;"></div>
+                    <script>
+                      function initMap() {
+                        var myLatLng = {lat: 37.455197, lng: 126.952001};
+
+                        // Create a map object and specify the DOM element for display.
+                        var map = new google.maps.Map(document.getElementById('map'), {
+                          center: myLatLng,
+                          scrollwheel: true,
+                          zoom: 17
+                        });
+
+                        // Create a marker and set its position.
+                        var marker = new google.maps.Marker({
+                          map: map,
+                          position: myLatLng,
+                          title: '서울대학교 공과대학 우수학생센터 공우(STEM)'
+                        });
+
+                        var content = "<h2>서울대학교 공과대학 우수학생센터 공우(STEM)</h2><p style='font-size:12px; font-weight:bold;'>서울시 관악구 관악로 1 (서울대학교)<br>신양학술정보관(44-1동) 402-1호, 공과대학 우수학생센터(공우)</p>"; 
+
+                        var infowindow = new google.maps.InfoWindow({ content: content});
+                            infowindow.open(map,marker);
+
+                        google.maps.event.addListener(marker, "click", function() {
+                            infowindow.open(map,marker);
+                        });
+
+
+                      }
+                    </script>
+                    <p class="literature" style="text-align:center;"><b>5511, 관악02 이용 시</b> : 에너지자원연구소<small>(21290)</small> 하차 후 에너지자원연구소<small>(135동)</small> 방향 이동 (도보 3분)</p>
+                    <p class="literature" style="text-align:center;"><b>5513, 5516 이용 시</b> : 공대입구<small>(21273)</small> 하차 후 글로벌공학교육센터<small>(38동)</small> 방향 이동 (도보 2분)</p>
+                    <p class="literature" style="text-align:center;"><b>행정관 셔틀 이용 시</b> : 행정관 하차 후 관정도서관<small>(62-1동)</small>, 멀티미디어강의동<small>(43-1동)</small> 거쳐 이동 (도보 10분)</p>
+                    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASm3kfXe5VOihHJlaVY1bNnkANqH-p4LM&callback=initMap"
+                        async defer></script>
+
+                    <h1 id="Campus_coming""><br><span style="color: #f19000; font-weight: bold; font-size:1.3rem;">서울대학교 관악캠퍼스 오시는 길</span></h1>
+                        <hr style="display: block; border: solid 1px #f19000;">
+                        <div style="position:relative; overflow:hidden; height:1800px;">
+                        <iframe id="contentFrame" name="contentFrame" src="//www.snu.ac.kr/campus/Gwanak/subway" marginwidth="0" marginheight="0" frameborder="0" width="718" height="2050" scrolling="no" style="padding: 0 10px 0 10px;"></iframe>
+                        </div>
+                    </div>
+                    </li>
                 </ul>
             </div>
         </div>

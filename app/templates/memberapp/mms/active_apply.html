@@ -1,0 +1,232 @@
+{% extends "memberapp/base.html" %}
+{% block content %}
+<section class="content-header">
+    <h1>
+        Member Management System <small>Active 회원 신청</small>
+    </h1>
+    <ol class="breadcrumb">
+        <li><a href="/stem"><i class="fa fa-address-card"></i> Home</a></li>
+        <li class="active">STEM Member Management System</li>
+    </ol>
+</section>
+
+{% if current_user.member in manager %} <!-- 관리자 옵션 -->
+<script>
+function active_activation(){
+  setTimeout( function () {
+    document.Activation.submit();
+  } , 500 );
+}
+</script>
+<section class="content" style="min-height:0; padding-bottom:0;">
+<div class="row">
+      <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">관리자 옵션</h3>
+            </div><!-- /.box-header -->
+            <form name="Activation" method="POST" action="{{url_for('.ActiveActivation')}}" enctype="multipart/form-data">
+            <div class="box-body"> Active 회원 신청 양식 활성화
+                        <div class="material-switch pull-right">
+                            <input id="activation" name="is_active" type="checkbox" value="1" onClick="active_activation()" {% if is_active != 0 %} checked{% endif %}/>
+                            <label for="activation" class="label-primary"></label>
+                        </div>
+            </div>
+            </form>
+            </div>
+            </div>
+</div>
+</section>
+{% endif %}
+
+{% if is_active == 0 %}
+<section class="content">
+<div class="row">
+<h1 class="text-center">Active 회원 신청 기간이 아닙니다.</h1>
+</div>
+</section>
+{% else %}
+{% if current_user.member.stem_dept_id==7 %} <!--id 7 = 일반회원-->
+<script>
+function sendit(){
+    var Modify=document.Modify;
+
+    if (Modify.passwd_original.value === "") {
+        alert("맨 아래에 비밀번호를 입력하세요.");
+        Modify.passwd_original.focus();
+        return;
+    }
+
+    Modify.submit();
+}
+</script>
+<form name="Modify" method="POST" action="{{ url_for('.ActiveApply')}}" enctype="multipart/form-data">
+<section class="content">
+<div class="row">
+      <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">회원 정보 업데이트</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              {{ form.hidden_tag() }}
+              <input type=hidden value="{{ next or '' }}" name=next>
+              <table id="active" cellspacing="0" class="table-striped" summary="액티브회원신청" style="width:100%;">
+              <tbody>
+                  <tr>
+                      <th scope="row" height='20' class="import text-center"> 이름</th>
+                      <td style="padding:5px 0 5px 10px; text-align:center;">{{ current_user.nickname }}</td>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="import text-center"> E-mail</th>
+                      <td style="padding:5px 0 5px 10px; text-align:center;">
+                          <input name="email" type="text" class="form-control" value="{{ current_user.email }}">
+                      </td>
+                  </tr>
+
+                  <tr>
+                      <th scope="row" class="import text-center"> 핸드폰번호</th>
+                      <td style="padding:5px 0 5px 10px;">
+                          <input name="cell" type="text" class="form-control" size="20" maxlength="20" onKeyPress='if( event.keyCode !== 45 && (event.keyCode<48) || (event.keyCode>57) ) event.returnValue=false;' style='IME-MODE:disabled' value="{{current_user.member.phone or ''}}">
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="import text-center"> 생년월일</th>
+                      <td style="padding:5px 0 5px 10px;">
+                          <input name="birthday" id="birthday" placeholder="YYYY-MM-DD" maxlength="10" type="date" class="form-control" value="{{current_user.member.birthday or ''}}"/>
+                      </td>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="import text-center"> 기수</th>
+                      <td style="padding:5px 0 5px 10px;"><select name="cycle" class="form-control" name="cycle" type="text" class="form-control">
+                      <option value='7' style="text-align:center;">7기 - 2016년</option>
+                      <option value='6' style="text-align:center;">6기 - 2015년</option>
+                      <option value='5' style="text-align:center;">5기 - 2014년</option>
+                      <option value='4' style="text-align:center;">4기 - 2013년</option>
+                      <option value='3' style="text-align:center;">3기 - 2012년</option>
+                      <option value='2' style="text-align:center;">2기 - 2011년</option>
+                      <option value='1' style="text-align:center;">1기 - 2010년</option>
+                      </select></td>
+                  </tr>
+                  <tr>
+                      <th scope="row" class="import text-center"> 소속 학과(부)</th>
+                      <td style="padding:5px 0 5px 10px;"><select name="department" class="form-control">
+                      {% for dept in departments %}
+                      <option value="{{dept.id}}"{% if dept.id == current_user.member.dept_id %} selected {% endif %}>{{dept.name}}</option>
+                      {% endfor %}
+                      </select></td>
+                  </tr>
+                  <tr style="display:none;">
+                      <th scope="row">자기소개<br>(공개용)</th>
+                      <td style="padding:5px 0 5px 10px;"><textarea class="form-control" rows="5" name="cv" onkeyup="autoGrow(this);">{{ current_user.member.cv or ''}}</textarea></td>
+                  </tr>
+                  <tr style="display:none;">
+                      <th scope="row">자기소개<br>(STEM 내부용)</th>
+                      <td style="padding:5px 0 5px 10px;"><textarea onkeyup="autoGrow(this);" class="form-control" rows="5" name="comment">{% if current_user.member.comment and current_user.member.comment != '' %}{{ current_user.member.comment }}{% else %}Example)
+                      학번
+                      주량/술버릇
+                      최근의 경력사항
+                      장래 희망
+                      스트레스 해소법
+                      STEM에게 하고 싶은 말
+                      좋아하는 음식은?
+                      좋아하는 연예인은?
+                      자신이 생각하는 자신의 챠밍 포인트는?{% endif %}</textarea></td>
+                  </tr>
+                  <tr style="display:none;">
+                      <th scope="row">SNS</th>
+                      <td style="padding:5px 0 5px 10px;"><input name="social" type="text" class="form-control" size="50" value="{{current_user.member.social or ''}}"></td>
+                  </tr>
+                  <tr style="display:none;">
+                      <th scope="row">프로필 사진<br>(140x140px, png/jpg/gif)</th>
+                      <td style="padding:5px 0 5px 10px;"><input name="photo" type="file" class="form-control">{% if current_user.member.img %} <small>(프로필 사진 있음)</small>{% endif %}</td>
+                  </tr>
+                  <tr style="display:none;">
+                      <th scope="row">커버 사진<br>(423x200px, png/jpg/gif)</th>
+                      <td style="padding:5px 0 5px 10px;"><input name="cover" type="file" class="form-control">{% if current_user.member.cover %} <small>(커버 사진 있음)</small>{% endif %}</td>
+                  </tr>
+                  <tr style="display:none;">
+                      <th scope="row">사는 곳</th>
+                      <td style="padding:5px 0 5px 10px;">
+                          <textarea name="addr" type="text" class="form-control" rows="3">{{current_user.member.addr or ''}}</textarea>
+                      </td>
+                  </tr>
+              </tbody>
+              </table>
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->
+      </div>
+      <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">희망 부서 선택</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              <select name="stem_department" class="form-control">
+                {% for dept in stem_departments %}
+                <option value="{{dept.id}}">{{dept.name}}</option>
+                {% endfor %}
+              </select>
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->
+      </div>
+
+      <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Active 회원 신청</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+              <table id="activeapply" cellspacing="0" class="table-striped" summary="비밀번호 확인" style="width:100%;">
+              <tbody>
+                  <tr>
+                      <th scope="row" class="import text-center">현재<br>비밀번호</th>
+                      <td style="padding:5px 0 5px 10px;">
+                          <input name="passwd_original" type="password" class="form-control" size="20" maxlength="20">
+                      </td>
+                  </tr>
+              </tbody>
+              </table>
+              <p class="text-center text-muted" style="margin:20px; font-weight:bold; font-size:12px;">* 현재 비밀번호가 일치하지 않은 상태로 버튼을 클릭하면 최종 신청이 되지 않습니다.</p>
+              <p style="margin:20px 0 20px 0; text-align:center;">
+                  <input type="button" title="" value="최종 신청" class="btn btn-default" style='cursor:pointer;' onclick="sendit()">
+              </p>
+            </div><!-- /.box-body -->
+          </div><!-- /.box -->
+      </div>
+</div>
+</section>
+</form>
+{% else %}
+<section class="content">
+<div class="row">
+      <div class="col-xs-12">
+          <div class="box">
+            <div class="box-header with-border">
+              <h3 class="box-title">Active 회원 신청을 완료하였거나, 신청이 불가능합니다.</h3>
+            </div><!-- /.box-header -->
+            <div class="box-body">
+            <p>다음의 세 가지 중 하나에 해당되지 않는지 살펴봐주세요.</p>
+            <ul>
+              <li>Active 회원 신청 양식을 작성하고, 최종 신청을 이미 하였습니다.</li>
+              <li>현 활동 기수의 회장, 혹은 총무입니다.</li>
+              <li>이미 수료한 명예회원, 혹은 우수명예회원입니다.</li>
+            </ul>
+            <p>PM(Provisional Member) 활동을 희망하시는 경우, 회장에게 별도 연락 바랍니다.</p>
+            </div>
+            </div>
+            </div>
+</div>
+</section>
+{% endif %}
+{% endif %}
+
+<script>
+{% if message %}
+alert("{{message}}");
+{% endif %}
+</script>
+
+{% endblock %}
+
+

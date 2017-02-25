@@ -7,7 +7,7 @@
 }
 
 .members h3 {
-    border-bottom: 3px solid #f47a35;
+    border-bottom: 3px solid #f19000;
     position: absolute;
 }
 
@@ -104,10 +104,25 @@
     text-align: center;
 }
 
+.member-tag-m {
+    margin-bottom: 10px;
+    display: inline-block;
+    text-align: center;
+}
+
 .member-picture-container {
     height: 140px;
     width: 140px;
     border-radius: 140px;
+    overflow: hidden;
+    border: 3px solid #EEE;
+    position: relative;
+}
+
+.member-picture-container-m {
+    height: 100px;
+    width: 100px;
+    border-radius: 100px;
     overflow: hidden;
     border: 3px solid #EEE;
     position: relative;

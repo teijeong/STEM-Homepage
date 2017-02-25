@@ -2,7 +2,6 @@
 
 <form name="boardfrm" id="boardfrm" action="/post/write" method="post" enctype="multipart/form-data" style="margin:0;">
 <input type="hidden" name="boardID" value="{{board.id}}">
-<input type="hidden" name="level" value="1">
 <table cellspacing="0" border="0" summary="글 내용을 작성" class="tbl_write" style="table-layout:fixed;">
     <colgroup>
     <col width="100">
@@ -11,16 +10,18 @@
     <col>
     </colgroup>
     <thead>
-        {% if board.isPublic %}
+        {% if board.id == 2 %}
         <tr>
             <th scope="row">잠금설정</th>
             <td colspan="3">
-                <input name="publicYN" type="radio" value="0" checked style="border:none;">
+                <input name="level" type="radio" value="1" checked style="border:none;">
                 공개글
-                <input name="publicYN" type="radio" value="1" style="border:none;">
+                <input name="level" type="radio" value="2" style="border:none;">
                 비공개글
             </td>
         </tr>
+        {% else %}
+        <input type="hidden" name="level" value="1">
         {% endif %}
         <tr>
             <th scope="row">작성자</th>
@@ -57,7 +58,7 @@
                         <td style="padding:1px 0; border:0px solid #ffffff">
                             <input type="file" name="files" id="files" style="width:350px" class="input" multiple="true">
                             <input type="hidden" id="filedel_idx" value="0">
-                            <a href="#jLink" onclick="addRow()"><span style="color: #D90000">필드추가</span></a>
+                            <!--<a href="#jLink" onclick="addRow()"><span style="color: #D90000">필드추가</span></a>-->
                         </td>
                     </tr>
                 </table>
@@ -67,7 +68,7 @@
 </table>
 
 <div style="padding:10px; text-align:center;">
-    <input type="submit" value="확인" class="button2">
+    <input type="button" value="확인" class="button2" onclick="writeit();">
     <!--
     <input type="button" value="확인" class="button2" onclick="javascript:writePost({{ current_user.id}}, {{ board.id }});" style="cursor:pointer">
     -->
@@ -76,5 +77,15 @@
 </form>
 
 <script type="text/javascript">
-CKEDITOR.replace( "content", { customConfig: "config_user.js" } );
+
+
+function writeit(){
+	var article=document.boardfrm;
+	if(article.title.value==""){
+        alert("제목을 입력하세요.");
+        article.title.focus();
+        return;
+    }
+    article.submit();
+}
 </script>

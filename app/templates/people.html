@@ -1,14 +1,24 @@
-
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
 <script src="{{url_for('static', filename='js/member_app.js')}}"></script>
 <link rel="stylesheet" href="{{url_for('static', filename='css/member.css')}}" />
 <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">-->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-
-<div ng-app="stemApp" ng-controller="memberList">
-	<div class="members" ng-view>
-		<div ng-repeat="cycle in all_members">
-			<h3>{[cycle[0].cycle]}기</h3>
+<li class="nostyle con_img">
+<div id="memberlist" ng-app="stemApp" ng-controller="memberList" style="visibility:hidden;">
+    <div style="text-align:right; margin:10px 10px;">
+        <select name="cycle" ng-init="searchText.cycle = searchText.cycle || '7'" ng-model="searchText.cycle" style="width:110px; display:inline-block;">
+        <option value='7' style="text-align:center;">7기 - 2016년</option>
+        <option value='6' style="text-align:center;">6기 - 2015년</option>
+        <option value='5' style="text-align:center;">5기 - 2014년</option>
+        <option value='4' style="text-align:center;">4기 - 2013년</option>
+        <option value='3' style="text-align:center;">3기 - 2012년</option>
+        <option value='2' style="text-align:center;">2기 - 2011년</option>
+        <option value='1' style="text-align:center;">1기 - 2010년</option>
+		</select>
+	</div>
+	<div class="members" style="margin:10px 50px;" ng-view>
+		<div ng-repeat="cycle in all_members | filter:searchText">
+			<h3>{[cycle[0].cycle]}기</h3><br>
             <a ng-repeat="mem in cycle" class="member-tag" ng-click="openCard(mem.id)">
             	<div class="member-picture">
             		<div class="member-picture-container">
@@ -18,6 +28,7 @@
             	<h5>{[mem.user.nickname]}</h5>
             </a>
         </div>
+
 	</div>
 
 	<div class="member-card">	
@@ -45,6 +56,7 @@
 		</a>
 	</div>
 </div>
+</li>
 <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>-->
 <script src="{{url_for('static', filename='js/jquery.easyModal.js')}}"></script>
 <script src="{{url_for('static', filename='js/member.js')}}"></script>

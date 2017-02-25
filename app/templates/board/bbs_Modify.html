@@ -1,6 +1,6 @@
-<script type="text/javascript" src="{{ url_for("static", filename="ckeditor/ckeditor.js") }}"></script>
-
-
+<script type="text/javascript" src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='library/boardControl.js') }}"></script>
+ 
 <form name="boardfrm" method="post" action="/post/{{ post.id }}/modify" enctype="multipart/form-data" style="margin:0;">
 <table cellspacing="0" border="0" summary="글 내용을 작성" class="tbl_write">
 <colgroup>
@@ -10,6 +10,17 @@
 <col>
 </colgroup>
 <thead>
+    {% if board.id == 2 %}
+    <tr>
+        <th scope="row">잠금설정</th>
+        <td colspan="3">
+            <input name="publicYN" type="radio" value="0" checked style="border:none;">
+            공개글
+            <input name="publicYN" type="radio" value="1" style="border:none;">
+            비공개글
+        </td>
+    </tr>
+    {% endif %}
     <tr>
         <th scope="row">작성자</th>
         <td colspan="3"><input name="writer" type="text" size="38" maxlength="10" class="input" value="{{ post.author.nickname }}"></td>
@@ -53,7 +64,7 @@
                 <td style="padding:1px 0; border:0px solid #ffffff">
                     <input type="file" name="files" id="files" style="width:350px" class="input" multiple="true">
                     <input type="hidden" name="filedel_idx" value="0">
-                    <a href="#jLink" onclick="addRow()"><span style="color: #D90000">필드추가</span></a>
+                    <!--<a href="#jLink" onclick="addRow()"><span style="color: #D90000">필드추가</span></a>-->
                 </td>
             </tr>
             </table>
@@ -63,11 +74,11 @@
 </table>
 
 <div style="padding:10px; text-align:center;">
-    <input type="submit" value="확인" class="button2" style="cursor:pointer">
+    <input type="button" value="확인" class="button2" style="cursor:pointer" onclick="sendit()">
     <input type="button" value="취소" class="button1" onclick="history.back();" style="cursor:pointer">
 </div>
 </form>
 
 <script type="text/javascript">
-CKEDITOR.replace( "content", { customConfig: "config_user.js" } );
+CKEDITOR.replace( "content", { customConfig: "config.js" } );
 </script>

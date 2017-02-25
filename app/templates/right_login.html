@@ -1,7 +1,7 @@
 <div class="m_login">
     {% if current_user.is_authenticated() %}
     <dl>
-        <dt style='color: #ffffff;'>{{ current_user.nickname }}</b>님 환영합니다!</dt>
+        <dt style='color: #ffffff; padding: 7px; font-size: 12px;'><b>{{ current_user.nickname }}</b> 님 환영합니다!</dt>
         <dd><input type="button" value="LOGOUT" class="m_login_btn" onclick="location.href='/logout'" /></dd>
     </dl>
     <p class="m_login_txt"></p>
@@ -25,10 +25,12 @@
         <dd><input type="button" value="LOGIN" class="m_login_btn" onclick="mainLoginSend(login);" style='cursor:pointer;' /></dd>
     </dl>
     </form>
-    <p class="m_login_txt"><a href="{{ url_for('register') }}">·회원가입</a><a href="javascript:go_menu('id_seek')">·아이디찾기</a><a href="javascript:go_menu('pw_seek')">·비밀번호찾기</a></p>
+    <p class="m_login_txt" style="text-align:center;"><a href="{{ url_for('register') }}">·회원가입</a><a href="javascript:go_menu('id_seek')">·아이디찾기</a><a href=javascript:go_menu('pw_seek')>·비밀번호찾기</a></p>
     {% endif %}
+    {% if current_user.is_authenticated() %}
     <ul class="nostyle">
         <li class="nostyle">
-        <a href="{{ url_for('modify') }}"><img src="{{ url_for('static', filename='images/m_mypage.gif') }}"/></a><a href="javascript:go_menu('favorite')"><img src="{{ url_for('static', filename='images/m_bookmark.gif') }}" /></a></li>
+        <a href="{{ url_for('modify') }}"><img src="{{ url_for('static', filename='images/m_mypage_long.gif') }}"/></a> <!--<a href="javascript:go_menu('favorite')"><img src="{{ url_for('static', filename='images/m_bookmark.gif') }}" /></a></li> -->
     </ul>
+    {% endif %}
 </div>

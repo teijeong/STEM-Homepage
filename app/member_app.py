@@ -3,16 +3,19 @@ import pytz
 import uuid
 
 from flask import Blueprint, render_template, abort, current_app, redirect, \
-    request
+    request, url_for
 from jinja2 import TemplateNotFound
 from flask.ext.login import login_user, logout_user, current_user, \
     login_required
 from flask.ext.restful import Api, Resource, reqparse, fields, marshal_with
 from functools import wraps
 
+from .forms import ModifyMemberForm, ModifyStemDeptOnly
+
 from werkzeug import secure_filename
 
 from sqlalchemy import or_, and_, not_
+from sqlalchemy.sql.expression import func
 from datetime import datetime, timedelta
 
 from app import db, models, app, helper, notification
@@ -21,7 +24,6 @@ from app import db, models, app, helper, notification
 member_app = Blueprint('member_app', __name__,
                        template_folder='templates/memberapp')
 api = Api(member_app)
-
 
 def member_required(func):
     @wraps(func)
@@ -37,37 +39,162 @@ def member_required(func):
 @member_required
 def main():
     member = current_user.member
+    
+#    task_levels = [0, 1, 2]
+#    task_lists = []
+#
+#    for level in task_levels:
+#        task_lists.append(
+#            models.Task.query
+#            .filter(or_(models.Task.contributors.contains(member),
+#                        models.Task.creator == member))
+#            .filter(models.Task.status != 3)
+#            .filter_by(level=level).all())
+#    task_lists[2] = [t for t in task_lists[2] if t.parents]
 
-    task_levels = [0, 1, 2]
-    task_lists = []
-
-    for level in task_levels:
-        task_lists.append(
-            models.Task.query
-            .filter(or_(models.Task.contributors.contains(member),
-                        models.Task.creator == member))
-            .filter(models.Task.status != 3)
-            .filter_by(level=level).all())
-    task_lists[2] = [t for t in task_lists[2] if t.parents]
+    mem = models.Member
+    issues = models.Task.query.get(0).children[::-1][0:3]
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
 
     try:
         return render_template(
             'dashboard.html', member=current_user.member,
-            task_lists=task_lists, nav_id=1,
+            nav_id=1,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(),
+            manager=manager, recruitcycle=recruitcycle, issues=issues,mem=mem)
     except TemplateNotFound:
         abort(404)
 
-
-@member_app.route('/people')
+@member_app.route('/mms/completion_state')
 @member_required
-def showPeople():
+def CompletionState():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    try:
+        return render_template('memberapp/mms/completion_state.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/mms/active', methods=['GET', 'POST'])
+@member_required
+def ActiveApply():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    form = ModifyMemberForm()
+    departments = models.Department.query.all()
+    stem_departments = models.StemDepartment.query.filter(or_(models.StemDepartment.id==1, models.StemDepartment.id==3, models.StemDepartment.id==4)).all()
+
+    request = models.Activeapply.query.first()
+
+    try:
+        if form.validate_on_submit():
+            return render_template('memberapp/mms/active_apply.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), manager=manager, form=form, departments=departments, stem_departments=stem_departments, is_active=request.is_active, message='신청이 완료되었습니다.')
+        return render_template('memberapp/mms/active_apply.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), manager=manager, form=form, departments=departments, stem_departments=stem_departments, is_active=request.is_active)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/mms/active/activation', methods=['GET', 'POST'])
+@member_required
+def ActiveActivation():
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    if current_user.member in manager:
+        if 'is_active' in request.form:
+            isactive = models.Activeapply.query.all()
+            newval = models.Activeapply(is_active=1)
+            for i in isactive:
+                db.session.delete(i)
+            db.session.add(newval)
+            db.session.commit()
+        else:
+            isactive = models.Activeapply.query.all()
+            newval = models.Activeapply(is_active=0)
+            for i in isactive:
+                db.session.delete(i)
+            db.session.add(newval)
+            db.session.commit()
+        return redirect(url_for('.ActiveApply'))
+    return abort(403)
+
+@member_app.route('/mms/completion_criterion')
+@member_required
+def MgmtCompletionCriterion():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    if not current_user.member in manager:
+        abort(404)
+
+    try:
+        return render_template('memberapp/mms/mgmt_completion_criterion.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/mms/mgmt/completion_record')
+@member_required
+def MgmtCompletionRecord():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    if not current_user.member in manager:
+        abort(404)
+
+    try:
+        return render_template('memberapp/mms/mgmt_completion_record.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/mms/mgmt/active_registration', methods=['GET', 'POST'])
+@member_required
+def MgmtActiveRegistration():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    form = ModifyStemDeptOnly()
+
+    if not current_user.member in manager:
+        abort(404)
+
+    try:
+        if form.is_submitted():
+            if form.memberid.data == -1:
+                users = models.Member.query.filter(or_(models.Member.stem_dept_id==1,models.Member.stem_dept_id==3,models.Member.stem_dept_id==4)).all()
+                for user in users :
+                    user.stem_dept_id = form.stem_department.data
+                    db.session.add(user)
+                db.session.commit()
+            else:
+                user = models.Member.query.filter(models.Member.id == form.memberid.data).first_or_404()
+                user.stem_dept_id = form.stem_department.data
+                db.session.add(user)
+                db.session.commit()
+            return render_template('memberapp/mms/mgmt_registration.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), form=form, manager=manager)
+        return render_template('memberapp/mms/mgmt_registration.html', member=current_user.member, notifications=notification.Generate(current_user.member), nav_id=2, boards=models.Tag.query.filter_by(special=1).all(), form=form, manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/people/_<int:cycle>')
+@member_required
+def showPeople(cycle):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         return render_template(
-            'memberapp/people.html', member=current_user.member, nav_id=2,
+            'memberapp/people.html', member=current_user.member, nav_id=3,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), cycle=cycle, manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -75,22 +202,95 @@ def showPeople():
 @member_app.route('/people/<int:id>')
 @member_required
 def showMember(id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         mem = models.Member.query.get(id)
         if not mem:
             abort(404)
         return render_template(
             'memberapp/profile.html', member=current_user.member,
-            profile_member=mem, nav_id=2,
+            profile_member=mem, nav_id=3, cycle=mem.cycle,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
+@member_app.route('/people/u_<int:id>')
+@member_required
+def showMemberbyUserID(id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    try:
+        mem = models.Member.query.filter_by(user_id=id).first()
+        if not mem:
+            abort(404)
+        memberid = str(mem.id)
+        return redirect('stem/people/' + memberid )
+
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/calendar')
+@member_required
+def showCalendar():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    try:
+        return render_template(
+            'calendar.html', member=current_user.member, nav_id=4,
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/suggestion')
+@member_required
+def gotoSuggestionPage1():
+    return redirect(url_for('.showSuggestion', page = 1))
+
+@member_app.route('/suggestion/<int:page>')
+@member_required
+def showSuggestion(page):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    totalSuggestion = len(models.Task.query.get(0).children[::-1]) - 1
+    end = totalSuggestion - 10 * (page - 1) + 1
+    start = totalSuggestion - 10 * page + 1
+    maxpage = round(totalSuggestion / 10 + 0.5)
+
+    if start < 1 :
+        start = 1
+    if end < 1 :
+        abort(404)
+
+    issues = models.Task.query.get(0).children[start:end:][::-1]
+
+    try:
+        mem = models.Member
+        return render_template(
+            'suggestion.html',
+            member=current_user.member, nav_id=5,
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all(), mem=mem, manager=manager, issues=issues, maxpage = maxpage, page=page, totalSuggestion=totalSuggestion)
+    except TemplateNotFound:
+        abort(404)
 
 @member_app.route('/task/<int:id>')
 @member_required
 def showTask(id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         task = models.Task.query.get(id)
         if not task:
@@ -98,21 +298,21 @@ def showTask(id):
         if task.level == 0:
             return render_template(
                 'milestone.html', member=current_user.member,
-                milestone=task, task=task, nav_id=4,
+                milestone=task, task=task, nav_id=5,
                 notifications=notification.Generate(current_user.member),
-                boards=models.Tag.query.filter_by(special=1).all())
+                boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
         if task.level == 1:
             return render_template(
                 'issue.html', member=current_user.member,
-                issue=task, task=task, nav_id=5,
+                issue=task, task=task, nav_id=6,
                 notifications=notification.Generate(current_user.member),
-                boards=models.Tag.query.filter_by(special=1).all())
+                boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
         if task.level == 2:
             return render_template(
                 'subtask.html', member=current_user.member,
-                task=task, nav_id=5,
+                task=task, nav_id=6,
                 notifications=notification.Generate(current_user.member),
-                boards=models.Tag.query.filter_by(special=1).all())
+                boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -120,15 +320,19 @@ def showTask(id):
 @member_app.route('/milestone/<int:id>')
 @member_required
 def showMilestone(id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         milestone = models.Task.query.get(id)
         if milestone and milestone.level == 0:
             return render_template(
                 'milestone.html',
                 member=current_user.member,
-                milestone=milestone, task=milestone, nav_id=4,
+                milestone=milestone, task=milestone, nav_id=5,
                 notifications=notification.Generate(current_user.member),
-                boards=models.Tag.query.filter_by(special=1).all())
+                boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
         else:
             abort(404)
     except TemplateNotFound:
@@ -138,14 +342,18 @@ def showMilestone(id):
 @member_app.route('/issue/<int:id>')
 @member_required
 def showIssue(id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         issue = models.Task.query.get(id)
         if issue and issue.level == 1:
             return render_template(
                 'issue.html', member=current_user.member,
-                issue=issue, task=issue, nav_id=5,
+                issue=issue, task=issue, nav_id=6,
                 notifications=notification.Generate(current_user.member),
-                boards=models.Tag.query.filter_by(special=1).all())
+                boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
         else:
             abort(404)
     except TemplateNotFound:
@@ -155,30 +363,38 @@ def showIssue(id):
 @member_app.route('/subtask/<int:id>')
 @member_required
 def showSubtask(id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         task = models.Task.query.get(id)
         if task and task.level == 2:
             return render_template(
                 'subtask.html', member=current_user.member,
-                task=task, nav_id=5,
+                task=task, nav_id=6,
                 notifications=notification.Generate(current_user.member),
-                boards=models.Tag.query.filter_by(special=1).all())
+                boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
         else:
             abort(404)
     except TemplateNotFound:
             abort(404)
 
-
+"""
 @member_app.route('/issue')
 @member_required
 def showIssues():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         issues = models.Task.query.filter_by(level=1).all()
         return render_template(
             'issue_list.html', member=current_user.member,
             issues=issues, nav_id=5,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -186,6 +402,10 @@ def showIssues():
 @member_app.route('/milestone')
 @member_required
 def showMilestones():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         milestones = models.Task.query.filter_by(level=0).all()
         return render_template('milestone_list.html',
@@ -194,33 +414,7 @@ def showMilestones():
                                 notifications=notification.Generate(
                                    current_user.member),
                                 boards=models.Tag.query
-                                    .filter_by(special=1).all())
-    except TemplateNotFound:
-        abort(404)
-
-
-@member_app.route('/suggestion')
-@member_required
-def showSuggestion():
-    try:
-        return render_template(
-            'suggestion.html',
-            milestone=models.Task.query.get(0),
-            member=current_user.member, nav_id=3,
-            notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
-    except TemplateNotFound:
-        abort(404)
-
-
-@member_app.route('/calendar')
-@member_required
-def showCalendar():
-    try:
-        return render_template(
-            'calendar.html', member=current_user.member, nav_id=6,
-            notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+                                    .filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -228,12 +422,16 @@ def showCalendar():
 @member_app.route('/tag')
 @member_required
 def showTagList():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         tags = models.Tag.query.all()
         return render_template(
             'tag_list.html', member=current_user.member, nav_id=7, tags=tags,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -249,21 +447,25 @@ def showTag(id):
         return render_template(
             'tag.html', member=current_user.member, nav_id=7, tag=tag,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
-
+"""
 
 @member_app.route('/board')
 @member_required
 def showBoardList():
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         tags = models.Tag.query.filter_by(special=1).all()
         return render_template(
             'board_list.html',
-            member=current_user.member, nav_id=8, tags=tags,
+            member=current_user.member, nav_id=6, tags=tags,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -271,18 +473,45 @@ def showBoardList():
 @member_app.route('/board/<int:tag_id>')
 @member_required
 def showBoard(tag_id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         tag = models.Tag.query.get(tag_id)
+        
         if not tag:
             abort(404)
 
         posts = tag.posts
 
         return render_template(
-            'post_list.html', member=current_user.member, nav_id=8,
+            'post_list.html', member=current_user.member, nav_id=6,
             tag=tag, posts=posts,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/board/<int:tag_id>_<int:page>')
+@member_required
+def showPage(tag_id,page):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    try:
+        tag = models.Tag.query.get(tag_id)
+        if not tag:
+            abort(404)
+
+        pagination = tag.posts.query.filter(3)
+
+        return render_template(
+            'post_list.html', member=current_user.member, nav_id=6,
+            tag=tag, posts=posts,
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
@@ -290,23 +519,62 @@ def showBoard(tag_id):
 @member_app.route('/board/<int:tag_id>/<int:post_id>')
 @member_required
 def showPost(tag_id, post_id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         tag = models.Tag.query.get(tag_id)
         post = models.Post.query.get(post_id)
+
+        if not post in tag.posts:
+            abort(404)
+
         if not (tag and post):
             abort(404)
 
+        post.hitCount = post.hitCount + 1
+        db.session.commit()
+
         return render_template(
-            'post_view.html', member=current_user.member, nav_id=8,
+            'post_view.html', member=current_user.member, nav_id=6,
             tag=tag, post=post,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
     except TemplateNotFound:
         abort(404)
 
 @member_app.route('/board/<int:tag_id>/<int:post_id>/modify')
 @member_required
 def modifyPost(tag_id, post_id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
+    try:
+        tag = models.Tag.query.get(tag_id)
+        post = models.Post.query.get(post_id)
+
+        if not (tag and post):
+            abort(404)
+        if post.author != current_user:
+            abort(403)
+
+        return render_template(
+            'post_modify.html', member=current_user.member, nav_id=6,
+            tag=tag, post=post,
+            notifications=notification.Generate(current_user.member),
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
+    except TemplateNotFound:
+        abort(404)
+
+@member_app.route('/board/<int:tag_id>/<int:post_id>/delete')
+@member_required
+def deletePost(tag_id, post_id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         tag = models.Tag.query.get(tag_id)
         post = models.Post.query.get(post_id)
@@ -315,27 +583,32 @@ def modifyPost(tag_id, post_id):
         if post.author != current_user:
             abort(403)
 
-        return render_template(
-            'post_modify.html', member=current_user.member, nav_id=8,
-            tag=tag, post=post,
-            notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+        db.session.delete(post)
+        db.session.commit()
+
+        return redirect(url_for('.showBoard', tag_id=tag_id))
     except TemplateNotFound:
         abort(404)
 
 @member_app.route('/board/<int:tag_id>/write')
 @member_required
 def writePost(tag_id):
+
+    recruitcycle = db.session.query(func.max(models.Member.cycle).label("cycle")).first().cycle
+    manager = models.Member.query.filter(or_(models.Member.cycle==recruitcycle, models.Member.cycle==recruitcycle-1)).filter(or_(models.Member.stem_dept_id==5,models.Member.stem_dept_id==6)).all()
+
     try:
         tag = models.Tag.query.get(tag_id)
         if not tag:
             abort(404)
+        if not tag.special==1:
+            abort(404)
 
         return render_template(
             'post_write.html',
-            member=current_user.member, nav_id=8, tag=tag,
+            member=current_user.member, nav_id=6, tag=tag,
             notifications=notification.Generate(current_user.member),
-            boards=models.Tag.query.filter_by(special=1).all())
+            boards=models.Tag.query.filter_by(special=1).all(), manager=manager)
 
     except TemplateNotFound:
         abort(404)
@@ -501,7 +774,7 @@ class Task(Resource):
                 tag_data = models.Tag(tag)
                 task.tags.append(tag_data)
                 db.session.add(tag_data)
-
+'''
         priority_text = ['[시간날 때]', '[보통]', '[중요함]', '[급함]']
         comment_text += '중요도: %s, ' % priority_text[task.priority]
 
@@ -763,9 +1036,26 @@ class Task(Resource):
         if task:
             return task
         return {}
-
+'''
 api.add_resource(Task, '/api/task', '/api/task/<int:taskID>')
 
+class DeleteTask(Resource):
+
+    taskParser = reqparse.RequestParser()
+    taskParser.add_argument('id', type=int, default=0)
+
+    @member_required
+    def post(self):
+        args = self.taskParser.parse_args()
+        post = models.Task.query.filter_by(id=args['id']).first_or_404()
+        if current_user.member.id != post.creator_id:
+            return "Not Allowed", 403
+
+        db.session.delete(post)
+        db.session.commit()
+        return "Success", 200
+
+api.add_resource(DeleteTask, '/api/task/delete')
 
 class Issue(Resource):
     @member_required
@@ -936,6 +1226,5 @@ class Event(Resource):
             event.name = "[%s] %s" % (event.repr_id(), event.name)
 
         return events
-
 
 api.add_resource(Event, '/api/deadlines')
